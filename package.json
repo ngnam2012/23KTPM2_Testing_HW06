@@ -1,0 +1,13 @@
+{
+  "name": "hw06-api-testing",
+  "version": "1.0.0",
+  "description": "HW06 - Automated API Testing for EShop SUT using Postman & Newman",
+  "scripts": {
+    "test:fr04": "newman run collections/FR04_Profile_Management.postman_collection.json --env-var studentId=25127001 -r cli,htmlextra --reporter-htmlextra-export reports/FR04_Newman_Report.html",
+    "test:ci": "newman run collections/FR04_Profile_Management.postman_collection.json --env-var studentId=25127001 -r cli,htmlextra --reporter-htmlextra-export reports/CI_CD_Newman_Report.html"
+  },
+  "devDependencies": {
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1"
+  }
+}

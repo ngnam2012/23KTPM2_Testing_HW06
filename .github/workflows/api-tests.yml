@@ -1,0 +1,62 @@
+name: EShop Automated API Testing CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  api-testing:
+    name: Run Newman API Tests for EShop SUT
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: 2. Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          cache-dependency-path: eshop-sut/backend/package-lock.json
+
+      - name: 3. Install Backend Dependencies
+        working-directory: eshop-sut/backend
+        run: npm ci
+
+      - name: 4. Initialize SQLite Database & Seed Data
+        working-directory: eshop-sut/backend
+        run: node database.js
+
+      - name: 5. Start Backend Server & Wait for Healthcheck
+        working-directory: eshop-sut/backend
+        run: |
+          node server.js &
+          npx wait-on http://localhost:3000/api/products --timeout 30000
+
+      - name: 6. Install Newman & HTML Reporter
+        run: |
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: 7. Execute Postman API Test Suite via Newman
+        run: |
+          mkdir -p reports
+          newman run collections/FR04_Profile_Management.postman_collection.json \
+            --env-var "studentId=25127001" \
+            -r cli,htmlextra,json \
+            --reporter-htmlextra-export reports/CI_CD_Newman_Report.html \
+            --reporter-htmlextra-title "HW06 CI/CD EShop API Test Automation Report" \
+            --reporter-json-export reports/CI_CD_Newman_Report.json
+
+      - name: 8. Upload Newman Test Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-api-test-report
+          path: |
+            reports/CI_CD_Newman_Report.html
+            reports/CI_CD_Newman_Report.json
+          retention-days: 14
