@@ -1,0 +1,136 @@
+[
+  {
+    "tc_id": "TC_FR10_STATE_01",
+    "category": "State Transition (Valid - Pending to Canceled)",
+    "description": "Cancel pending order successfully",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 200,
+    "expected_message": "Order canceled successfully"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_02",
+    "category": "State Transition (State Verification - GET)",
+    "description": "Verify order status updated to canceled in DB",
+    "method": "GET",
+    "endpoint": "/api/orders/1",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 200,
+    "expected_order_status": "canceled"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_03",
+    "category": "State Transition (Valid - Confirmed to Canceled)",
+    "description": "Cancel confirmed order successfully",
+    "method": "PUT",
+    "endpoint": "/api/orders/2/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 200,
+    "expected_message": "Order canceled successfully"
+  },
+  {
+    "tc_id": "TC_FR10_INV_01",
+    "category": "State Machine Bug Hunter (Invalid - Shipping to Canceled)",
+    "description": "Reject cancellation of order in shipping status",
+    "method": "PUT",
+    "endpoint": "/api/orders/3/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 400,
+    "bug_note": "SUT currently allows canceling shipping orders (returns 200 OK)"
+  },
+  {
+    "tc_id": "TC_FR10_INV_02",
+    "category": "State Machine (Invalid - Delivered to Canceled)",
+    "description": "Reject cancellation of delivered order",
+    "method": "PUT",
+    "endpoint": "/api/orders/4/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR10_INV_03",
+    "category": "State Machine (Invalid - Canceled to Canceled)",
+    "description": "Reject cancellation of already canceled order",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR10_SEC_01",
+    "category": "Security (SEC-01 - BOLA/IDOR on Cancel)",
+    "description": "Prevent User A from canceling User B's order",
+    "method": "PUT",
+    "endpoint": "/api/orders/20/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 404
+  },
+  {
+    "tc_id": "TC_FR10_SEC_02",
+    "category": "Security Bug Hunter (SEC-01 - BOLA/IDOR on GET)",
+    "description": "Prevent User A from viewing User B's order details",
+    "method": "GET",
+    "endpoint": "/api/orders/20",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 403,
+    "bug_note": "SUT GET /api/orders/:id lacks authentication and ownership verification"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_03",
+    "category": "Security (SEC-02 - Missing Auth on Cancel)",
+    "description": "Reject cancellation without token",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 401
+  },
+  {
+    "tc_id": "TC_FR10_SEC_05",
+    "category": "Security (SEC-02 - Invalid Token on Cancel)",
+    "description": "Reject cancellation with forged JWT token",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "Authorization": "Bearer fake.forged.jwt.token",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 403
+  },
+  {
+    "tc_id": "TC_FR10_DOM_05",
+    "category": "Domain (Non-existent ID = 999999)",
+    "description": "Return 404 on canceling non-existent order",
+    "method": "PUT",
+    "endpoint": "/api/orders/999999/cancel",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 404
+  }
+]

@@ -1,0 +1,4654 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "fr09-mobile-coupon-25127001"
+    },
+    "item": [
+      {
+        "id": "713901c8-86b3-4183-8936-df74824fd2ea",
+        "name": "Group 1 - Decision Table (C1 to C5)",
+        "item": [
+          {
+            "id": "035a3e86-e8d7-44ef-bda6-a540df635a6d",
+            "name": "TC_FR09_COND_01: Valid Percent Coupon (SAVE10 on 500k)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "3d82a531-de6f-4228-a5bb-f4f836cd0274",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_01: Status code is 200 OK\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "pm.test(\"TC_FR09_COND_01: Success is true\", function () {",
+                    "    pm.expect(pm.response.json().success).to.be.true;",
+                    "});"
+                  ],
+                  "_lastExecutionId": "0d83433e-e5f1-4b5a-9fdc-81e53e653b73"
+                }
+              }
+            ]
+          },
+          {
+            "id": "37f5d85d-0eb4-4cc7-a0ac-a331d0116d3f",
+            "name": "TC_FR09_COND_02: Valid Fixed Coupon (BIGBUY on 600k)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "8f767a44-66c4-4c69-b25f-2502facf38b2",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_02: Status code is 200 OK\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "    var res = pm.response.json();",
+                    "    pm.expect(res.discount_amount).to.eql(50000);",
+                    "    pm.expect(res.final_amount).to.eql(550000);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "0038d3f0-5771-4621-8a7b-7f935620066d"
+                }
+              }
+            ]
+          },
+          {
+            "id": "82c673da-b446-492a-af97-a4ea13e49d7a",
+            "name": "TC_FR09_COND_03: Non-existent Coupon Code",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "e8c9d5f2-e891-4562-9076-7f2955198f1f",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_03: Non-existent coupon returns 404 or 400\", function () {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "46e17f00-0f07-4c92-b16f-0ddfe1c46ba5"
+                }
+              }
+            ]
+          },
+          {
+            "id": "64297a69-8fe9-4f85-ba73-6720b8bde4a1",
+            "name": "TC_FR09_COND_05: Expired Coupon (EXPIRED)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "394e0ba9-0379-4b4d-9b41-51c4d429f14e",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_05: Expired coupon returns 400 Bad Request\", function () {",
+                    "    pm.response.to.have.status(400);",
+                    "    pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
+                    "});"
+                  ],
+                  "_lastExecutionId": "5dfe8c76-be7c-4533-8461-73bfe2367a86"
+                }
+              }
+            ]
+          },
+          {
+            "id": "fba142b4-b51e-4d07-a199-c3174cf15c74",
+            "name": "TC_FR09_COND_06: Below Min Order Amount (SAVE10 on 200k)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "1fe70ced-63b0-44b6-a80a-1d7d92430f88",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_06: Below min order amount returns 400\", function () {",
+                    "    pm.response.to.have.status(400);",
+                    "    pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                    "});"
+                  ],
+                  "_lastExecutionId": "17b7db6c-b832-4194-896a-0dc75a44ced2"
+                }
+              }
+            ]
+          },
+          {
+            "id": "42202ae0-75ed-475b-af7a-3bf413fc6b3d",
+            "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "bc135c33-3427-4164-af56-c3925db043fe",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "    pm.expect(pm.response.json().success).to.be.true;",
+                    "});"
+                  ],
+                  "_lastExecutionId": "082ec4be-45eb-444d-b273-e90b16b7b596"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "1a3baa84-9dc0-4c63-aa06-4e761aed2627",
+        "name": "Group 2 - Math & Calculation Edge Cases",
+        "item": [
+          {
+            "id": "d3f69c17-2b72-4b2c-b785-e708dc407373",
+            "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "e00ae242-2ee8-4865-92ca-9640531e7741",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
+                    "    var res = pm.response.json();",
+                    "    pm.expect(res.discount_amount).to.eql(50000);",
+                    "    pm.expect(res.discount_amount).to.be.above(0);",
+                    "    pm.expect(res.final_amount).to.eql(450000);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "e0f88edc-0e6f-4e0b-84b4-551031393185"
+                }
+              }
+            ]
+          },
+          {
+            "id": "4a893a7e-02c1-4ccc-b6d5-c62194bdd058",
+            "name": "TC_FR09_MATH_07: Arithmetic Invariant Property (final + discount === total)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "86950d56-724d-4b20-892e-0efd1e4f0ebf",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)\", function () {",
+                    "    var res = pm.response.json();",
+                    "    pm.expect(res.final_amount + res.discount_amount).to.eql(750000);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "80e1c12d-6e88-484f-8242-32af3491ad84"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "ac995471-5956-4afe-88e1-181473ebb461",
+        "name": "Group 3 - Domain Partitions & Security",
+        "item": [
+          {
+            "id": "51b2aa15-a6d8-4644-9646-ac9cb34bfecd",
+            "name": "TC_FR09_DOM_03: Empty Coupon Code",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "e9ad4b28-77e6-4d39-8c05-a9510e35eae6",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_DOM_03: Empty code returns 400 Bad Request\", function () {",
+                    "    pm.response.to.have.status(400);",
+                    "    pm.expect(pm.response.json().error).to.eql(\"Vui lòng nhập mã giảm giá\");",
+                    "});"
+                  ],
+                  "_lastExecutionId": "d1ba9887-1f5a-4344-b2fa-cd26d956fbb0"
+                }
+              }
+            ]
+          },
+          {
+            "id": "6f3cbc8a-34ca-4ae2-b28c-c379bce99d1c",
+            "name": "TC_FR09_DOM_06: SQL Injection in Coupon Code",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"SAVE10' OR '1'='1\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "0ab2b274-983c-46a5-8a8a-26d681e81c0a",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_DOM_06: SQLi handled safely without 500 error\", function () {",
+                    "    pm.expect(pm.response.code).to.not.equal(500);",
+                    "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "9c20f712-f592-4c82-9b53-fbe6322343de"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "9711b178-0e07-47db-ad77-17567f2ef979",
+        "name": "Group 4 - Schema Validation & Mobile SLA",
+        "item": [
+          {
+            "id": "273b34ec-e704-446b-b5e9-057271d065f3",
+            "name": "TC_FR09_SCHEMA_01: 200 OK JSON Schema Validation",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "b6eb9fc8-2f07-43a2-83bc-d8f3e4f0efd9",
+                  "type": "text/javascript",
+                  "exec": [
+                    "var schema = {",
+                    "    \"type\": \"object\",",
+                    "    \"required\": [\"success\", \"coupon_id\", \"discount_amount\", \"final_amount\", \"message\"],",
+                    "    \"properties\": {",
+                    "        \"success\": { \"type\": \"boolean\" },",
+                    "        \"coupon_id\": { \"type\": \"integer\" },",
+                    "        \"discount_amount\": { \"type\": \"number\" },",
+                    "        \"final_amount\": { \"type\": \"number\" },",
+                    "        \"message\": { \"type\": \"string\" }",
+                    "    }",
+                    "};",
+                    "pm.test(\"TC_FR09_SCHEMA_01: Conforms to Apply Coupon JSON Schema\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                    "});"
+                  ],
+                  "_lastExecutionId": "da163804-de74-4863-bf5a-598b40c0a36c"
+                }
+              }
+            ]
+          },
+          {
+            "id": "a00b991a-c5b0-40e5-8121-827f04a497f3",
+            "name": "TC_FR09_SCHEMA_06: Mobile Performance SLA (< 200ms)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "apply-coupon"
+                ],
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "5797f1ff-be66-4389-bf1d-04f60a07c4ba",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"TC_FR09_SCHEMA_06: Response time is under 200ms\", function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "79615053-6b43-4961-b629-cee30af2f60b"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "id": "ef248077-6c1a-46b9-bc9d-ba60ed13b2b9",
+          "type": "text/javascript",
+          "exec": [
+            "// Attach mandatory Header X-Student-Id to every request",
+            "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
+          ],
+          "_lastExecutionId": "767dc139-e810-4eea-9524-e47fba77385d"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "type": "string",
+        "value": "http://localhost:3000",
+        "key": "baseUrl"
+      },
+      {
+        "type": "string",
+        "value": "25127001",
+        "key": "studentId"
+      }
+    ],
+    "info": {
+      "_postman_id": "fr09-mobile-coupon-25127001",
+      "name": "FR-09: Mobile Apply Coupon Test Suite",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Comprehensive Test Suite for FR-09 (POST /api/apply-coupon) covering Decision Table C1-C5, Math Formula Bugs, Domain Boundaries, and JSON Schema Validation.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "id": "62dc5231-67e6-484c-bcfa-8b31e7ed4834",
+    "values": []
+  },
+  "globals": {
+    "id": "efb875a7-d889-4d92-b446-a2a87ce92024",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 24,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 13,
+        "pending": 0,
+        "failed": 2
+      },
+      "testScripts": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 5.5,
+      "responseMin": 2,
+      "responseMax": 21,
+      "responseSd": 5.9651767227244274,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1787407852658,
+      "completed": 1787407853691
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 12,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "5c6734cf-bd84-4817-be3d-140449282576",
+          "httpRequestId": "65a2db70-f329-4d55-840d-2ffa75bb0afc"
+        },
+        "item": {
+          "id": "035a3e86-e8d7-44ef-bda6-a540df635a6d",
+          "name": "TC_FR09_COND_01: Valid Percent Coupon (SAVE10 on 500k)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3d82a531-de6f-4228-a5bb-f4f836cd0274",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_01: Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"TC_FR09_COND_01: Success is true\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ],
+                "_lastExecutionId": "0d83433e-e5f1-4b5a-9fdc-81e53e653b73"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "5bc9090a-28e0-4256-8425-9d138b1d205d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "733a8517-5d7c-4b54-bbe1-01d5d237389b",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "128"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"80-eEcQQFYR6VLLw3p0alA98mMsV0s\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:52 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              45,
+              52,
+              53,
+              48,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              49,
+              48,
+              37,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 21,
+          "responseSize": 128
+        },
+        "id": "035a3e86-e8d7-44ef-bda6-a540df635a6d",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_01: Status code is 200 OK",
+            "skipped": false
+          },
+          {
+            "assertion": "TC_FR09_COND_01: Success is true",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "ca69b409-84fc-49ef-be83-bd214ba9c38c",
+          "length": 12,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "8a5a60c7-405d-48d8-aa66-cb5229a64309"
+        },
+        "item": {
+          "id": "37f5d85d-0eb4-4cc7-a0ac-a331d0116d3f",
+          "name": "TC_FR09_COND_02: Valid Fixed Coupon (BIGBUY on 600k)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "8f767a44-66c4-4c69-b25f-2502facf38b2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_02: Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.discount_amount).to.eql(50000);",
+                  "    pm.expect(res.final_amount).to.eql(550000);",
+                  "});"
+                ],
+                "_lastExecutionId": "0038d3f0-5771-4621-8a7b-7f935620066d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3553d323-5b91-4c56-bfd0-a2d70a0dbd62",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "e98d8643-3914-4e43-8dbd-ab1d90a4fde8",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "131"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"83-FVmCnU2NBFE0kYjPgdROFzIsKt8\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:52 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              53,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 16,
+          "responseSize": 131
+        },
+        "id": "37f5d85d-0eb4-4cc7-a0ac-a331d0116d3f",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_02: Status code is 200 OK",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "85cbe780-a07a-45f1-8827-5d037f75c071",
+          "length": 12,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "698cb8fc-0b12-42a6-8517-807f7aab0cc9"
+        },
+        "item": {
+          "id": "82c673da-b446-492a-af97-a4ea13e49d7a",
+          "name": "TC_FR09_COND_03: Non-existent Coupon Code",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e8c9d5f2-e891-4562-9076-7f2955198f1f",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_03: Non-existent coupon returns 404 or 400\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "_lastExecutionId": "46e17f00-0f07-4c92-b16f-0ddfe1c46ba5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "07f0cdd5-47a3-439d-93f1-75dc02847c33",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "73",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "65846e31-a77b-4fec-936b-6ceda400aa9a",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "79"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"4f-Zi25GXkQG92bS4EOxPGgD4Fb01I\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:52 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              77,
+              195,
+              163,
+              32,
+              103,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              103,
+              105,
+              195,
+              161,
+              32,
+              107,
+              104,
+              195,
+              180,
+              110,
+              103,
+              32,
+              116,
+              225,
+              187,
+              147,
+              110,
+              32,
+              116,
+              225,
+              186,
+              161,
+              105,
+              32,
+              104,
+              111,
+              225,
+              186,
+              183,
+              99,
+              32,
+              196,
+              145,
+              195,
+              163,
+              32,
+              98,
+              225,
+              187,
+              139,
+              32,
+              118,
+              195,
+              180,
+              32,
+              104,
+              105,
+              225,
+              187,
+              135,
+              117,
+              32,
+              104,
+              195,
+              179,
+              97,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 79
+        },
+        "id": "82c673da-b446-492a-af97-a4ea13e49d7a",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_03: Non-existent coupon returns 404 or 400",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "b4f83d5d-a6ef-4b38-848c-55e7f8849db5",
+          "length": 12,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "7d0381b9-9db8-4adb-a2a3-0c5f8b6d02bd"
+        },
+        "item": {
+          "id": "64297a69-8fe9-4f85-ba73-6720b8bde4a1",
+          "name": "TC_FR09_COND_05: Expired Coupon (EXPIRED)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "394e0ba9-0379-4b4d-9b41-51c4d429f14e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_05: Expired coupon returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
+                  "});"
+                ],
+                "_lastExecutionId": "5dfe8c76-be7c-4533-8461-73bfe2367a86"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ea0fff7c-5b8d-4632-bdaa-c1293d048c26",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "65",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "9d39bb91-69a0-4b64-9470-fcafbfb52233",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "44"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"2c-TEKYjb/x8uUMAcqo6Q+gnvTyj+w\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:52 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              77,
+              195,
+              163,
+              32,
+              103,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              103,
+              105,
+              195,
+              161,
+              32,
+              196,
+              145,
+              195,
+              163,
+              32,
+              104,
+              225,
+              186,
+              191,
+              116,
+              32,
+              104,
+              225,
+              186,
+              161,
+              110,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 44
+        },
+        "id": "64297a69-8fe9-4f85-ba73-6720b8bde4a1",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_05: Expired coupon returns 400 Bad Request",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "d2b48d4f-41af-457d-b2d4-cce46487dbc7",
+          "length": 12,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "f7440521-95d8-429a-a046-c7399165d7c2"
+        },
+        "item": {
+          "id": "fba142b4-b51e-4d07-a199-c3174cf15c74",
+          "name": "TC_FR09_COND_06: Below Min Order Amount (SAVE10 on 200k)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "1fe70ced-63b0-44b6-a80a-1d7d92430f88",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_06: Below min order amount returns 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                  "});"
+                ],
+                "_lastExecutionId": "17b7db6c-b832-4194-896a-0dc75a44ced2"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "dfc669b1-7e89-4619-a804-7f9bbc2cdbc6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "0b85ffc5-3780-4d9d-9dd1-0835ebbc6e13",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "98"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"62-jbiIxglY77nZImtomx8bPvimMK4\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              196,
+              144,
+              198,
+              161,
+              110,
+              32,
+              104,
+              195,
+              160,
+              110,
+              103,
+              32,
+              99,
+              104,
+              198,
+              176,
+              97,
+              32,
+              196,
+              145,
+              225,
+              187,
+              167,
+              32,
+              103,
+              105,
+              195,
+              161,
+              32,
+              116,
+              114,
+              225,
+              187,
+              139,
+              32,
+              116,
+              225,
+              187,
+              145,
+              105,
+              32,
+              116,
+              104,
+              105,
+              225,
+              187,
+              131,
+              117,
+              32,
+              51,
+              48,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              32,
+              196,
+              145,
+              225,
+              187,
+              131,
+              32,
+              195,
+              161,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              109,
+              195,
+              163,
+              32,
+              110,
+              195,
+              160,
+              121,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 98
+        },
+        "id": "fba142b4-b51e-4d07-a199-c3174cf15c74",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_06: Below min order amount returns 400",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "011d5a33-d5aa-46dd-84b5-04c45328b302",
+          "length": 12,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "e3ab4eb9-b963-4344-a7d7-1a21d973d9a9"
+        },
+        "item": {
+          "id": "42202ae0-75ed-475b-af7a-3bf413fc6b3d",
+          "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "bc135c33-3427-4164-af56-c3925db043fe",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ],
+                "_lastExecutionId": "082ec4be-45eb-444d-b273-e90b16b7b596"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "9d7f5d45-2528-4441-9767-da38b67068f0",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "44eb5e08-29bd-41ae-b446-642faeafd55f",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "98"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"62-jbiIxglY77nZImtomx8bPvimMK4\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              196,
+              144,
+              198,
+              161,
+              110,
+              32,
+              104,
+              195,
+              160,
+              110,
+              103,
+              32,
+              99,
+              104,
+              198,
+              176,
+              97,
+              32,
+              196,
+              145,
+              225,
+              187,
+              167,
+              32,
+              103,
+              105,
+              195,
+              161,
+              32,
+              116,
+              114,
+              225,
+              187,
+              139,
+              32,
+              116,
+              225,
+              187,
+              145,
+              105,
+              32,
+              116,
+              104,
+              105,
+              225,
+              187,
+              131,
+              117,
+              32,
+              51,
+              48,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              32,
+              196,
+              145,
+              225,
+              187,
+              131,
+              32,
+              195,
+              161,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              109,
+              195,
+              163,
+              32,
+              110,
+              195,
+              160,
+              121,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 98
+        },
+        "id": "42202ae0-75ed-475b-af7a-3bf413fc6b3d",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK",
+              "message": "expected response to have status code 200 but got 400",
+              "stack": "AssertionError: expected response to have status code 200 but got 400\n   at Object.eval sandbox-script.js:1:6)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "a713f84c-8c37-42e8-8a76-a36acd421dd1",
+          "length": 12,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "a9a2da83-3eee-4f1f-849e-c0f266e1852f"
+        },
+        "item": {
+          "id": "d3f69c17-2b72-4b2c-b785-e708dc407373",
+          "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e00ae242-2ee8-4865-92ca-9640531e7741",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.discount_amount).to.eql(50000);",
+                  "    pm.expect(res.discount_amount).to.be.above(0);",
+                  "    pm.expect(res.final_amount).to.eql(450000);",
+                  "});"
+                ],
+                "_lastExecutionId": "e0f88edc-0e6f-4e0b-84b4-551031393185"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d2660c56-1725-4bd8-ab08-b097654137e6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "79f2c0cf-b43e-4688-9868-a240d9747dfe",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "128"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"80-eEcQQFYR6VLLw3p0alA98mMsV0s\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              45,
+              52,
+              53,
+              48,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              49,
+              48,
+              37,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 128
+        },
+        "id": "d3f69c17-2b72-4b2c-b785-e708dc407373",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000",
+              "message": "expected -4500000 to deeply equal 50000",
+              "stack": "AssertionError: expected -4500000 to deeply equal 50000\n   at Object.eval sandbox-script.js:1:7)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "b0b7b23d-278c-4108-80f7-35e7a2300aeb",
+          "length": 12,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "86bc22e1-dabd-4ca4-9c4c-47a6e343667d"
+        },
+        "item": {
+          "id": "4a893a7e-02c1-4ccc-b6d5-c62194bdd058",
+          "name": "TC_FR09_MATH_07: Arithmetic Invariant Property (final + discount === total)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "86950d56-724d-4b20-892e-0efd1e4f0ebf",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)\", function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.final_amount + res.discount_amount).to.eql(750000);",
+                  "});"
+                ],
+                "_lastExecutionId": "80e1c12d-6e88-484f-8242-32af3491ad84"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "9f2b1856-07c1-4b5e-8ffc-76ddd197fe96",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "b789de45-66a4-4355-93ec-e5c490666acb",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "131"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"83-shIXd0hwODMRSOXgR6NfFLCv+q4\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              55,
+              48,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              53,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 131
+        },
+        "id": "4a893a7e-02c1-4ccc-b6d5-c62194bdd058",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "2d1da4e1-00de-4ad9-a955-1300e68feb1d",
+          "length": 12,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "311754b5-0aa0-48bc-8e95-50f2c73fc083"
+        },
+        "item": {
+          "id": "51b2aa15-a6d8-4644-9646-ac9cb34bfecd",
+          "name": "TC_FR09_DOM_03: Empty Coupon Code",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e9ad4b28-77e6-4d39-8c05-a9510e35eae6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_DOM_03: Empty code returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.eql(\"Vui lòng nhập mã giảm giá\");",
+                  "});"
+                ],
+                "_lastExecutionId": "d1ba9887-1f5a-4344-b2fa-cd26d956fbb0"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "06681b25-ffad-4bec-b14c-48424bc37ffa",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "58",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "2e291ebe-2d15-4260-b3c3-dfc35f531ae1",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "44"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"2c-srs7aEbKrRU8VAXW41rvAUqQ99Q\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              86,
+              117,
+              105,
+              32,
+              108,
+              195,
+              178,
+              110,
+              103,
+              32,
+              110,
+              104,
+              225,
+              186,
+              173,
+              112,
+              32,
+              109,
+              195,
+              163,
+              32,
+              103,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              103,
+              105,
+              195,
+              161,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 44
+        },
+        "id": "51b2aa15-a6d8-4644-9646-ac9cb34bfecd",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_DOM_03: Empty code returns 400 Bad Request",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "917df16d-4e2e-4563-a0da-fd4193f3e3b3",
+          "length": 12,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "692366c3-9cae-4031-a1df-9fdd89cd470c"
+        },
+        "item": {
+          "id": "6f3cbc8a-34ca-4ae2-b28c-c379bce99d1c",
+          "name": "TC_FR09_DOM_06: SQL Injection in Coupon Code",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10' OR '1'='1\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0ab2b274-983c-46a5-8a8a-26d681e81c0a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_DOM_06: SQLi handled safely without 500 error\", function () {",
+                  "    pm.expect(pm.response.code).to.not.equal(500);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ],
+                "_lastExecutionId": "9c20f712-f592-4c82-9b53-fbe6322343de"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3dee5e1e-59a8-440a-9382-84d1bdb201f4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "75",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"SAVE10' OR '1'='1\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "26b7b713-b8e5-4f1c-914f-274d5f0edf5c",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "79"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"4f-Zi25GXkQG92bS4EOxPGgD4Fb01I\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              77,
+              195,
+              163,
+              32,
+              103,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              103,
+              105,
+              195,
+              161,
+              32,
+              107,
+              104,
+              195,
+              180,
+              110,
+              103,
+              32,
+              116,
+              225,
+              187,
+              147,
+              110,
+              32,
+              116,
+              225,
+              186,
+              161,
+              105,
+              32,
+              104,
+              111,
+              225,
+              186,
+              183,
+              99,
+              32,
+              196,
+              145,
+              195,
+              163,
+              32,
+              98,
+              225,
+              187,
+              139,
+              32,
+              118,
+              195,
+              180,
+              32,
+              104,
+              105,
+              225,
+              187,
+              135,
+              117,
+              32,
+              104,
+              195,
+              179,
+              97,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 79
+        },
+        "id": "6f3cbc8a-34ca-4ae2-b28c-c379bce99d1c",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_DOM_06: SQLi handled safely without 500 error",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "b748b7a1-4d93-4b67-bc0a-c7b0ce82ac0b",
+          "length": 12,
+          "cycles": 1,
+          "position": 10,
+          "iteration": 0,
+          "httpRequestId": "856a3407-b898-4f19-b923-90cd9f654161"
+        },
+        "item": {
+          "id": "273b34ec-e704-446b-b5e9-057271d065f3",
+          "name": "TC_FR09_SCHEMA_01: 200 OK JSON Schema Validation",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b6eb9fc8-2f07-43a2-83bc-d8f3e4f0efd9",
+                "type": "text/javascript",
+                "exec": [
+                  "var schema = {",
+                  "    \"type\": \"object\",",
+                  "    \"required\": [\"success\", \"coupon_id\", \"discount_amount\", \"final_amount\", \"message\"],",
+                  "    \"properties\": {",
+                  "        \"success\": { \"type\": \"boolean\" },",
+                  "        \"coupon_id\": { \"type\": \"integer\" },",
+                  "        \"discount_amount\": { \"type\": \"number\" },",
+                  "        \"final_amount\": { \"type\": \"number\" },",
+                  "        \"message\": { \"type\": \"string\" }",
+                  "    }",
+                  "};",
+                  "pm.test(\"TC_FR09_SCHEMA_01: Conforms to Apply Coupon JSON Schema\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                  "});"
+                ],
+                "_lastExecutionId": "da163804-de74-4863-bf5a-598b40c0a36c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "74822dd5-4a73-493a-9c22-bfc24412ae96",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "dc377d9a-229a-4acd-9365-f6e992f844a6",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "131"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"83-FVmCnU2NBFE0kYjPgdROFzIsKt8\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              53,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 131
+        },
+        "id": "273b34ec-e704-446b-b5e9-057271d065f3",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_SCHEMA_01: Conforms to Apply Coupon JSON Schema",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "bd524a7d-ceb3-4d08-b9b1-b14ea81e35d3",
+          "length": 12,
+          "cycles": 1,
+          "position": 11,
+          "iteration": 0,
+          "httpRequestId": "5e70d994-be99-423b-811f-06154c7626c8"
+        },
+        "item": {
+          "id": "a00b991a-c5b0-40e5-8121-827f04a497f3",
+          "name": "TC_FR09_SCHEMA_06: Mobile Performance SLA (< 200ms)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "5797f1ff-be66-4389-bf1d-04f60a07c4ba",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_SCHEMA_06: Response time is under 200ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                  "});"
+                ],
+                "_lastExecutionId": "79615053-6b43-4961-b629-cee30af2f60b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "apply-coupon"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Student-Id",
+              "value": "25127001"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d3df1da0-16e9-4e3c-b563-a52f5ccebb36",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "64",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "67dfdef2-76d2-4d3a-b4d2-74b417df01a9",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "131"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"83-FVmCnU2NBFE0kYjPgdROFzIsKt8\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 22 Aug 2026 14:10:53 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              112,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              100,
+              105,
+              115,
+              99,
+              111,
+              117,
+              110,
+              116,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              102,
+              105,
+              110,
+              97,
+              108,
+              95,
+              97,
+              109,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              53,
+              53,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              195,
+              129,
+              112,
+              32,
+              100,
+              225,
+              187,
+              165,
+              110,
+              103,
+              32,
+              116,
+              104,
+              195,
+              160,
+              110,
+              104,
+              32,
+              99,
+              195,
+              180,
+              110,
+              103,
+              33,
+              32,
+              71,
+              105,
+              225,
+              186,
+              163,
+              109,
+              32,
+              53,
+              48,
+              46,
+              48,
+              48,
+              48,
+              32,
+              226,
+              130,
+              171,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2,
+          "responseSize": 131
+        },
+        "id": "a00b991a-c5b0-40e5-8121-827f04a497f3",
+        "assertions": [
+          {
+            "assertion": "TC_FR09_SCHEMA_06: Response time is under 200ms",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1222
+    },
+    "failures": [
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK",
+          "message": "expected response to have status code 200 but got 400",
+          "stack": "AssertionError: expected response to have status code 200 but got 400\n   at Object.eval sandbox-script.js:1:6)",
+          "checksum": "65f44ae67e156266639cd5a68c26a222",
+          "id": "de077d42-0c04-4641-a0c1-03001c73d70c",
+          "timestamp": 1787407853149,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 6,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "42202ae0-75ed-475b-af7a-3bf413fc6b3d",
+          "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "bc135c33-3427-4164-af56-c3925db043fe",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ],
+                "_lastExecutionId": "082ec4be-45eb-444d-b273-e90b16b7b596"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "713901c8-86b3-4183-8936-df74824fd2ea",
+          "name": "Group 1 - Decision Table (C1 to C5)",
+          "item": [
+            {
+              "id": "035a3e86-e8d7-44ef-bda6-a540df635a6d",
+              "name": "TC_FR09_COND_01: Valid Percent Coupon (SAVE10 on 500k)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3d82a531-de6f-4228-a5bb-f4f836cd0274",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_01: Status code is 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"TC_FR09_COND_01: Success is true\", function () {",
+                      "    pm.expect(pm.response.json().success).to.be.true;",
+                      "});"
+                    ],
+                    "_lastExecutionId": "0d83433e-e5f1-4b5a-9fdc-81e53e653b73"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "37f5d85d-0eb4-4cc7-a0ac-a331d0116d3f",
+              "name": "TC_FR09_COND_02: Valid Fixed Coupon (BIGBUY on 600k)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "8f767a44-66c4-4c69-b25f-2502facf38b2",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_02: Status code is 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    var res = pm.response.json();",
+                      "    pm.expect(res.discount_amount).to.eql(50000);",
+                      "    pm.expect(res.final_amount).to.eql(550000);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "0038d3f0-5771-4621-8a7b-7f935620066d"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "82c673da-b446-492a-af97-a4ea13e49d7a",
+              "name": "TC_FR09_COND_03: Non-existent Coupon Code",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e8c9d5f2-e891-4562-9076-7f2955198f1f",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_03: Non-existent coupon returns 404 or 400\", function () {",
+                      "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "46e17f00-0f07-4c92-b16f-0ddfe1c46ba5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "64297a69-8fe9-4f85-ba73-6720b8bde4a1",
+              "name": "TC_FR09_COND_05: Expired Coupon (EXPIRED)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "394e0ba9-0379-4b4d-9b41-51c4d429f14e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_05: Expired coupon returns 400 Bad Request\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "    pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5dfe8c76-be7c-4533-8461-73bfe2367a86"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fba142b4-b51e-4d07-a199-c3174cf15c74",
+              "name": "TC_FR09_COND_06: Below Min Order Amount (SAVE10 on 200k)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "1fe70ced-63b0-44b6-a80a-1d7d92430f88",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_06: Below min order amount returns 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "    pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                      "});"
+                    ],
+                    "_lastExecutionId": "17b7db6c-b832-4194-896a-0dc75a44ced2"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "42202ae0-75ed-475b-af7a-3bf413fc6b3d",
+              "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "bc135c33-3427-4164-af56-c3925db043fe",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    pm.expect(pm.response.json().success).to.be.true;",
+                      "});"
+                    ],
+                    "_lastExecutionId": "082ec4be-45eb-444d-b273-e90b16b7b596"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "011d5a33-d5aa-46dd-84b5-04c45328b302",
+          "length": 12,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "e3ab4eb9-b963-4344-a7d7-1a21d973d9a9",
+          "scriptId": "bc135c33-3427-4164-af56-c3925db043fe",
+          "execution": "082ec4be-45eb-444d-b273-e90b16b7b596"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000",
+          "message": "expected -4500000 to deeply equal 50000",
+          "stack": "AssertionError: expected -4500000 to deeply equal 50000\n   at Object.eval sandbox-script.js:1:7)",
+          "checksum": "f9a2e91e6fc423a1bc76f9b701209926",
+          "id": "7adb5d3e-9890-4955-9732-43e161a7ab84",
+          "timestamp": 1787407853239,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 7,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "d3f69c17-2b72-4b2c-b785-e708dc407373",
+          "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "apply-coupon"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e00ae242-2ee8-4865-92ca-9640531e7741",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.discount_amount).to.eql(50000);",
+                  "    pm.expect(res.discount_amount).to.be.above(0);",
+                  "    pm.expect(res.final_amount).to.eql(450000);",
+                  "});"
+                ],
+                "_lastExecutionId": "e0f88edc-0e6f-4e0b-84b4-551031393185"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "1a3baa84-9dc0-4c63-aa06-4e761aed2627",
+          "name": "Group 2 - Math & Calculation Edge Cases",
+          "item": [
+            {
+              "id": "d3f69c17-2b72-4b2c-b785-e708dc407373",
+              "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e00ae242-2ee8-4865-92ca-9640531e7741",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
+                      "    var res = pm.response.json();",
+                      "    pm.expect(res.discount_amount).to.eql(50000);",
+                      "    pm.expect(res.discount_amount).to.be.above(0);",
+                      "    pm.expect(res.final_amount).to.eql(450000);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "e0f88edc-0e6f-4e0b-84b4-551031393185"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "4a893a7e-02c1-4ccc-b6d5-c62194bdd058",
+              "name": "TC_FR09_MATH_07: Arithmetic Invariant Property (final + discount === total)",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "apply-coupon"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "86950d56-724d-4b20-892e-0efd1e4f0ebf",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)\", function () {",
+                      "    var res = pm.response.json();",
+                      "    pm.expect(res.final_amount + res.discount_amount).to.eql(750000);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "80e1c12d-6e88-484f-8242-32af3491ad84"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "a713f84c-8c37-42e8-8a76-a36acd421dd1",
+          "length": 12,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "a9a2da83-3eee-4f1f-849e-c0f266e1852f",
+          "scriptId": "e00ae242-2ee8-4865-92ca-9640531e7741",
+          "execution": "e0f88edc-0e6f-4e0b-84b4-551031393185"
+        }
+      }
+    ],
+    "error": null
+  }
+}

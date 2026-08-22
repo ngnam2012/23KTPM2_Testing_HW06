@@ -1,0 +1,373 @@
+{
+  "info": {
+    "_postman_id": "fr09-mobile-coupon-25127001",
+    "name": "FR-09: Mobile Apply Coupon Test Suite",
+    "description": "Comprehensive Test Suite for FR-09 (POST /api/apply-coupon) covering Decision Table C1-C5, Math Formula Bugs, Domain Boundaries, and JSON Schema Validation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Attach mandatory Header X-Student-Id to every request",
+          "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "studentId", "value": "25127001", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Group 1 - Decision Table (C1 to C5)",
+      "item": [
+        {
+          "name": "TC_FR09_COND_01: Valid Percent Coupon (SAVE10 on 500k)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_01: Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"TC_FR09_COND_01: Success is true\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_02: Valid Fixed Coupon (BIGBUY on 600k)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_02: Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.discount_amount).to.eql(50000);",
+                  "    pm.expect(res.final_amount).to.eql(550000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_03: Non-existent Coupon Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_03: Non-existent coupon returns 404 or 400\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_05: Expired Coupon (EXPIRED)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_05: Expired coupon returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_06: Below Min Order Amount (SAVE10 on 200k)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_06: Below min order amount returns 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 2 - Math & Calculation Edge Cases",
+      "item": [
+        {
+          "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.discount_amount).to.eql(50000);",
+                  "    pm.expect(res.discount_amount).to.be.above(0);",
+                  "    pm.expect(res.final_amount).to.eql(450000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_07: Arithmetic Invariant Property (final + discount === total)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)\", function () {",
+                  "    var res = pm.response.json();",
+                  "    pm.expect(res.final_amount + res.discount_amount).to.eql(750000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 3 - Domain Partitions & Security",
+      "item": [
+        {
+          "name": "TC_FR09_DOM_03: Empty Coupon Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_DOM_03: Empty code returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    pm.expect(pm.response.json().error).to.eql(\"Vui lòng nhập mã giảm giá\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_06: SQL Injection in Coupon Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10' OR '1'='1\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_DOM_06: SQLi handled safely without 500 error\", function () {",
+                  "    pm.expect(pm.response.code).to.not.equal(500);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 4 - Schema Validation & Mobile SLA",
+      "item": [
+        {
+          "name": "TC_FR09_SCHEMA_01: 200 OK JSON Schema Validation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var schema = {",
+                  "    \"type\": \"object\",",
+                  "    \"required\": [\"success\", \"coupon_id\", \"discount_amount\", \"final_amount\", \"message\"],",
+                  "    \"properties\": {",
+                  "        \"success\": { \"type\": \"boolean\" },",
+                  "        \"coupon_id\": { \"type\": \"integer\" },",
+                  "        \"discount_amount\": { \"type\": \"number\" },",
+                  "        \"final_amount\": { \"type\": \"number\" },",
+                  "        \"message\": { \"type\": \"string\" }",
+                  "    }",
+                  "};",
+                  "pm.test(\"TC_FR09_SCHEMA_01: Conforms to Apply Coupon JSON Schema\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_06: Mobile Performance SLA (< 200ms)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"TC_FR09_SCHEMA_06: Response time is under 200ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+[
+  {
+    "tc_id": "TC_FR09_COND_01",
+    "category": "Decision Table (Valid Percent Coupon)",
+    "description": "Apply 10% coupon SAVE10 successfully on 500k order",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "SAVE10",
+      "total_amount": 500000,
+      "user_id": 1
+    },
+    "expected_status": 200,
+    "expected_discount": 50000,
+    "expected_final": 450000
+  },
+  {
+    "tc_id": "TC_FR09_COND_02",
+    "category": "Decision Table (Valid Fixed Coupon)",
+    "description": "Apply 50k fixed coupon BIGBUY successfully on 600k order",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "BIGBUY",
+      "total_amount": 600000,
+      "user_id": 1
+    },
+    "expected_status": 200,
+    "expected_discount": 50000,
+    "expected_final": 550000
+  },
+  {
+    "tc_id": "TC_FR09_COND_03",
+    "category": "Decision Table (Violate C1 - Non-existent Code)",
+    "description": "Reject non-existent coupon code",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "FAKE_COUPON_999",
+      "total_amount": 500000,
+      "user_id": 1
+    },
+    "expected_status": 404
+  },
+  {
+    "tc_id": "TC_FR09_COND_05",
+    "category": "Decision Table (Violate C2 - Expired Coupon)",
+    "description": "Reject expired coupon code",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "EXPIRED",
+      "total_amount": 500000,
+      "user_id": 1
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR09_COND_06",
+    "category": "Decision Table (Violate C3 - Below Minimum Order)",
+    "description": "Reject order below minimum amount (200k < 300k)",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "SAVE10",
+      "total_amount": 200000,
+      "user_id": 1
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR09_COND_07",
+    "category": "Decision Table (Boundary C3 - Exactly Equal Minimum Order)",
+    "description": "Accept order exactly equal to minimum amount (300k === 300k)",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "SAVE10",
+      "total_amount": 300000,
+      "user_id": 1
+    },
+    "expected_status": 200,
+    "bug_note": "SUT uses total_amount > min_order_amount instead of >=, rejecting valid orders at exact threshold"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_01",
+    "category": "Math (Percent Formula Calculation)",
+    "description": "Ensure 10% discount on 500k calculates as positive 50000",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "SAVE10",
+      "total_amount": 500000,
+      "user_id": 1
+    },
+    "expected_status": 200,
+    "expected_discount": 50000,
+    "bug_note": "SUT calculates total_amount * (1 - discount_value), resulting in negative millions"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_03",
+    "category": "Domain (Empty Code)",
+    "description": "Reject request with empty code string",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "code": "",
+      "total_amount": 500000,
+      "user_id": 1
+    },
+    "expected_status": 400
+  }
+]

@@ -1,0 +1,146 @@
+[
+  {
+    "tc_id": "TC_FR15_BAC_01",
+    "category": "Broken Access Control (SEC-03 - Unauthenticated POST)",
+    "description": "Reject unauthenticated product creation",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "Tai nghe Bluetooth Sony",
+      "price": 2500000,
+      "description": "Chống ồn chủ động",
+      "imageUrl": "https://example.com/sony.jpg",
+      "category_id": 1
+    },
+    "expected_status": 401,
+    "bug_note": "SUT currently allows unauthenticated POST /api/products (missing authenticateToken)"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_04",
+    "category": "Broken Function Level Authorization (SEC-05 - Regular User POST)",
+    "description": "Reject product creation by regular user",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "Unauthorized Item",
+      "price": 500000,
+      "category_id": 1
+    },
+    "expected_status": 403
+  },
+  {
+    "tc_id": "TC_FR15_BAC_07",
+    "category": "Access Control (Admin POST Product)",
+    "description": "Admin creates product successfully",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "Tai nghe Bluetooth Sony WH-1000XM5",
+      "price": 8490000,
+      "description": "Tai nghe chống ồn đỉnh cao",
+      "imageUrl": "https://placehold.co/300x300/png?text=Sony+XM5",
+      "category_id": 3
+    },
+    "expected_status": 200,
+    "expected_message": "Product created"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_01",
+    "category": "Domain (BVA - Zero Price)",
+    "description": "Reject product creation with price = 0",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "Zero Price Item",
+      "price": 0,
+      "category_id": 1
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR15_DOM_02",
+    "category": "Domain (BVA - Negative Price)",
+    "description": "Reject product creation with price = -10000",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "Negative Price Item",
+      "price": -10000,
+      "category_id": 1
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR15_DOM_06",
+    "category": "Domain (EP - Empty Name)",
+    "description": "Reject product creation with empty name string",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Student-Id": "25127001"
+    },
+    "body": {
+      "name": "",
+      "price": 500000,
+      "category_id": 1
+    },
+    "expected_status": 400
+  },
+  {
+    "tc_id": "TC_FR15_TYPE_01",
+    "category": "Type Coercion (Even ID Price String Coercion)",
+    "description": "Verify GET /api/products/2 returns price as number not string",
+    "method": "GET",
+    "endpoint": "/api/products/2",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 200,
+    "bug_note": "SUT coerces price to string on even product IDs"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_05",
+    "category": "Schema (Non-existent Product 404 Status)",
+    "description": "Return 404 on non-existent product ID",
+    "method": "GET",
+    "endpoint": "/api/products/999999",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 404,
+    "bug_note": "SUT returns 200 OK with empty object {} instead of 404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_05",
+    "category": "Security (SQLi in Product Search)",
+    "description": "Search product with SQL injection payload safely",
+    "method": "GET",
+    "endpoint": "/api/products?search=' OR '1'='1",
+    "headers": {
+      "X-Student-Id": "25127001"
+    },
+    "expected_status": 200,
+    "bug_note": "SUT search endpoint has SQLi vulnerability returning HTML database error"
+  }
+]
