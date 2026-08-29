@@ -1,8 +1,92 @@
-﻿commit c323e31aafcae1912e1cdafb160751a6c35d8981
-Author: ngnam2012 <nam20122005@gmail.com>
-Date:   Sat Aug 22 21:12:29 2026 +0700
+================================================================================
+                    HW06 - API TESTING GIT COMMIT LOG
+================================================================================
+Course       : Software Testing (CS423 / CSC13003) - FIT@HCMUS
+Exercise ID  : HW06-AI (API Testing with AI & Postman/Newman)
+Student Name : Nguyen Nhat Nam
+Student ID   : 23127092
+Class        : 23KTPM2
+Repository   : https://github.com/ngnam2012/23KTPM2_Testing_HW06
+Branch       : main
+SUT Target   : EShop Backend (Node.js/Express + SQLite3)
+Anti-Cheat   : Header X-Student-Id: 23127092 injected on 100% requests
+================================================================================
 
-    docs: update git_commit_log.txt
+--------------------------------------------------------------------------------
+I. SUMMARY OF PROCEDURE COMMITS (PIPELINE MILESTONES)
+--------------------------------------------------------------------------------
+1. [4f5349f] INITIALIZE WORKSPACE & SUT ENVIRONMENT
+   - Setup project structure, SUT backend, test case templates, and initial plan.
+
+2. [58c7f71] SETUP CI/CD PIPELINE & POOL A (FR-04 PROFILE MANAGEMENT)
+   - Setup GitHub Actions CI/CD workflow (.github/workflows/api-tests.yml).
+   - Generate, audit, and execute 44 test cases for FR-04 with Newman reporter.
+
+3. [4ea5d1d] DOCUMENTATION CONSOLIDATION
+   - Reorganize planning assets and refine testing documentation.
+
+4. [926b18b] COMPLETE TEST SUITES FOR POOLS B, C, AND D (FR-10, FR-15, FR-09)
+   - Implement Postman collections, test data JSON, and Newman execution reports for:
+     * FR-10: Order State Machine (45 TCs, 3 Bugs caught)
+     * FR-15: Admin Product CRUD (45 TCs, 5 Bugs caught)
+     * FR-09: Mobile Coupon Application (45 TCs, 3 Bugs caught)
+
+5. [ee08a60] FINALIZE AI GENERATOR SKILL, OPENAPI SPEC & COMPREHENSIVE REPORTS
+   - Implement AI Test Generator Python agent (generator/api_test_agent.py).
+   - Create Agent Skill definition (generator/SKILL.md) and architecture diagram (generator/generator_design.md).
+   - Generate OpenAPI 3.0 YAML specification (openapi/eshop_openapi.yaml).
+   - Export master Excel test cases (EShop_TestCases_All.xlsx - 6 sheets).
+   - Complete main report (main_report.md), AI audit (ai_audit_report.md), and critique (ai_critique.md).
+
+--------------------------------------------------------------------------------
+II. DETAILED GIT COMMIT HISTORY (git log --stat)
+--------------------------------------------------------------------------------
+
+commit ee08a600e05eda78c1f54f7a8b8aa808b727499d
+Author: ngnam2012 <nam20122005@gmail.com>
+Date:   Sat Aug 29 21:33:47 2026 +0700
+
+    feat: finalize all test suites, generator skill, openapi, and comprehensive reports
+
+ .github/workflows/api-tests.yml                             |     4 +-
+ EShop_TestCases_All.xlsx                                    |   Bin 0 -> 57007 bytes
+ README.md                                                   |   164 +-
+ ai_audit_report.md                                          |   102 +-
+ ai_critique.md                                              |    15 +-
+ ci-cd/ci_cd_report.md                                       |     6 +-
+ collections/FR04_Profile_Management.postman_collection.json  |  2268 +-
+ collections/FR09_Mobile_Coupon.postman_collection.json      |  2128 +-
+ collections/FR10_Order_State_Machine.postman_collection.json |  2283 +-
+ collections/FR15_Admin_Product_CRUD.postman_collection.json  |  2150 +-
+ data/fr04_test_data.json                                    |   626 +-
+ data/fr09_test_data.json                                    |   612 +-
+ data/fr10_test_data.json                                    |   577 +-
+ data/fr15_test_data.json                                    |   605 +-
+ eshop-sut/backend/database.sqlite                           |   Bin 36864 -> 36864 bytes
+ generator/SKILL.md                                          |    38 +
+ generator/api_test_agent.py                                 |   568 +-
+ generator/generator_design.md                               |   182 +
+ main_report.md                                              |   118 +-
+ openapi/eshop_openapi.yaml                                  |   494 +
+ package.json                                                |    10 +-
+ reports/FR04_Newman_Report.html                             | 11650 ++-
+ reports/FR04_Newman_Report.json                             | 92669 +++++++++++++++++-
+ reports/FR09_Newman_Report.html                             | 11976 ++-
+ reports/FR09_Newman_Report.json                             | 97219 ++++++++++++++++++-
+ reports/FR10_Newman_Report.html                             | 10996 ++-
+ reports/FR10_Newman_Report.json                             | 48105 ++++++++-
+ reports/FR15_Newman_Report.html                             | 11058 ++-
+ reports/FR15_Newman_Report.json                             | 77383 +++++++++++++--
+ test-cases/EShop_TestCases_All.xlsx                         |   Bin 0 -> 56939 bytes
+ test-cases/FR04/FR04_TestCases.md                           |   293 +-
+ test-cases/FR04/FR04_TestExecution_Results.md               |   169 +-
+ test-cases/FR09_Mobile/FR09_Mobile_TestCases.md             |   298 +-
+ test-cases/FR09_Mobile/FR09_TestExecution_Results.md        |   119 +-
+ test-cases/FR10/FR10_TestCases.md                           |   240 +-
+ test-cases/FR10/FR10_TestExecution_Results.md               |   109 +-
+ test-cases/FR15/FR15_TestCases.md                           |   252 +-
+ test-cases/FR15/FR15_TestExecution_Results.md               |   161 +-
+ 38 files changed, 353339 insertions(+), 22308 deletions(-)
 
 commit 926b18b6fac4e53fbb314d5376c1d4baff1566c7
 Author: ngnam2012 <nam20122005@gmail.com>
@@ -10,17 +94,37 @@ Date:   Sat Aug 22 21:12:26 2026 +0700
 
     feat(api-testing): complete test suite, newman execution & bug reports for FR-04, FR-10, FR-15, and FR-09
 
+ .gitignore                                                  |    4 +
+ collections/FR09_Mobile_Coupon.postman_collection.json      |  373 +
+ collections/FR10_Order_State_Machine.postman_collection.json |  459 ++
+ collections/FR15_Admin_Product_CRUD.postman_collection.json  |  448 +
+ data/fr09_test_data.json                                    |  145 +
+ data/fr10_test_data.json                                    |  136 +
+ data/fr15_test_data.json                                    |  146 +
+ eshop-sut/backend/database.sqlite                           |  Bin 36864 -> 36864 bytes
+ main_report.md                                              |   77 +-
+ reports/FR09_Newman_Report.html                             | 4218 ++++++++++
+ reports/FR09_Newman_Report.json                             | 4654 +++++++++++
+ reports/FR10_Newman_Report.html                             | 4888 +++++++++++
+ reports/FR10_Newman_Report.json                             | 5465 +++++++++++++
+ reports/FR15_Newman_Report.html                             | 5112 ++++++++++++
+ reports/FR15_Newman_Report.json                             | 8516 ++++++++++++++++++++
+ test-cases/FR09_Mobile/FR09_Mobile_TestCases.md             | 1234 ++-
+ test-cases/FR09_Mobile/FR09_TestExecution_Results.md        |  102 +-
+ test-cases/FR10/FR10_TestCases.md                           |  991 ++-
+ test-cases/FR10/FR10_TestExecution_Results.md               |   92 +-
+ test-cases/FR15/FR15_TestCases.md                           | 1143 +++
+ test-cases/FR15/FR15_TestExecution_Results.md               |  138 +-
+ 21 files changed, 38335 insertions(+), 6 deletions(-)
+
 commit 4ea5d1d55a7213bd0b871fe8b136f9cb32f763ab
 Author: ngnam2012 <nam20122005@gmail.com>
 Date:   Sat Aug 22 21:00:02 2026 +0700
 
     docs: reorganize project documentation and consolidate test planning assets
 
-commit fd922db5bd5e1cc61d05e1bf00186c273e3118e8
-Author: ngnam2012 <nam20122005@gmail.com>
-Date:   Fri Aug 21 21:36:35 2026 +0700
-
-    docs: update git commit log with CI/CD setup
+ HW06_API_Testing_Master_Plan_and_Prompts.md | 737 ----------------------------
+ 1 file changed, 737 deletions(-)
 
 commit 58c7f71c466d13328c19e353104fb8f921c34a9a
 Author: ngnam2012 <nam20122005@gmail.com>
@@ -28,14 +132,113 @@ Date:   Fri Aug 21 21:36:17 2026 +0700
 
     feat: setup GitHub Actions CI/CD pipeline, FR-04 test cases, collection and execution reports
 
-commit 304d6a7992a648dcc68a2c3408b5a9f88a62e6f8
-Author: ngnam2012 <nam20122005@gmail.com>
-Date:   Fri Aug 21 21:11:34 2026 +0700
-
-    docs: update git commit log
+ .github/workflows/api-tests.yml                             |   62 +
+ ci-cd/ci_cd_report.md                                       |  112 +
+ collections/FR04_Profile_Management.postman_collection.json  |  591 ++
+ data/fr04_test_data.json                                    |  536 ++
+ eshop-sut/backend/database.sqlite                           |  Bin 36864 -> 36864 bytes
+ package-lock.json                                           | 2389 +++++++
+ package.json                                                |   13 +
+ reports/FR04_Newman_Report.html                             | 5379 ++++++++++++++
+ reports/FR04_Newman_Report.json                             | 7447 ++++++++++++++++++++
+ test-cases/FR04/FR04_TestCases.md                           | 1267 ++++
+ test-cases/FR04/FR04_TestExecution_Results.md               |  146 +-
+ 11 files changed, 17941 insertions(+), 1 deletion(-)
 
 commit 4f5349f731c0b6fb550cccc408faf317f0545d94
 Author: ngnam2012 <nam20122005@gmail.com>
 Date:   Fri Aug 21 21:11:21 2026 +0700
 
     feat: initialize HW06 workspace structure, test-cases templates, and SUT environment
+
+ .gitignore                                         |   15 +
+ 2026.HW06.API Testing_En.md                        |  186 +
+ HW06_API_Testing_Master_Plan_and_Prompts.md        |  737 ++
+ README.md                                          |    7 +
+ ai_audit_report.md                                 |    1 +
+ ai_critique.md                                     |    1 +
+ collections/.gitkeep                               |    1 +
+ data/.gitkeep                                      |    1 +
+ eshop-sut/README.md                                |  288 +
+ eshop-sut/api_specification.md                     |  214 +
+ eshop-sut/backend/database.js                      |  119 +
+ eshop-sut/backend/database.sqlite                  |  Bin 0 -> 36864 bytes
+ eshop-sut/backend/package-lock.json                | 1663 ++++
+ eshop-sut/backend/package.json                     |   20 +
+ eshop-sut/backend/server.js                        |  572 ++
+ eshop-sut/backend/test_profile.js                  |    8 +
+ eshop-sut/frontend-admin/.gitignore                |   24 +
+ eshop-sut/frontend-admin/README.md                 |   16 +
+ eshop-sut/frontend-admin/eslint.config.js          |   21 +
+ eshop-sut/frontend-admin/index.html                |   13 +
+ eshop-sut/frontend-admin/package-lock.json         | 3681 ++++++++
+ eshop-sut/frontend-admin/package.json              |   32 +
+ eshop-sut/frontend-admin/postcss.config.js         |    6 +
+ eshop-sut/frontend-admin/public/favicon.svg        |    1 +
+ eshop-sut/frontend-admin/public/icons.svg          |   24 +
+ eshop-sut/frontend-admin/src/App.css               |  184 +
+ eshop-sut/frontend-admin/src/App.jsx               |  922 ++
+ eshop-sut/frontend-admin/src/assets/hero.png       |  Bin 0 -> 13057 bytes
+ eshop-sut/frontend-admin/src/assets/react.svg      |    1 +
+ eshop-sut/frontend-admin/src/assets/vite.svg       |    1 +
+ eshop-sut/frontend-admin/src/index.css             |    8 +
+ eshop-sut/frontend-admin/src/main.jsx              |   10 +
+ eshop-sut/frontend-admin/tailwind.config.js        |   11 +
+ eshop-sut/frontend-admin/vite.config.js            |   11 +
+ eshop-sut/frontend-mobile/.gitignore               |   41 +
+ eshop-sut/frontend-mobile/App.js                   | 1300 +++
+ eshop-sut/frontend-mobile/app.json                 |   29 +
+ eshop-sut/frontend-mobile/assets/adaptive-icon.png |  Bin 0 -> 17547 bytes
+ eshop-sut/frontend-mobile/assets/favicon.png       |  Bin 0 -> 1466 bytes
+ eshop-sut/frontend-mobile/assets/icon.png          |  Bin 0 -> 22380 bytes
+ eshop-sut/frontend-mobile/assets/splash-icon.png   |  Bin 0 -> 17547 bytes
+ eshop-sut/frontend-mobile/index.js                 |    8 +
+ eshop-sut/frontend-mobile/package-lock.json        | 8773 ++++++++++++++++++++
+ eshop-sut/frontend-mobile/package.json             |   18 +
+ eshop-sut/frontend-web/.gitignore                  |   24 +
+ eshop-sut/frontend-web/README.md                   |   16 +
+ eshop-sut/frontend-web/eslint.config.js            |   21 +
+ eshop-sut/frontend-web/index.html                  |   13 +
+ eshop-sut/frontend-web/package-lock.json           | 3681 ++++++++
+ eshop-sut/frontend-web/package.json                |   32 +
+ eshop-sut/frontend-web/postcss.config.js           |    6 +
+ eshop-sut/frontend-web/public/favicon.svg          |    1 +
+ eshop-sut/frontend-web/public/icons.svg            |   24 +
+ eshop-sut/frontend-web/src/App.css                 |  184 +
+ eshop-sut/frontend-web/src/App.jsx                 |   71 +
+ eshop-sut/frontend-web/src/assets/hero.png         |  Bin 0 -> 13057 bytes
+ eshop-sut/frontend-web/src/assets/react.svg        |    1 +
+ eshop-sut/frontend-web/src/assets/vite.svg         |    1 +
+ eshop-sut/frontend-web/src/context/AuthContext.jsx |   50 +
+ eshop-sut/frontend-web/src/context/CartContext.jsx |   36 +
+ eshop-sut/frontend-web/src/index.css               |   14 +
+ eshop-sut/frontend-web/src/main.jsx                |   10 +
+ eshop-sut/frontend-web/src/pages/Cart.jsx          |   79 +
+ eshop-sut/frontend-web/src/pages/Checkout.jsx      |  151 +
+ eshop-sut/frontend-web/src/pages/ForgotPassword.jsx |  100 +
+ eshop-sut/frontend-web/src/pages/Home.jsx          |  116 +
+ eshop-sut/frontend-web/src/pages/Login.jsx         |   69 +
+ eshop-sut/frontend-web/src/pages/ProductDetail.jsx |   73 +
+ eshop-sut/frontend-web/src/pages/Profile.jsx       |  217 +
+ eshop-sut/frontend-web/src/pages/Register.jsx      |   83 +
+ eshop-sut/frontend-web/tailwind.config.js          |   11 +
+ eshop-sut/frontend-web/vite.config.js              |    7 +
+ eshop-sut/run_servers.sh                           |    5 +
+ eshop-sut/setup_guide.md                           |  117 +
+ generator/api_test_agent.py                        |   86 +
+ git_commit_log.txt                                 |    1 +
+ main_report.md                                     |    1 +
+ reports/.gitkeep                                   |    1 +
+ test-cases/FR04/FR04_TestCases.md                  |    1 +
+ test-cases/FR04/FR04_TestExecution_Results.md      |    1 +
+ test-cases/FR09_Mobile/FR09_Mobile_TestCases.md    |    1 +
+ test-cases/FR09_Mobile/FR09_TestExecution_Results.md |   1 +
+ test-cases/FR10/FR10_TestCases.md                  |    1 +
+ test-cases/FR10/FR10_TestExecution_Results.md      |    1 +
+ test-cases/FR15/FR15_TestCases.md                  |    1 +
+ test-cases/FR15/FR15_TestExecution_Results.md      |    1 +
+ 86 files changed, 24278 insertions(+)
+
+================================================================================
+                              END OF COMMIT LOG
+================================================================================
