@@ -1,9 +1,10 @@
-﻿{
+{
   "name": "hw06-api-testing",
   "version": "1.0.0",
   "description": "HW06 - Automated API Testing for EShop SUT using Postman & Newman",
   "scripts": {
     "test:all": "npm run test:fr04 && npm run test:fr10 && npm run test:fr15 && npm run test:fr09",
+    "test:fr05": "newman run collections/FR05_Product_Listing_Search.postman_collection.json --env-var studentId=23127092 --env-var baseUrl=http://localhost:3000 -r cli,htmlextra,json --reporter-htmlextra-export reports/FR05_Newman_Report.html --reporter-json-export reports/FR05_Newman_Report.json",
     "test:fr04": "newman run collections/FR04_Profile_Management.postman_collection.json --env-var studentId=23127092 -r cli,htmlextra,json --reporter-htmlextra-export reports/FR04_Newman_Report.html --reporter-json-export reports/FR04_Newman_Report.json",
     "test:fr10": "newman run collections/FR10_Order_State_Machine.postman_collection.json --env-var studentId=23127092 -r cli,htmlextra,json --reporter-htmlextra-export reports/FR10_Newman_Report.html --reporter-json-export reports/FR10_Newman_Report.json",
     "test:fr15": "newman run collections/FR15_Admin_Product_CRUD.postman_collection.json --env-var studentId=23127092 -r cli,htmlextra,json --reporter-htmlextra-export reports/FR15_Newman_Report.html --reporter-json-export reports/FR15_Newman_Report.json",
