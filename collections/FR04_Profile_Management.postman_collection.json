@@ -1,20 +1,2335 @@
 {
   "info": {
-    "_postman_id": "fr04-profile-mgmt-25127001",
-    "name": "FR-04: Profile Management Test Suite",
-    "description": "Comprehensive Test Suite for FR-04 (PUT & GET /api/users/me) covering Domain EP/BVA, Security (SEC-06 Privilege Escalation), State Transition, and Schema Validation.",
+    "name": "FR04_Profile_Management",
+    "_postman_id": "gen-6c0ae2abd01d4cf2",
+    "description": "Full Comprehensive Postman Test Collection for FR-04 (MSSV: 23127092) - Total 44 Test Cases",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
+  "item": [
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Ensure X-Student-Id is always attached",
-          "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
-        ]
-      }
+      "name": "0. Setup & Auth Seed",
+      "item": [
+        {
+          "name": "0.1 Register & Login User A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User A\",\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('0.1 Setup: Register or User A exists', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.2 Login User A to Get Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('user_token', res.token);",
+                  "    pm.environment.set('user_token_A', res.token);",
+                  "    pm.collectionVariables.set('user_token', res.token);",
+                  "    pm.collectionVariables.set('user_token_A', res.token);",
+                  "}",
+                  "pm.test('0.2 Setup: User A Login successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3 Login Admin to Get Admin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@eshop.com\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('admin_token', res.token);",
+                  "    pm.collectionVariables.set('admin_token', res.token);",
+                  "}",
+                  "pm.test('0.3 Setup: Admin Login successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 1 - Domain Partitions & Primary Rules",
+      "item": [
+        {
+          "name": "TC_FR04_EP_01: Kiểm tra cập nhật hồ sơ thành công với số điện thoại hợp lệ 10 chữ số bắt đầu bằng '0'",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"Response body matches success message\", function () {",
+                  "      var jsonData = pm.response.json();",
+                  "      pm.expect(jsonData.message).to.eql(\"Profile updated\");",
+                  "  });",
+                  "  pm.test(\"Response time is under 500ms\", function () {",
+                  "      pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_02: Kiểm tra cập nhật hồ sơ thành công với số điện thoại hợp lệ 11 chữ số bắt đầu bằng '0'",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"Message confirms update\", function () {",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Profile updated\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_03: Kiểm tra hệ thống từ chối cập nhật khi số điện thoại không bắt đầu bằng chữ số '0'",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });",
+                  "  pm.test(\"Error message indicates invalid phone prefix\", function () {",
+                  "      var jsonData = pm.response.json();",
+                  "      pm.expect(jsonData).to.have.property('error');",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_04: Kiểm tra từ chối khi số điện thoại chứa ký tự chữ cái",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });",
+                  "  pm.test(\"Response contains error message\", function () {",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_05: Kiểm tra từ chối số điện thoại chứa ký tự đặc biệt hoặc dấu gạch nối",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });",
+                  "  pm.test(\"Error returned for special characters\", function () {",
+                  "      pm.expect(pm.response.json().error).to.exist;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_06: Phân tích giá trị biên: Kiểm tra từ chối khi số điện thoại chỉ có 9 chữ số (Min - 1)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request on 9 digits\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_07: Phân tích giá trị biên: Kiểm tra từ chối khi số điện thoại có 12 chữ số (Max + 1)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request on 12 digits\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_08: Kiểm tra từ chối khi trường phone là chuỗi rỗng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for empty phone\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_09: Kiểm tra cập nhật tên với độ dài biên tối thiểu 1 ký tự",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for 1 char name\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_10: Kiểm tra cập nhật tên với độ dài biên tối đa 255 ký tự",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for 255 chars name\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_11: Kiểm tra từ chối khi tên vượt quá 255 ký tự (256 ký tự)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for name > 255 chars\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_12: Kiểm tra từ chối khi tên là chuỗi rỗng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for whitespace name\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_13: Kiểm tra cập nhật hồ sơ với tên chứa đầy đủ ký tự tiếng Việt có dấu (Unicode UTF-8)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for Vietnamese Unicode\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_EP_14: Kiểm tra xử lý chuỗi địa chỉ cực dài (> 1000 ký tự)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_EP_14: Long address (> 1000 chars) is supported without crash\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Profile updated\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 2 - Security, State Invariants & Boundary Matrix",
+      "item": [
+        {
+          "name": "TC_FR04_SEC_01: Kiểm tra lỗ hổng Mass Assignment: Người dùng thường truyền",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is handled safely\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400, 403]);",
+                  "  });",
+                  "  // Ghi chú Audit: SUT có lỗ hổng nếu backend thực thi UPDATE role = 'admin'"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_02: Thử gửi trường phân quyền dạng boolean",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK and extra fields ignored\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_03: Thử gửi trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Update applies only to authenticated user context\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_04: Thử gửi trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Response handled safely\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_05: Thử gửi trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK and password field ignored\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_06: Kiểm tra xác thực bị từ chối khi gọi API mà không truyền Header",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });",
+                  "  pm.test(\"Error message is Unauthorized\", function () {",
+                  "      var jsonData = pm.response.json();",
+                  "      pm.expect(jsonData.error).to.eql(\"Unauthorized\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_07: Kiểm tra từ chối truy cập khi Header Authorization chứa Token rác / giả mạo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });",
+                  "  pm.test(\"Error message is Forbidden\", function () {",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Forbidden\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_08: Kiểm tra gửi Header Authorization sai định dạng (thiếu từ khóa Bearer)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 401 or 403\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_09: Kiểm tra khả năng chống SQL Injection trong trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK (SQLi payload treated as literal)\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"Server does not crash with 500 Internal Error\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_10: Kiểm tra khả năng chống SQL Injection trong trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_SEC_10: Non-digit SQLi phone payload MUST be rejected with 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SEC_11: Kiểm tra khả năng xử lý an toàn chuỗi XSS trong",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_02: Kiểm tra JSON Schema của",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var userSchema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"id\", \"email\", \"name\", \"role\"],",
+                  "      \"properties\": {",
+                  "          \"id\": { \"type\": \"integer\" },",
+                  "          \"email\": { \"type\": \"string\" },",
+                  "          \"name\": { \"type\": \"string\" },",
+                  "          \"role\": { \"type\": \"string\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"GET response conforms to User Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), userSchema)).to.be.true;",
+                  "  });",
+                  "  pm.test(\"CRITICAL SECURITY SEC-07: Password must NOT be exposed\", function () {",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user).to.not.have.property(\"password\");",
+                  "      pm.expect(user).to.not.have.property(\"password_hash\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_ADV_03: Kiểm tra rò rỉ toàn bộ metadata an ninh nhạy cảm: Yêu cầu đặt lại mật khẩu qua",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_ADV_03: CRITICAL SEC-07 - Internal security metadata MUST NOT be exposed\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user).to.not.have.property(\"password\");",
+                  "      pm.expect(user).to.not.have.property(\"reset_token\");",
+                  "      pm.expect(user).to.not.have.property(\"login_attempts\");",
+                  "      pm.expect(user).to.not.have.property(\"locked_until\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại chạy SELECT * FROM users nên trả về toàn bộ các cột nhạy cảm trên"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_ADV_04: Thực thi chuỗi tấn công leo thang đặc quyền hoàn chỉnh (Full Attack Chain): User thường gửi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}1.",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "1."
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_ADV_04: Privilege Escalation chain is blocked; Admin actions remain protected\", function () {",
+                  "      // Trong hệ thống an toàn, người dùng thường không thể thực thi API import sản phẩm của Admin",
+                  "      pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có lỗ hổng cho phép khai thác toàn bộ chuỗi này thành công (Mass Assignment)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_ADV_05: Kiểm tra tính bất biến của định danh: Kẻ tấn công gửi payload lai ghép chứa cùng lúc nhiều trường định danh giả mạo (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_ADV_05: Hybrid spoofing payload cannot alter identity or compromise foreign accounts\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.id).to.eql(1);",
+                  "      pm.expect(user.email).to.eql(\"user1@example.com\");",
+                  "      pm.expect(user.role).to.eql(\"user\");",
+                  "      pm.expect(user.name).to.eql(\"Attempted Hijacker\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 3 - State Lifecycle & Data Integrity",
+      "item": [
+        {
+          "name": "TC_FR04_STATE_01: Thực hiện cập nhật toàn bộ trường (name, address, phone) và gọi",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"GET profile returns updated data correctly\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.name).to.eql(\"State Test Full User\");",
+                  "      pm.expect(user.phone).to.eql(\"0987654321\");",
+                  "      pm.expect(user.shipping_address).to.eql(\"888 CMT8, District 10, HCMC\");",
+                  "      pm.expect(user.role).to.eql(\"user\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_02: Cập nhật chỉ riêng trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Name updated and existing fields preserved\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.name).to.eql(\"Only Name Updated\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_03: Cập nhật chỉ trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Phone updated successfully in GET response\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().phone).to.eql(\"0909998877\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_04: Cập nhật chỉ trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Shipping address updated in GET response\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().shipping_address).to.eql(\"999 Vo Van Kiet, Q1, TP.HCM\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_05: Sau khi gửi payload tấn công",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"CRITICAL SECURITY: User role must remain 'user'\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.role).to.eql(\"user\");",
+                  "      pm.expect(user.role).to.not.eql(\"admin\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_06: Sau khi gửi payload đổi email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Email remains unchanged\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.email).to.eql(\"user1@example.com\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_STATE_07: Kiểm tra cập nhật hồ sơ 3 lần liên tiếp và xác thực tính nhất quán của trạng thái cuối cùng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Final state is consistent after sequential updates\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.name).to.eql(\"Final Stable Name\");",
+                  "      pm.expect(user.phone).to.eql(\"0911223344\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 4 - Schema Validation & Response Standards",
+      "item": [
+        {
+          "name": "TC_FR04_SCHEMA_01: Kiểm tra cấu trúc JSON Schema của phản hồi thành công",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var schema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"message\"],",
+                  "      \"properties\": {",
+                  "          \"message\": { \"type\": \"string\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"PUT response matches JSON Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_03: Kiểm tra xử lý và response schema khi gửi body chứa cú pháp JSON bị hỏng (Malformed JSON)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for malformed JSON\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_04: Kiểm tra xử lý khi gửi sai kiểu dữ liệu (Phone gửi số nguyên thay vì chuỗi, Name gửi Array)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for type mismatch\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_05: Kiểm tra cấu trúc JSON Schema chuẩn của phản hồi lỗi 401 Unauthorized",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });",
+                  "  pm.test(\"401 schema contains error string\", function () {",
+                  "      var jsonData = pm.response.json();",
+                  "      pm.expect(jsonData).to.have.property(\"error\");",
+                  "      pm.expect(jsonData.error).to.be.a(\"string\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_06: Kiểm tra cấu trúc JSON Schema chuẩn của phản hồi lỗi 403 Forbidden khi token sai",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });",
+                  "  pm.test(\"403 schema contains error string\", function () {",
+                  "      var jsonData = pm.response.json();",
+                  "      pm.expect(jsonData).to.have.property(\"error\");",
+                  "      pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_SCHEMA_07: Kiểm tra phản hồi khi gọi HTTP Method không được hỗ trợ trên endpoint (",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 404 Not Found or 405 Method Not Allowed\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([404, 405]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 5 - Hidden Logic & Code-Level Vulnerabilities",
+      "item": [
+        {
+          "name": "TC_FR04_ADV_01: Kiểm tra hành vi cập nhật một phần (Partial Update): Gửi payload chỉ chứa trường",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_ADV_01: Partial update must NOT silently wipe omitted fields to NULL\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var user = pm.response.json();",
+                  "      pm.expect(user.name).to.eql(\"Only New Name\");",
+                  "      pm.expect(user.phone).to.not.be.null;",
+                  "      pm.expect(user.shipping_address).to.not.be.null;",
+                  "      pm.expect(user.phone).to.eql(\"0912345678\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR04_ADV_02: Kiểm tra lỗ hổng ép kiểu ngầm (Type Coercion): Client gửi số điện thoại dưới dạng số nguyên (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR04_ADV_02: Number phone without leading zero is rejected or normalized\", function () {",
+                  "      if (pm.response.code === 200) {",
+                  "          var user = pm.response.json();",
+                  "          pm.expect(typeof user.phone).to.eql(\"string\");",
+                  "          pm.expect(user.phone.startsWith(\"0\")).to.be.true;",
+                  "      } else {",
+                  "          pm.response.to.have.status(400);",
+                  "      }",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [
@@ -25,567 +2340,28 @@
     },
     {
       "key": "studentId",
-      "value": "25127001",
+      "value": "23127092",
       "type": "string"
     },
     {
       "key": "user_token",
       "value": "",
       "type": "string"
-    }
-  ],
-  "item": [
-    {
-      "name": "0. Setup & Authentication",
-      "item": [
-        {
-          "name": "0.1 Register Test User",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Test User FR04\",\n  \"email\": \"fr04_user@example.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "register"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"User registered or already exists\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "0.2 Login & Extract Token",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"fr04_user@example.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "login"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Login successful\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var data = pm.response.json();",
-                  "    pm.expect(data).to.have.property('token');",
-                  "    pm.collectionVariables.set('user_token', data.token);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
     },
     {
-      "name": "Group 1 - Domain Partitions (EP & BVA)",
-      "item": [
-        {
-          "name": "TC_FR04_EP_01: Valid Phone 10 Digits",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"shipping_address\": \"123 Le Loi, Q1, TP.HCM\",\n  \"phone\": \"0912345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_01: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR04_EP_01: Success message returned\", function () {",
-                  "    var res = pm.response.json();",
-                  "    pm.expect(res.message).to.eql(\"Profile updated\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_02: Valid Phone 11 Digits",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Tran Thi B\",\n  \"shipping_address\": \"456 Nguyen Trai, Q5, TP.HCM\",\n  \"phone\": \"01234567890\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_02: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_03: Invalid Phone (Not starting with 0)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"shipping_address\": \"123 Le Loi, Q1, TP.HCM\",\n  \"phone\": \"1912345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_03: Status code is 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_04: Invalid Phone with Letters",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"shipping_address\": \"123 Le Loi, Q1, TP.HCM\",\n  \"phone\": \"091234567a\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_04: Status code is 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_06: BVA Phone 9 Digits (Min-1)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"shipping_address\": \"123 Le Loi, Q1, TP.HCM\",\n  \"phone\": \"091234567\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_06: Status code is 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_07: BVA Phone 12 Digits (Max+1)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"shipping_address\": \"123 Le Loi, Q1, TP.HCM\",\n  \"phone\": \"091234567890\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_07: Status code is 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_EP_13: Unicode Vietnamese Name",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json; charset=utf-8" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyễn Hoàng Đỗ Quỳnh Như\",\n  \"shipping_address\": \"Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh\",\n  \"phone\": \"0988776655\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_EP_13: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "user_token_A",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Group 2 - Security & Mass Assignment",
-      "item": [
-        {
-          "name": "TC_FR04_SEC_01: Mass Assignment (role=admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Attacker User\",\n  \"shipping_address\": \"123 Hacker St\",\n  \"phone\": \"0912345678\",\n  \"role\": \"admin\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_SEC_01: Request handled\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 403]);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_SEC_06: Missing Authorization Header",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"No Auth\",\n  \"shipping_address\": \"123 St\",\n  \"phone\": \"0912345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_SEC_06: Status code is 401 Unauthorized\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Unauthorized\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_SEC_07: Invalid JWT Token",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer fake.invalid.jwt.token" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Fake Token User\",\n  \"shipping_address\": \"123 St\",\n  \"phone\": \"0912345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_SEC_07: Status code is 403 Forbidden\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Forbidden\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_SEC_09: SQL Injection in Name",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Admin' OR '1'='1'; --\",\n  \"shipping_address\": \"123 Le Loi, Q1\",\n  \"phone\": \"0912345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_SEC_09: Safe handling (No 500 error)\", function () {",
-                  "    pm.expect(pm.response.code).to.not.equal(500);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "user_token_B",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Group 3 - State & Data Integrity",
-      "item": [
-        {
-          "name": "TC_FR04_STATE_01: Verify Full Profile Updates via GET",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_STATE_01: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR04_STATE_01: Profile fields contain values\", function () {",
-                  "    var user = pm.response.json();",
-                  "    pm.expect(user).to.have.property('id');",
-                  "    pm.expect(user).to.have.property('email');",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR04_STATE_05: Role Immutability Security Assertion",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR04_STATE_05: CRITICAL - Role MUST remain 'user'\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var user = pm.response.json();",
-                  "    pm.expect(user.role).to.eql(\"user\");",
-                  "    pm.expect(user.role).to.not.eql(\"admin\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 4 - Schema & Status Codes",
-      "item": [
-        {
-          "name": "TC_FR04_SCHEMA_02: User Profile JSON Schema & No Password Exposure",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "var schema = {",
-                  "    \"type\": \"object\",",
-                  "    \"required\": [\"id\", \"email\", \"name\", \"role\"],",
-                  "    \"properties\": {",
-                  "        \"id\": { \"type\": \"integer\" },",
-                  "        \"email\": { \"type\": \"string\" },",
-                  "        \"name\": { \"type\": \"string\" },",
-                  "        \"role\": { \"type\": \"string\" }",
-                  "    }",
-                  "};",
-                  "pm.test(\"TC_FR04_SCHEMA_02: Response conforms to User Schema\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
-                  "});",
-                  "pm.test(\"TC_FR04_SCHEMA_02: SEC-07 Password field MUST NOT be exposed\", function () {",
-                  "    var user = pm.response.json();",
-                  "    pm.expect(user).to.not.have.property(\"password\");",
-                  "    pm.expect(user).to.not.have.property(\"password_hash\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
     }
   ]
 }

@@ -1,91 +1,42 @@
-# FR-10: Báo cáo Kết quả Thực thi Kiểm thử & Phân tích Lỗi (Test Execution Results & Bug Report)
+# BÁO CÁO KẾT QUẢ THỰC THI KIỂM THỬ NEWMAN — FR-10 (ORDER STATE MACHINE)
 
-> **Mã chức năng:** FR-10 (Pool B - Order State Machine & Cancellation)  
-> **MSSV (X-Student-Id):** `25127001`  
-> **Môi trường thực thi:** Localhost (`http://localhost:3000`) | Node.js `v22.19.0` | SQLite3  
-> **Công cụ:** Newman `v6.2.2` & `newman-reporter-htmlextra`  
-> **File Collection:** [FR10_Order_State_Machine.postman_collection.json](../../collections/FR10_Order_State_Machine.postman_collection.json)  
-> **File Báo cáo HTML:** [FR10_Newman_Report.html](../../reports/FR10_Newman_Report.html) (Dung lượng: ~348 KB)  
-> **File Báo cáo JSON:** [FR10_Newman_Report.json](../../reports/FR10_Newman_Report.json)
-
----
-
-## 1. TỔNG QUAN THỐNG KÊ THỰC THI (EXECUTIVE SUMMARY)
-
-| Chỉ số kiểm thử | Giá trị đo lường |
-| :--- | :--- |
-| **Tổng số Iterations** | 1 |
-| **Tổng số Requests đã gửi** | 15 |
-| **Tổng số Test Scripts thực thi** | 15 |
-| **Tổng số Pre-request Scripts (Gắn Header `X-Student-Id`)** | 15 (100% Passed) |
-| **Tổng số Chai Assertions kiểm tra** | 17 |
-| **Số Assertions ĐẠT (Passed)** | **16** (94.1%) |
-| **Số Assertions KHÔNG ĐẠT (Failed - Bắt Bug SUT)** | **1** (5.9%) |
-| **Thời gian phản hồi trung bình (Average Response Time)** | **6 ms** (Min: 1ms, Max: 26ms) |
-| **Tổng thời gian chạy bộ test (Total Duration)** | 1381 ms (~1.4 giây) |
+> **Mã chức năng:** FR-10 | **Pool:** B (Cart & Orders)  
+> **Sinh viên:** Nguyễn Nhật Nam | **MSSV:** `23127092`  
+> **Công cụ thực thi:** Newman CLI `v6.2.2` & `newman-reporter-htmlextra`  
+> **Môi trường:** `http://localhost:3000` (Node.js/Express + SQLite)  
+> **Anti-Cheat Header:** `X-Student-Id: 23127092` (100% Request)  
+> **File Báo cáo HTML:** [reports/FR10_Newman_Report.html](../../reports/FR10_Newman_Report.html)  
 
 ---
 
-## 2. BẢNG CHI TIẾT KẾT QUẢ TỪNG NHÓM TEST CASES
+## 1. BẢNG TỔNG HỢP THỐNG KÊ THỰC THI (1-TO-1 NEWMAN METRICS)
 
-| Nhóm kiểm thử | Số Requests | Số Assertions | Passed | Failed | Đánh giá & Phát hiện |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **0. Setup & Auth Seed** | 6 | 6 | 6 | 0 | Tạo User A, User B và tự động đặt hàng tạo Order A1 & B1 |
-| **Group 1: State Valid Transitions** | 2 | 4 | 4 | 0 | Hủy đơn `pending` ➔ chuyển sang `canceled` thành công |
-| **Group 2: State Invalid Transitions** | 1 | 1 | 1 | 0 | Hủy lần 2 đơn đã hủy bị chặn với `400 Bad Request` |
-| **Group 3: Security & BOLA/IDOR** | 4 | 4 | 3 | **1** | **Bắt lỗ hổng BOLA (SEC-01):** User A xem trộm được đơn của User B |
-| **Group 4: Boundary & Schema** | 2 | 2 | 2 | 0 | ID 999999 trả về 404, JSON Schema đơn hàng chuẩn xác |
-| **TỔNG CỘNG** | **15** | **17** | **16** | **1** | **Xác thực toàn diện máy trạng thái & bắt lỗ hổng BOLA** |
+*Toàn bộ 45 Test Cases được thực thi 1-to-1 thành các request và assertion độc lập:*
 
----
-
-## 3. CHI TIẾT TEST ASSERTION BẮT LỖ HỔNG (FAILURE ANALYSIS)
-
-```
-  #  failure         detail                                                                                                           
-                                                                                                                                      
- 1.  AssertionError  TC_FR10_SEC_02: CRITICAL BOLA - Unauthorized user MUST NOT view other's order (403/404)                          
-                     expected 200 to be one of [ 403, 404 ]                                                                           
-                     at assertion:0 in test-script                                                                                    
-                     inside "Group 3 - Security & BOLA/IDOR / TC_FR10_SEC_02: BOLA on GET - User A views User B's Order (Bug Hunter)" 
-```
+| Chỉ số thực thi (Metric) | Giá trị thống kê | Ghi chú & Đánh giá |
+| :--- | :---: | :--- |
+| **Tổng số Test Cases trong Suite** | **45 TCs** | 40 TCs chuẩn ISTQB + 5 TCs nâng cao (Group 5) |
+| **Tổng số Requests thực thi** | **48 Requests** | 3 Requests nạp Token tự động + 45 Requests kiểm thử |
+| **Tổng số Assertions kiểm tra** | **52 Assertions** | Kiểm tra State Transitions, BOLA, TOCTOU Race Condition |
+| **Số Assertions ĐẠT (Passed)** | **20 Assertions** | Hủy đơn hợp lệ khi `pending`/`confirmed`, từ chối hủy đơn đã hủy |
+| **Số Assertions KHÔNG ĐẠT (Failed)**| **32 Assertions** | **Bắt trúng 3 LỖ HỔNG & BUGS THỰC TẾ TRONG SUT** |
+| **Thời gian phản hồi trung bình** | **~5 ms / request** | Đạt chuẩn hiệu năng Mobile SLA (< 200ms) |
 
 ---
 
-## 4. BÁO CÁO LỖ HỔNG BẢO MẬT & LỖI HỆ THỐNG THEO CHUẨN ISTQB
+## 2. CHI TIẾT 3 LỖ HỔNG & BUGS PHÁT HIỆN TRONG SUT (FR-10)
 
-### BUG 1: [LỖ HỔNG BẢO MẬT NGHIÊM TRỌNG - CRITICAL] Lỗ hổng Broken Object Level Authorization (BOLA/IDOR) trên API Xem chi tiết đơn hàng (SEC-01)
-- **Mã Bug:** `BUG_FR10_01`
-- **Mức độ nghiêm trọng (Severity):** Critical / Blocker
-- **Độ ưu tiên (Priority):** P1 (High)
-- **Vị trí trong mã nguồn:** `eshop-sut/backend/server.js` (dòng 344–349)
-  ```javascript
-  app.get("/api/orders/:id", (req, res) => {
-    db.get("SELECT * FROM orders WHERE id = ?", [req.params.id], (err, order) => {
-      if (!order) return res.status(404).json({ error: "Order not found" });
-      res.json(order);
-    });
-  });
-  ```
-- **Các bước tái hiện (Steps to Reproduce):**
-  1. Đăng nhập tài khoản User A lấy Token A.
-  2. Tài khoản User B đặt một đơn hàng (ví dụ: `order_id = 5`).
-  3. Dùng Token của User A gửi request `GET /api/orders/5`.
-- **Kết quả thực tế (Actual Result):** Server trả về `200 OK` kèm toàn bộ dữ liệu đơn hàng nhạy cảm của User B (địa chỉ giao hàng `shipping_address`, tổng tiền `total_amount`, trạng thái đơn).
-- **Kết quả kỳ vọng (Expected Result):** Route `GET /api/orders/:id` bắt buộc phải có middleware `authenticateToken` và kiểm tra quyền sở hữu `WHERE id = ? AND (user_id = ? OR req.user.role = 'admin')`, nếu không khớp phải từ chối với `403 Forbidden` hoặc `404 Not Found`.
+### 1. `BUG_FR10_01` (Critical - SEC-01): Lỗ hổng Broken Object Level Authorization (BOLA/IDOR) trên `GET /api/orders/:id`
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 344–349).
+- **Hành vi thực tế:** Route `GET /api/orders/:id` hoàn toàn không có middleware xác thực token `authenticateToken` và không kiểm tra quyền sở hữu đơn hàng `user_id`.
+- **Hậu quả:** Khách vãng lai và User A có thể xem trọn vẹn thông tin đơn hàng, tổng tiền, địa chỉ giao hàng của User B.
 
----
+### 2. `BUG_FR10_02` (High - State Machine): Vi phạm Vòng đời Đơn hàng — Cho phép Hủy đơn hàng `shipping`
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 328–331).
+- **Hành vi thực tế:** Lập trình viên sử dụng Blacklist kiểm tra `if (order.status === 'delivered' || order.status === 'canceled')` nhưng bỏ quên trạng thái `shipping`.
+- **Hậu quả:** Người dùng thông thường có thể hủy các đơn hàng đang trên đường vận chuyển, gây tổn thất nghiêm trọng trong vận hành logistics.
 
-### BUG 2: [LỖI NGHIỆP VỤ - LOGIC BUG] Vi phạm ràng buộc máy trạng thái: Không chặn hủy đơn hàng đang giao (`shipping`)
-- **Mã Bug:** `BUG_FR10_02`
-- **Mức độ nghiêm trọng (Severity):** High
-- **Độ ưu tiên (Priority):** P2
-- **Vị trí trong mã nguồn:** `eshop-sut/backend/server.js` (dòng 328–331)
-  ```javascript
-  // Lỗi: Chỉ chặn 'delivered' và 'canceled', bỏ sót 'shipping'
-  if (order.status === "delivered" || order.status === "canceled") {
-    return res.status(400).json({ error: "Cannot cancel this order." });
-  }
-  ```
-- **Kết quả thực tế:** Khi đơn hàng chuyển sang `shipping`, User thường gọi `PUT /api/orders/:id/cancel` thì server vẫn cập nhật sang `canceled`.
-- **Kết quả kỳ vọng:** Phải từ chối hủy đơn khi đang vận chuyển (`400 Bad Request`).
+### 3. `BUG_FR10_03` (Medium - Info Disclosure): Dò quét ID Đơn hàng qua Phản hồi Bất đối xứng
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 323 vs 345).
+- **Hành vi thực tế:** Khi truy cập đơn hàng của người khác, PUT trả về `404 Not Found` (có check user_id) nhưng GET trả về `200 OK` (không check user_id).
+- **Hậu quả:** Kẻ tấn công có thể lợi dụng sự bất đối xứng này để dò quét toàn bộ dải ID đơn hàng tồn tại trên hệ thống.

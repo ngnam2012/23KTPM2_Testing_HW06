@@ -2,535 +2,609 @@
   {
     "tc_id": "TC_FR04_EP_01",
     "category": "Domain (EP - Valid Phone 10 Digits)",
-    "description": "Update profile with valid 10-digit phone starting with 0",
+    "objective": "Kiểm tra cập nhật hồ sơ thành công với số điện thoại hợp lệ 10 chữ số bắt đầu bằng '0'",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "0912345678"
-    },
-    "expected_status": 200,
-    "expected_message": "Profile updated"
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_EP_02",
     "category": "Domain (EP - Valid Phone 11 Digits)",
-    "description": "Update profile with valid 11-digit phone starting with 0",
+    "objective": "Kiểm tra cập nhật hồ sơ thành công với số điện thoại hợp lệ 11 chữ số bắt đầu bằng '0'",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Tran Thi B",
-      "shipping_address": "456 Nguyen Trai, Q5, TP.HCM",
-      "phone": "01234567890"
-    },
-    "expected_status": 200,
-    "expected_message": "Profile updated"
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_EP_03",
-    "category": "Domain (EP - Invalid Phone Prefix)",
-    "description": "Reject phone not starting with 0",
+    "category": "Domain (EP - Invalid Phone Not Starting with 0)",
+    "objective": "Kiểm tra hệ thống từ chối cập nhật khi số điện thoại không bắt đầu bằng chữ số '0'",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "1912345678"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_04",
-    "category": "Domain (EP - Phone Contains Alphabets)",
-    "description": "Reject phone containing letters",
+    "category": "Domain (EP - Invalid Phone Containing Alphabets)",
+    "objective": "Kiểm tra từ chối khi số điện thoại chứa ký tự chữ cái",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "091234567a"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_05",
-    "category": "Domain (EP - Phone With Dashes)",
-    "description": "Reject phone with special characters/dashes",
+    "category": "Domain (EP - Invalid Phone with Special Characters/Dashes)",
+    "objective": "Kiểm tra từ chối số điện thoại chứa ký tự đặc biệt hoặc dấu gạch nối",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "091-234-5678"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_06",
-    "category": "Domain (BVA - Phone 9 Digits)",
-    "description": "Reject phone with 9 digits (Min - 1)",
+    "category": "Domain (BVA - Invalid Phone 9 Digits / Min-1)",
+    "objective": "Phân tích giá trị biên: Kiểm tra từ chối khi số điện thoại chỉ có 9 chữ số (Min - 1)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "091234567"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_07",
-    "category": "Domain (BVA - Phone 12 Digits)",
-    "description": "Reject phone with 12 digits (Max + 1)",
+    "category": "Domain (BVA - Invalid Phone 12 Digits / Max+1)",
+    "objective": "Phân tích giá trị biên: Kiểm tra từ chối khi số điện thoại có 12 chữ số (Max + 1)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "091234567890"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_08",
-    "category": "Domain (EP - Empty Phone)",
-    "description": "Reject empty phone string",
+    "category": "Domain (EP - Empty String Phone)",
+    "objective": "Kiểm tra từ chối khi trường phone là chuỗi rỗng",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": ""
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_09",
     "category": "Domain (BVA - Name Min Length 1 Char)",
-    "description": "Accept single character name",
+    "objective": "Kiểm tra cập nhật tên với độ dài biên tối thiểu 1 ký tự",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "A",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_EP_10",
     "category": "Domain (BVA - Name Max Length 255 Chars)",
-    "description": "Accept 255 character name",
+    "objective": "Kiểm tra cập nhật tên với độ dài biên tối đa 255 ký tự",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_EP_11",
-    "category": "Domain (BVA - Name Exceeding 256 Chars)",
-    "description": "Reject 256 character name",
+    "category": "Domain (BVA - Name Exceeding Max Length 256 Chars)",
+    "objective": "Kiểm tra từ chối khi tên vượt quá 255 ký tự (256 ký tự)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "0912345678"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_12",
-    "category": "Domain (EP - Whitespace Name)",
-    "description": "Reject whitespace only name",
+    "category": "Domain (EP - Empty Name String or Whitespaces)",
+    "objective": "Kiểm tra từ chối khi tên là chuỗi rỗng",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "   ",
-      "shipping_address": "123 Le Loi, Q1, TP.HCM",
-      "phone": "0912345678"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_EP_13",
-    "category": "Domain (EP - Vietnamese Unicode)",
-    "description": "Accept Vietnamese accented UTF-8 string",
+    "category": "Domain (EP - Valid Full Unicode Vietnamese Characters)",
+    "objective": "Kiểm tra cập nhật hồ sơ với tên chứa đầy đủ ký tự tiếng Việt có dấu (Unicode UTF-8)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
-      "Content-Type": "application/json; charset=utf-8",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyễn Hoàng Đỗ Quỳnh Như",
-      "shipping_address": "Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
-      "phone": "0988776655"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_EP_14",
-    "category": "Domain (BVA - Long Address)",
-    "description": "Check handling of extremely long address string",
+    "category": "Domain (BVA - Extremely Long Address > 1000 Chars)",
+    "objective": "Kiểm tra xử lý chuỗi địa chỉ cực dài (> 1000 ký tự)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "Số 123 Đường Rất Dài, Phường 1, Quận 1... [Extremely Long String]",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_01",
-    "category": "Security (SEC-06 - Privilege Escalation / Mass Assignment)",
-    "description": "Attempt to elevate privileges to role='admin' via body payload",
+    "category": "Security (SEC-06 - Privilege Escalation via Mass Assignment)",
+    "objective": "Kiểm tra lỗ hổng Mass Assignment: Người dùng thường truyền",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Attacker User",
-      "shipping_address": "123 Hacker St",
-      "phone": "0912345678",
-      "role": "admin"
-    },
-    "expected_status": 200,
-    "security_constraint": "Role must not be updated to admin in database"
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_02",
-    "category": "Security (SEC-06 - Boolean Admin Flag)",
-    "description": "Attempt to inject isAdmin: true in body",
+    "category": "Security (SEC-06 - Mass Assignment with Boolean Flag",
+    "objective": "Thử gửi trường phân quyền dạng boolean",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Attacker User",
-      "shipping_address": "123 Hacker St",
-      "phone": "0912345678",
-      "isAdmin": true
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_03",
-    "category": "Security (SEC-06 - User ID Tampering)",
-    "description": "Attempt to overwrite user_id in body",
+    "category": "Security (SEC-06 - User ID Overwrite Attempt)",
+    "objective": "Thử gửi trường",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "id": 1,
-      "name": "Tampered ID",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_04",
-    "category": "Security (SEC-06 - Email Tampering)",
-    "description": "Attempt to modify user email via PUT /api/users/me",
+    "category": "Security (SEC-06 - Email Tampering Attempt)",
+    "objective": "Thử gửi trường",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "email": "attacker@evil.com",
-      "name": "Normal User",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 200,
-    "security_constraint": "Email must remain original value"
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_05",
-    "category": "Security (SEC-06 - Password Overwrite)",
-    "description": "Attempt to overwrite password via PUT /api/users/me",
+    "category": "Security (SEC-06 - Password / Hash Overwrite Attempt)",
+    "objective": "Thử gửi trường",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "password": "HackedPassword123!",
-      "name": "Normal User",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_06",
-    "category": "Security (SEC-02 - Missing Token)",
-    "description": "Reject request without Authorization header",
+    "category": "Security (SEC-02 - Missing Authorization Header)",
+    "objective": "Kiểm tra xác thực bị từ chối khi gọi API mà không truyền Header",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "No Token User",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 401
+    "body": "json",
+    "expected_status": "401 Unauthorized"
   },
   {
     "tc_id": "TC_FR04_SEC_07",
-    "category": "Security (SEC-02 - Invalid Token)",
-    "description": "Reject request with forged JWT token",
+    "category": "Security (SEC-02 - Invalid / Forged JWT Token)",
+    "objective": "Kiểm tra từ chối truy cập khi Header Authorization chứa Token rác / giả mạo",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "Authorization": "Bearer fake.jwt.token",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Fake Token User",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 403
+    "body": "json",
+    "expected_status": "403 Forbidden"
   },
   {
     "tc_id": "TC_FR04_SEC_08",
     "category": "Security (SEC-02 - Malformed Bearer Prefix)",
-    "description": "Reject malformed Authorization header missing Bearer prefix",
+    "objective": "Kiểm tra gửi Header Authorization sai định dạng (thiếu từ khóa Bearer)",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "Authorization": "TokenWithoutBearer12345",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Malformed Auth",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 401
+    "body": "json",
+    "expected_status": "401 Unauthorized"
   },
   {
     "tc_id": "TC_FR04_SEC_09",
-    "category": "Security (SEC-06 - SQL Injection in Name)",
-    "description": "Ensure parameterized queries protect against SQL injection in name field",
+    "category": "Security (SEC-06 - SQL Injection in Name Field)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong trường",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Admin' OR '1'='1'; --",
-      "shipping_address": "123 Street",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SEC_10",
-    "category": "Security (SEC-06 - SQL Injection in Phone)",
-    "description": "Validate phone regex blocks SQL injection payloads in phone field",
+    "category": "Security (SEC-06 - SQL Injection in Phone Field)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong trường",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Nguyen Van A",
-      "shipping_address": "123 Street",
-      "phone": "0912345678' OR 1=1 --"
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_SEC_11",
-    "category": "Security (SEC-06 - Stored XSS in Profile)",
-    "description": "Verify stored XSS script tags are treated safely as plain text",
+    "category": "Security (SEC-06 - Stored XSS Payload in Profile)",
+    "objective": "Kiểm tra khả năng xử lý an toàn chuỗi XSS trong",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "<script>alert('XSS')</script>",
-      "shipping_address": "<img src=x onerror=alert(1)>",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
-  },
-  {
-    "tc_id": "TC_FR04_STATE_01",
-    "category": "State (Full Profile Verification)",
-    "description": "PUT profile followed by GET /api/users/me to verify all fields persisted",
-    "method": "GET",
-    "endpoint": "/api/users/me",
-    "headers": {
-      "X-Student-Id": "25127001"
-    },
-    "expected_status": 200
-  },
-  {
-    "tc_id": "TC_FR04_STATE_05",
-    "category": "State & Security (Role Immutability Verification)",
-    "description": "GET profile to verify role was NOT altered to admin after attack",
-    "method": "GET",
-    "endpoint": "/api/users/me",
-    "headers": {
-      "X-Student-Id": "25127001"
-    },
-    "expected_status": 200,
-    "expected_role": "user"
-  },
-  {
-    "tc_id": "TC_FR04_STATE_06",
-    "category": "State & Security (Email Immutability Verification)",
-    "description": "GET profile to verify email was NOT altered after attack",
-    "method": "GET",
-    "endpoint": "/api/users/me",
-    "headers": {
-      "X-Student-Id": "25127001"
-    },
-    "expected_status": 200
-  },
-  {
-    "tc_id": "TC_FR04_SCHEMA_01",
-    "category": "Schema (PUT 200 OK Schema)",
-    "description": "Validate 200 OK JSON Schema on PUT /api/users/me",
-    "method": "PUT",
-    "endpoint": "/api/users/me",
-    "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
-    },
-    "body": {
-      "name": "Schema Tester",
-      "shipping_address": "123 Schema St",
-      "phone": "0912345678"
-    },
-    "expected_status": 200
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR04_SCHEMA_02",
-    "category": "Schema & Security (GET 200 OK No Password Leak)",
-    "description": "Validate GET user schema and assert no password exposure",
+    "category": "Schema & Security (GET /api/users/me JSON Schema & Sensitive Data Exposure)",
+    "objective": "Kiểm tra JSON Schema của",
     "method": "GET",
     "endpoint": "/api/users/me",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 200
+    "body": "N/A",
+    "expected_status": "200 OK"
   },
   {
-    "tc_id": "TC_FR04_SCHEMA_03",
-    "category": "Schema (Malformed JSON Body)",
-    "description": "Validate 400 Bad Request on invalid JSON syntax",
+    "tc_id": "TC_FR04_ADV_03",
+    "category": "Advanced Security Vulnerability (Internal Security State Leak via",
+    "objective": "Kiểm tra rò rỉ toàn bộ metadata an ninh nhạy cảm: Yêu cầu đặt lại mật khẩu qua",
+    "method": "GET",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_ADV_04",
+    "category": "Advanced Security Vulnerability (Full Privilege Escalation & Admin Action Exploitation Chain)",
+    "objective": "Thực thi chuỗi tấn công leo thang đặc quyền hoàn chỉnh (Full Attack Chain): User thường gửi",
+    "method": "GET",
+    "endpoint": "1.",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "Bước 1 phải từ chối"
+  },
+  {
+    "tc_id": "TC_FR04_ADV_05",
+    "category": "Advanced Security Vulnerability (Identity Protection against Hybrid Spoofing Payload)",
+    "objective": "Kiểm tra tính bất biến của định danh: Kẻ tấn công gửi payload lai ghép chứa cùng lúc nhiều trường định danh giả mạo (",
     "method": "PUT",
     "endpoint": "/api/users/me",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "raw_body": "{ 'invalid_json': ",
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_01",
+    "category": "State (Full Profile Update & GET Lifecycle Verification)",
+    "objective": "Thực hiện cập nhật toàn bộ trường (name, address, phone) và gọi",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "PUT:"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_02",
+    "category": "State (Partial Update - Name Only)",
+    "objective": "Cập nhật chỉ riêng trường",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_03",
+    "category": "State (Partial Update - Phone Only)",
+    "objective": "Cập nhật chỉ trường",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_04",
+    "category": "State (Partial Update - Address Only)",
+    "objective": "Cập nhật chỉ trường",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_05",
+    "category": "State (State Integrity - Role Immutability Verification)",
+    "objective": "Sau khi gửi payload tấn công",
+    "method": "GET",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A (GET request)",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_06",
+    "category": "State (State Integrity - Email Immutability Verification)",
+    "objective": "Sau khi gửi payload đổi email",
+    "method": "GET",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_STATE_07",
+    "category": "State (Sequential State Transitions Across Multiple Updates)",
+    "objective": "Kiểm tra cập nhật hồ sơ 3 lần liên tiếp và xác thực tính nhất quán của trạng thái cuối cùng",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_SCHEMA_01",
+    "category": "Schema (PUT /api/users/me 200 OK JSON Schema Validation)",
+    "objective": "Kiểm tra cấu trúc JSON Schema của phản hồi thành công",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_SCHEMA_03",
+    "category": "Schema (Malformed JSON Payload Syntax)",
+    "objective": "Kiểm tra xử lý và response schema khi gửi body chứa cú pháp JSON bị hỏng (Malformed JSON)",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR04_SCHEMA_04",
+    "category": "Schema (Data Type Mismatch - Number/Array for Phone/Name)",
+    "objective": "Kiểm tra xử lý khi gửi sai kiểu dữ liệu (Phone gửi số nguyên thay vì chuỗi, Name gửi Array)",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR04_SCHEMA_05",
-    "category": "Schema (401 Unauthorized Schema)",
-    "description": "Validate 401 JSON error schema",
+    "category": "Schema (401 Unauthorized Response Schema Validation)",
+    "objective": "Kiểm tra cấu trúc JSON Schema chuẩn của phản hồi lỗi 401 Unauthorized",
     "method": "GET",
     "endpoint": "/api/users/me",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}"
     },
-    "expected_status": 401
+    "body": "N/A",
+    "expected_status": "401 Unauthorized"
   },
   {
     "tc_id": "TC_FR04_SCHEMA_06",
-    "category": "Schema (403 Forbidden Schema)",
-    "description": "Validate 403 JSON error schema",
+    "category": "Schema (403 Forbidden Response Schema Validation)",
+    "objective": "Kiểm tra cấu trúc JSON Schema chuẩn của phản hồi lỗi 403 Forbidden khi token sai",
     "method": "GET",
     "endpoint": "/api/users/me",
     "headers": {
-      "Authorization": "Bearer invalid_token",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 403
+    "body": "N/A",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR04_SCHEMA_07",
+    "category": "Schema & Route Protection (HTTP Method Not Allowed / 404 Route Check)",
+    "objective": "Kiểm tra phản hồi khi gọi HTTP Method không được hỗ trợ trên endpoint (",
+    "method": "DELETE",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR04_ADV_01",
+    "category": "Advanced Code Vulnerability (Destructive Partial Update - Silent Omitted Fields Wiping to NULL)",
+    "objective": "Kiểm tra hành vi cập nhật một phần (Partial Update): Gửi payload chỉ chứa trường",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR04_ADV_02",
+    "category": "Advanced Code Vulnerability (Numeric Phone Type Coercion & Leading-Zero Loss in SQLite)",
+    "objective": "Kiểm tra lỗ hổng ép kiểu ngầm (Type Coercion): Client gửi số điện thoại dưới dạng số nguyên (",
+    "method": "PUT",
+    "endpoint": "/api/users/me",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
   }
 ]

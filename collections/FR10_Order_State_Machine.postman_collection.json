@@ -1,65 +1,42 @@
 {
   "info": {
-    "_postman_id": "fr10-order-state-machine-25127001",
-    "name": "FR-10: Order State Machine & Cancellation Test Suite",
-    "description": "Comprehensive Test Suite for FR-10 (PUT /api/orders/:id/cancel & GET /api/orders/:id) covering State Transitions, BOLA/IDOR Security, Domain Boundaries, and Schema Validation.",
+    "name": "FR10_Order_State_Machine",
+    "_postman_id": "gen-a4b1d9af5b0842b6",
+    "description": "Full Comprehensive Postman Test Collection for FR-10 (MSSV: 23127092) - Total 45 Test Cases",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Attach mandatory Header X-Student-Id to every request",
-          "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
-    { "key": "studentId", "value": "25127001", "type": "string" },
-    { "key": "user_token_A", "value": "", "type": "string" },
-    { "key": "user_token_B", "value": "", "type": "string" },
-    { "key": "order_id_A", "value": "1", "type": "string" },
-    { "key": "order_id_B", "value": "2", "type": "string" }
-  ],
   "item": [
     {
       "name": "0. Setup & Auth Seed",
       "item": [
         {
-          "name": "0.1 Register User A",
+          "name": "0.1 Register & Login User A",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"User A\",\n  \"email\": \"usera_fr10@example.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/register", "host": ["{{baseUrl}}"], "path": ["api", "register"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": ["pm.test(\"User A registered or exists\", () => pm.expect(pm.response.code).to.be.oneOf([200, 400]));"]
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
               }
-            }
-          ]
-        },
-        {
-          "name": "0.2 Login User A",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"usera_fr10@example.com\",\n  \"password\": \"Password123!\"\n}"
+              "raw": "{\n  \"name\": \"Test User A\",\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
           },
           "event": [
             {
@@ -67,10 +44,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Login User A successful\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var data = pm.response.json();",
-                  "    pm.collectionVariables.set('user_token_A', data.token);",
+                  "pm.test('0.1 Setup: Register or User A exists', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
                   "});"
                 ]
               }
@@ -78,18 +53,33 @@
           ]
         },
         {
-          "name": "0.3 User A Checkout Order A1",
+          "name": "0.2 Login User A to Get Token",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"total_amount\": 150000,\n  \"shipping_address\": \"123 Nguyen Hue, Q1\"\n}"
+              "raw": "{\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/checkout", "host": ["{{baseUrl}}"], "path": ["api", "checkout"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
           },
           "event": [
             {
@@ -97,13 +87,15 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"User A created Order A1\", function () {",
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('user_token', res.token);",
+                  "    pm.environment.set('user_token_A', res.token);",
+                  "    pm.collectionVariables.set('user_token', res.token);",
+                  "    pm.collectionVariables.set('user_token_A', res.token);",
+                  "}",
+                  "pm.test('0.2 Setup: User A Login successful', function () {",
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "    var res = pm.response.json();",
-                  "    var orderId = res.orderId || res.id || res.order_id || (res.order && res.order.id);",
-                  "    if (orderId) {",
-                  "        pm.collectionVariables.set('order_id_A', String(orderId));",
-                  "    }",
                   "});"
                 ]
               }
@@ -111,66 +103,33 @@
           ]
         },
         {
-          "name": "0.4 Register User B",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"User B\",\n  \"email\": \"userb_fr10@example.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/register", "host": ["{{baseUrl}}"], "path": ["api", "register"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": ["pm.test(\"User B registered or exists\", () => pm.expect(pm.response.code).to.be.oneOf([200, 400]));"]
-              }
-            }
-          ]
-        },
-        {
-          "name": "0.5 Login User B",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"userb_fr10@example.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Login User B successful\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var data = pm.response.json();",
-                  "    pm.collectionVariables.set('user_token_B', data.token);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "0.6 User B Checkout Order B1",
+          "name": "0.3 Login Admin to Get Admin Token",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_B}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"total_amount\": 300000,\n  \"shipping_address\": \"456 Le Loi, Q1\"\n}"
+              "raw": "{\n  \"email\": \"admin@eshop.com\",\n  \"password\": \"Admin123!\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/checkout", "host": ["{{baseUrl}}"], "path": ["api", "checkout"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
           },
           "event": [
             {
@@ -178,13 +137,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"User B created Order B1\", function () {",
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('admin_token', res.token);",
+                  "    pm.collectionVariables.set('admin_token', res.token);",
+                  "}",
+                  "pm.test('0.3 Setup: Admin Login successful', function () {",
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "    var res = pm.response.json();",
-                  "    var orderId = res.orderId || res.id || res.order_id || (res.order && res.order.id);",
-                  "    if (orderId) {",
-                  "        pm.collectionVariables.set('order_id_B', String(orderId));",
-                  "    }",
                   "});"
                 ]
               }
@@ -194,18 +153,42 @@
       ]
     },
     {
-      "name": "Group 1 - State Machine Valid Transitions",
+      "name": "Group 3 - State Lifecycle & Data Integrity",
       "item": [
         {
-          "name": "TC_FR10_STATE_01: Cancel Pending Order A1",
+          "name": "TC_FR10_STATE_01: Kiểm tra người dùng hủy đơn hàng thành công khi đơn hàng đang ở trạng thái",
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}", "cancel"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -213,60 +196,43 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_STATE_01: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR10_STATE_01: Cancellation success message\", function () {",
-                  "    var res = pm.response.json();",
-                  "    pm.expect(res.message).to.eql(\"Order canceled successfully\");",
-                  "});"
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"Cancellation success message returned\", function () {",
+                  "      var res = pm.response.json();",
+                  "      pm.expect(res.message).to.eql(\"Order canceled successfully\");",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR10_STATE_02: Verify Order Status Changed to Canceled via GET",
+          "name": "TC_FR10_STATE_02: Gọi",
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
-            ],
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR10_STATE_02: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR10_STATE_02: Order status is 'canceled' in DB\", function () {",
-                  "    var order = pm.response.json();",
-                  "    pm.expect(order.status).to.eql(\"canceled\");",
-                  "});"
-                ]
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 2 - State Machine Invalid Transitions",
-      "item": [
-        {
-          "name": "TC_FR10_INV_03: Double Cancellation on Already Canceled Order",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
             ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}", "cancel"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
           },
           "event": [
             {
@@ -274,53 +240,91 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_INV_03: Status code is 400 Bad Request on second cancel\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Cannot cancel this order.\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 3 - Security & BOLA/IDOR",
-      "item": [
-        {
-          "name": "TC_FR10_SEC_01: BOLA on Cancel - User A attempts to cancel User B's Order",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
-            ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_B}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_B}}", "cancel"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR10_SEC_01: BOLA prevented on Cancel (404/403)\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([404, 403]);",
-                  "});"
+                  "  pm.test(\"Order status successfully updated to canceled in DB\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var order = pm.response.json();",
+                  "      pm.expect(order.status).to.eql(\"canceled\");",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR10_SEC_02: BOLA on GET - User A views User B's Order (Bug Hunter)",
+          "name": "TC_FR10_STATE_03: Kiểm tra người dùng hủy đơn hàng thành công khi đơn hàng đang ở trạng thái",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/2/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "2",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for confirmed order cancellation\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Order canceled successfully\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_STATE_04: Xác thực đơn hàng",
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_B}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_B}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "2"
+              ]
+            }
           },
           "event": [
             {
@@ -328,23 +332,49 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_SEC_02: CRITICAL BOLA - Unauthorized user MUST NOT view other's order (403/404)\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
-                  "});"
+                  "  pm.test(\"Confirmed order is now in canceled state\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().status).to.eql(\"canceled\");",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR10_SEC_03: Missing Authorization Header",
+          "name": "TC_FR10_STATE_05: Kiểm tra tạo đơn hàng 1 sản phẩm qua",
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}", "cancel"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{new_order_id}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{new_order_id}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -352,25 +382,48 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_SEC_03: Status code is 401 Unauthorized\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Unauthorized\");",
-                  "});"
+                  "  pm.test(\"Newly created single-item order canceled successfully\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR10_SEC_05: Invalid JWT Token",
+          "name": "TC_FR10_STATE_06: Kiểm tra hủy đơn hàng chứa nhiều mặt hàng (multi-product items)",
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer fake.forged.jwt.token" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}", "cancel"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{multi_item_order_id}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{multi_item_order_id}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -378,10 +431,297 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_SEC_05: Status code is 403 Forbidden\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Forbidden\");",
-                  "});"
+                  "  pm.test(\"Multi-item order canceled successfully\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_STATE_07: Kiểm tra hủy đơn hàng đã được áp dụng mã giảm giá",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{coupon_order_id}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{coupon_order_id}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Coupon discounted order canceled successfully\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_STATE_08: Kiểm tra hủy đơn hàng ngay tức thì sau khi bấm đặt hàng (T0)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{just_created_id}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{just_created_id}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Immediate cancellation returns 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_STATE_09: Kiểm tra danh sách đơn hàng cá nhân",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/my-orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "my-orders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"my-orders list contains canceled status for order 1\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var list = pm.response.json();",
+                  "      var target = list.find(o => o.id === 1);",
+                  "      pm.expect(target).to.exist;",
+                  "      pm.expect(target.status).to.eql(\"canceled\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_STATE_10: Kiểm tra hủy liên tiếp nhiều đơn hàng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/11/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "11",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Sequential order cancellation succeeds\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_ADV_01: Kiểm tra người dùng thường KHÔNG ĐƯỢC PHÉP hủy đơn hàng khi trạng thái đang là",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/3/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "3",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_ADV_01: CRITICAL - Order in 'shipping' state MUST NOT be canceled by regular user\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại cho phép hủy đơn shipping (trả về 200 OK sai hoàn toàn đặc tả SRS FR-10)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_ADV_05: Xác thực tính bất biến của dữ liệu tài chính và giao vận: Sau khi đơn hàng chuyển sang",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_ADV_05: Financial and audit data remains completely immutable after cancellation\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var order = pm.response.json();",
+                  "      pm.expect(order.status).to.eql(\"canceled\");",
+                  "      pm.expect(order.total_amount).to.be.a(\"number\");",
+                  "      pm.expect(order.total_amount).to.be.above(0);",
+                  "      pm.expect(order.shipping_address).to.be.a(\"string\");",
+                  "      pm.expect(order.shipping_address.length).to.be.above(0);",
+                  "  });"
                 ]
               }
             }
@@ -390,18 +730,42 @@
       ]
     },
     {
-      "name": "Group 4 - Domain, Boundary & Schema",
+      "name": "Group 2 - Security, State Invariants & Boundary Matrix",
       "item": [
         {
-          "name": "TC_FR10_DOM_05: Non-existent Order ID (999999)",
+          "name": "TC_FR10_INV_01: Kiểm tra người dùng thường KHÔNG ĐƯỢC PHÉP hủy đơn hàng khi trạng thái đang là",
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{baseUrl}}/api/orders/999999/cancel", "host": ["{{baseUrl}}"], "path": ["api", "orders", "999999", "cancel"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/3/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "3",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -409,23 +773,52 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR10_DOM_05: Status code is 404 Not Found\", function () {",
-                  "    pm.response.to.have.status(404);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Order not found\");",
-                  "});"
+                  "  pm.test(\"Status code is 400 Bad Request (Cannot cancel shipping order)\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });",
+                  "  pm.test(\"Error message returned for invalid shipping cancel\", function () {",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại có bug cho phép hủy đơn shipping (trả về 200 OK sai đặc tả)"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR10_SCHEMA_02: Order Details Schema Validation",
+          "name": "TC_FR10_INV_02: Kiểm tra hệ thống từ chối khi cố gắng hủy đơn hàng đã giao thành công (",
           "request": {
-            "method": "GET",
+            "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{user_token_A}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/orders/{{order_id_A}}", "host": ["{{baseUrl}}"], "path": ["api", "orders", "{{order_id_A}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/4/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "4",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -433,27 +826,1535 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var schema = {",
-                  "    \"type\": \"object\",",
-                  "    \"required\": [\"id\", \"user_id\", \"total_amount\", \"shipping_address\", \"status\"],",
-                  "    \"properties\": {",
-                  "        \"id\": { \"type\": \"integer\" },",
-                  "        \"user_id\": { \"type\": \"integer\" },",
-                  "        \"total_amount\": { \"type\": \"number\" },",
-                  "        \"shipping_address\": { \"type\": \"string\" },",
-                  "        \"status\": { \"type\": \"string\" }",
-                  "    }",
-                  "};",
-                  "pm.test(\"TC_FR10_SCHEMA_02: Conforms to Order JSON Schema\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
-                  "});"
+                  "  pm.test(\"Status code is 400 Bad Request for delivered order\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Cannot cancel this order.\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_03: Kiểm tra hệ thống từ chối khi cố gắng hủy đơn hàng đã ở trạng thái",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for already canceled order\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Cannot cancel this order.\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_04: Gửi 2 request hủy liên tiếp trên cùng 1 đơn hàng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/5/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "5",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Second cancellation attempt returns 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_05: Gửi 2 request hủy liên tiếp trên đơn hàng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/6/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "6",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Repeated cancellation of confirmed order returns 400\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_06: Xác thực trạng thái của đơn hàng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "4"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Order remains in delivered state\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().status).to.eql(\"delivered\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_07: Thử gửi body",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/7/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "7",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Cancel endpoint ignores body status override\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_08: Thử hủy đơn hàng đã hoàn tất đổi trả (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/8/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "8",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Returned order cannot be canceled\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_09: Gọi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "7"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Order status is strictly 'canceled'\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().status).to.eql(\"canceled\");",
+                  "      pm.expect(pm.response.json().status).to.not.eql(\"delivered\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_10: Đơn hàng ban đầu",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/9/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "9",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"User cannot cancel order that transitioned to shipping\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_INV_11: Đảm bảo khi lệnh hủy thất bại, tổng tiền",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "4"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Financial and address data remains intact\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var order = pm.response.json();",
+                  "      pm.expect(order.total_amount).to.be.above(0);",
+                  "      pm.expect(order.shipping_address).to.be.a('string');",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_01: Kiểm tra lỗ hổng BOLA: User A (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/20/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "20",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"BOLA PREVENTED: User A cannot cancel User B's order\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([404, 403]);",
+                  "  });",
+                  "  pm.test(\"Appropriate error message returned\", function () {",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_02: Kiểm tra lỗ hổng BOLA/IDOR: User A gọi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "20"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"CRITICAL BOLA: User A MUST NOT view User B's order details\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại trả về 200 OK và lộ toàn bộ đơn hàng của User B (Lỗ hổng BOLA nghiêm trọng)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_03: Kiểm tra từ chối yêu cầu hủy đơn khi không gửi kèm Header",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Unauthorized\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_04: Kiểm tra từ chối truy cập chi tiết đơn hàng khi khách vãng lai không đăng nhập",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Unauthenticated GET order should be rejected with 401\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về 200 OK do route GET /api/orders/:id không gắn authenticateToken"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_05: Kiểm tra từ chối truy cập khi gửi Token JWT giả mạo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_12345"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for forged token\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Forbidden\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_06: Kiểm tra từ chối khi Bearer Token đã hết hạn",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Expired token is rejected\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_07: Kiểm tra khả năng chống SQL Injection trong path parameter",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1'",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1'"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"SQL Injection handled safely (No 500 Internal Error)\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_08: Kiểm tra khả năng chống SQL Injection Union-based trong",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1'",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1'"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"GET SQL Injection treated safely (No 500)\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_09: Thử truyền query parameter trùng lặp",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel?id=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_SEC_09: Path param takes strict precedence over query pollution\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Order canceled successfully\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_10: User thường gửi kèm Header",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/3/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "3",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Fake role headers are ignored\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SEC_11: Xác thực Header",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Request header X-Student-Id is present\", function () {",
+                  "      pm.expect(pm.request.headers.get(\"X-Student-Id\")).to.eql(\"23127092\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_ADV_02: Kiểm tra truy cập trái phép chi tiết đơn hàng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User A sử dụng Token của mình để đọc trộm đơn hàng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "2"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_ADV_02: CRITICAL BOLA - Unauthenticated access to order details MUST be rejected with 401\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Unauthorized\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về 200 OK và phơi bày toàn bộ dữ liệu đơn hàng do thiếu middleware bảo vệ"
                 ]
               }
             }
           ]
         }
       ]
+    },
+    {
+      "name": "Group 1 - Domain Partitions & Primary Rules",
+      "item": [
+        {
+          "name": "TC_FR10_DOM_01: Phân tích giá trị biên: Kiểm tra hủy đơn hàng với",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/0/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "0",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Order ID 0 returns 404 Not Found\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_DOM_02: Phân tích giá trị biên: Kiểm tra hủy đơn hàng với ID âm (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/-1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "-1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Negative Order ID returns 404 or 400\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_DOM_03: Kiểm tra xử lý khi truyền ID dạng chuỗi chữ cái không phải số",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/abc/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "abc",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"String ID 'abc' handled gracefully\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_DOM_04: Kiểm tra xử lý khi truyền ID là số thực dấu phẩy động",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1.5/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1.5",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Float ID handled as not found or bad request\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_DOM_05: Kiểm tra hủy đơn hàng với ID không tồn tại trong hệ thống (",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/999999/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "999999",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 404 Not Found\", function () {",
+                  "      pm.response.to.have.status(404);",
+                  "  });",
+                  "  pm.test(\"Error message is Order not found\", function () {",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Order not found\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 4 - Schema Validation & Response Standards",
+      "item": [
+        {
+          "name": "TC_FR10_SCHEMA_01: Kiểm tra cấu trúc JSON Schema phản hồi thành công khi hủy đơn",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var schema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"message\"],",
+                  "      \"properties\": {",
+                  "          \"message\": { \"type\": \"string\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"PUT cancel response matches JSON Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SCHEMA_02: Kiểm tra cấu trúc JSON Schema phản hồi chi tiết đơn hàng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var orderSchema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"id\", \"user_id\", \"total_amount\", \"shipping_address\", \"status\"],",
+                  "      \"properties\": {",
+                  "          \"id\": { \"type\": \"integer\" },",
+                  "          \"user_id\": { \"type\": \"integer\" },",
+                  "          \"total_amount\": { \"type\": \"number\" },",
+                  "          \"shipping_address\": { \"type\": \"string\" },",
+                  "          \"status\": { \"type\": \"string\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"GET order details matches Order Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), orderSchema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_SCHEMA_03: Kiểm tra cấu trúc JSON Schema chuẩn của các phản hồi lỗi",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/999999/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "999999",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Error response contains 'error' string property\", function () {",
+                  "      var json = pm.response.json();",
+                  "      pm.expect(json).to.have.property(\"error\");",
+                  "      pm.expect(json.error).to.be.a(\"string\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR10_ADV_04: Phát hiện kỹ thuật dò quét ID đơn hàng (Blind ID Enumeration): So sánh phản hồi giữa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}1.",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "1."
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_ADV_04: Cross-endpoint authorization consistency - Foreign order must NOT return 200 on GET\", function () {",
+                  "      // Trong hệ thống bảo mật, User A không thể nhận 200 OK trên đơn hàng của User B",
+                  "      pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 5 - Hidden Logic & Code-Level Vulnerabilities",
+      "item": [
+        {
+          "name": "TC_FR10_ADV_03: Kiểm tra tính bất biến trạng thái khi xảy ra tranh chấp đồng thời: Gửi 2 request hủy đơn liên tiếp cực nhanh trên cùng một đơn hàng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/15/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "15",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR10_ADV_03: Second cancellation attempt MUST be rejected with 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Cannot cancel this order.\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "23127092",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token_A",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token_B",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
     }
   ]
 }

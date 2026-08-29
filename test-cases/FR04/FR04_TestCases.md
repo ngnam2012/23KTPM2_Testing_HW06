@@ -1,11 +1,11 @@
-# FR-04: Test Cases (Pool A - Profile Management)
+﻿# FR-04: Test Cases (Pool A - Profile Management)
 
 > **Mã chức năng:** FR-04 | **Pool:** A (Auth & Users)  
 > **Chức năng:** Quản lý Hồ sơ Cá nhân (Profile Management)  
 > **Endpoints:** `PUT /api/users/me` & `GET /api/users/me`  
-> **MSSV (X-Student-Id):** `25127001`  
+> **MSSV (X-Student-Id):** `23127092`  
 > **Tiêu chuẩn áp dụng:** ISTQB (EP, BVA, State Transition), OWASP API Security Top 10 (SEC-01 -> SEC-07), JSON Schema Validation Draft-07.  
-> **Tổng số test cases:** 39 Test Cases (Vượt chuẩn ≥ 35 TCs)
+> **Tổng số test cases:** 44 Test Cases (Gồm 39 TCs chuẩn + 5 TCs nâng cao chuyên sâu bóc tách mã nguồn)
 
 ---
 
@@ -17,7 +17,8 @@
 | **Nhóm 2** | **Security & Mass Assignment** | OWASP Top 10 (SEC-02, SEC-06 Privilege Escalation, SEC-07, SQLi, XSS) | 11 | `TC_FR04_SEC_01` → `TC_FR04_SEC_11` |
 | **Nhóm 3** | **State & Data Integrity** | State Transition & Sequential Lifecycle Integrity Verification | 7 | `TC_FR04_STATE_01` → `TC_FR04_STATE_07` |
 | **Nhóm 4** | **Schema & Status Codes** | JSON Schema Validation, Type Checking & HTTP Status Verification | 7 | `TC_FR04_SCHEMA_01` → `TC_FR04_SCHEMA_07` |
-| **TỔNG** | | | **39** | |
+| **Nhóm 5** | **Hidden Logic & Code Vulnerabilities** | Phân tích sâu mã nguồn Backend SUT (`server.js`), Type Coercion, State Desync, Partial Wiping | 5 | `TC_FR04_ADV_01` → `TC_FR04_ADV_05` |
+| **TỔNG** | | | **44** | |
 
 ---
 
@@ -34,7 +35,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -75,7 +76,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -107,7 +108,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -145,7 +146,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -177,7 +178,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -209,7 +210,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -238,7 +239,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -267,7 +268,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -296,7 +297,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -325,7 +326,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -354,7 +355,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -383,7 +384,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -412,7 +413,7 @@
 - **Headers:**
   - `Content-Type: application/json; charset=utf-8`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -441,7 +442,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -450,12 +451,13 @@
     "phone": "0912345678"
   }
   ```
-- **Expected Status Code:** `200 OK` hoặc `400 Bad Request`
-- **Expected Response Body / Schema:** Trả về 200 nếu hỗ trợ TEXT dài hoặc 400 nếu vượt giới hạn
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:** `{"message": "Profile updated"}` (Hệ thống hỗ trợ chuỗi TEXT dài an toàn)
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Status code is 200 OK or 400 Bad Request", function () {
-      pm.expect(pm.response.code).to.be.oneOf([200, 400]);
+  pm.test("TC_FR04_EP_14: Long address (> 1000 chars) is supported without crash", function () {
+      pm.response.to.have.status(200);
+      pm.expect(pm.response.json().message).to.eql("Profile updated");
   });
   ```
 
@@ -472,7 +474,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -503,7 +505,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -534,7 +536,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -565,7 +567,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -595,7 +597,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -625,7 +627,7 @@
 - **Request Method & Endpoint:** `PUT /api/users/me`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
   - *(Không có header Authorization)*
 - **Request Body:**
   ```json
@@ -664,7 +666,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.fake_payload.fake_signature`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -701,7 +703,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: TokenWithoutBearerKeyword12345`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -730,7 +732,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -762,7 +764,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -771,12 +773,13 @@
     "phone": "0912345678' OR 1=1 --"
   }
   ```
-- **Expected Status Code:** `400 Bad Request` (Bị chặn bởi Regex Phone) hoặc `200 OK` (Parameterized)
-- **Expected Response Body / Schema:** Không gây lỗi SQL syntax 500
+- **Expected Status Code:** `400 Bad Request`
+- **Expected Response Body / Schema:** `{"error": "Invalid phone format"}` (Bắt buộc từ chối chuỗi chứa ký tự không phải chữ số)
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Status code is 400 or 200, no SQL error 500", function () {
-      pm.expect(pm.response.code).to.not.equal(500);
+  pm.test("TC_FR04_SEC_10: Non-digit SQLi phone payload MUST be rejected with 400 Bad Request", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json()).to.have.property("error");
   });
   ```
 
@@ -791,7 +794,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -822,7 +825,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body (cho PUT):**
   ```json
   {
@@ -866,7 +869,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -897,7 +900,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -927,7 +930,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -956,7 +959,7 @@
 - **Request Method & Endpoint:** `GET /api/users/me` (sau bước gọi `PUT /api/users/me` kèm role='admin')
 - **Headers:**
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A (GET request)
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `role` bắt buộc phải là `"user"`
@@ -980,7 +983,7 @@
 - **Request Method & Endpoint:** `GET /api/users/me`
 - **Headers:**
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `email === "user1@example.com"`
@@ -1004,7 +1007,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1038,7 +1041,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1084,7 +1087,7 @@
 - **Request Method & Endpoint:** `GET /api/users/me`
 - **Headers:**
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:**
@@ -1136,7 +1139,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body (Raw String):**
   `{ "name": "Broken JSON", "phone": "0912345678", `
 - **Expected Status Code:** `400 Bad Request`
@@ -1159,7 +1162,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1186,7 +1189,7 @@
 - **Pre-condition:** Không gửi Authorization header
 - **Request Method & Endpoint:** `GET /api/users/me`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `401 Unauthorized`
 - **Expected Response Body / Schema:**
@@ -1221,7 +1224,7 @@
 - **Request Method & Endpoint:** `GET /api/users/me`
 - **Headers:**
   - `Authorization: Bearer fake.jwt.token`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:**
@@ -1256,7 +1259,7 @@
 - **Request Method & Endpoint:** `DELETE /api/users/me`
 - **Headers:**
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `404 Not Found` hoặc `405 Method Not Allowed`
 - **Expected Response Body / Schema:** HTML hoặc JSON thông báo route không hỗ trợ
@@ -1266,3 +1269,191 @@
       pm.expect(pm.response.code).to.be.oneOf([404, 405]);
   });
   ```
+
+---
+
+### NHÓM 5: TÌNH HUỐNG BIÊN NÂNG CAO & BÓC TÁCH MÃ NGUỒN ẨN (5 ADVANCED TEST CASES)
+
+> **Mục đích nhóm 5:** Khai thác các kẽ hở logic nằm sâu trong tầng triển khai mã nguồn Node.js/Express + SQLite của `server.js` mà các công cụ sinh test AI thông thường (Blackbox Prompting) rất dễ bỏ qua.
+
+---
+
+#### TC_FR04_ADV_01
+- **TC_ID:** `TC_FR04_ADV_01`
+- **Category:** Advanced Code Vulnerability (Destructive Partial Update - Silent Omitted Fields Wiping to NULL)
+- **Test Objective:** Kiểm tra hành vi cập nhật một phần (Partial Update): Gửi payload chỉ chứa trường `name` mà KHÔNG gửi `phone` và `shipping_address`, nhằm phát hiện lỗi backend tự động ghi đè dữ liệu cũ thành `NULL` trong SQLite *(Bắt Bug SUT: câu lệnh SQL tĩnh `UPDATE users SET name = ?, shipping_address = ?, phone = ?`)*
+- **Pre-condition:** User A đã có sẵn hồ sơ đầy đủ (`phone = "0912345678"`, `shipping_address = "123 Le Loi, Q1"`)
+- **Request Method & Endpoint:** `PUT /api/users/me` theo sau bởi `GET /api/users/me`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{user_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "name": "Only New Name"
+  }
+  ```
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema (GET):** `phone` và `shipping_address` ban đầu **BẮT BUỘC PHẢI ĐƯỢC GIỮ NGUYÊN**, không bị biến thành `null` hay chuỗi rỗng
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR04_ADV_01: Partial update must NOT silently wipe omitted fields to NULL", function () {
+      pm.response.to.have.status(200);
+      var user = pm.response.json();
+      pm.expect(user.name).to.eql("Only New Name");
+      pm.expect(user.phone).to.not.be.null;
+      pm.expect(user.shipping_address).to.not.be.null;
+      pm.expect(user.phone).to.eql("0912345678");
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các công cụ AI tạo test thông thường chỉ nhìn nhận API theo góc nhìn Blackbox RESTful tiêu chuẩn. Chúng mặc định giả định rằng một API `PUT` nếu chấp nhận payload khuyết trường thì hoặc sẽ từ chối 400, hoặc sẽ thông minh bảo toàn các trường không được gửi (tương tự như `PATCH`). AI thông thường thiếu khả năng đọc hiểu luồng mã nguồn backend tại dòng 119-122 trong `server.js` (`const { name, shipping_address, phone } = req.body; let params = [name, shipping_address, phone];`). Khi biến `phone` và `shipping_address` không được truyền trong JSON, JavaScript gán chúng là `undefined`, và thư viện SQLite driver sẽ âm thầm chuyển `undefined` thành `NULL`, dẫn đến việc vô tình **xóa sổ toàn bộ số điện thoại và địa chỉ giao hàng của khách hàng** mà không hề có bất kỳ cảnh báo nào.
+
+---
+
+#### TC_FR04_ADV_02
+- **TC_ID:** `TC_FR04_ADV_02`
+- **Category:** Advanced Code Vulnerability (Numeric Phone Type Coercion & Leading-Zero Loss in SQLite)
+- **Test Objective:** Kiểm tra lỗ hổng ép kiểu ngầm (Type Coercion): Client gửi số điện thoại dưới dạng số nguyên (`phone: 912345678` thay vì string `"0912345678"`) để phát hiện việc SQLite lưu dạng INTEGER làm mất chữ số 0 đầu tiên
+- **Pre-condition:** User đã đăng nhập, token hợp lệ
+- **Request Method & Endpoint:** `PUT /api/users/me` theo sau bởi `GET /api/users/me`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{user_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "name": "Numeric Phone User",
+    "shipping_address": "123 Street",
+    "phone": 912345678
+  }
+  ```
+- **Expected Status Code:** `400 Bad Request` (Do vi phạm kiểu dữ liệu String và thiếu số 0) hoặc nếu chấp nhận thì khi GET phải trả về chuỗi đầy đủ `"0912345678"`
+- **Expected Response Body / Schema:** Bị từ chối hoặc chuẩn hóa chuỗi
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR04_ADV_02: Number phone without leading zero is rejected or normalized", function () {
+      if (pm.response.code === 200) {
+          var user = pm.response.json();
+          pm.expect(typeof user.phone).to.eql("string");
+          pm.expect(user.phone.startsWith("0")).to.be.true;
+      } else {
+          pm.response.to.have.status(400);
+      }
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Hầu hết các prompt sinh test bằng AI chỉ tập trung vào phân vùng tương đương chuỗi (ví dụ: chuỗi chứa chữ cái, chuỗi 9 ký tự). AI thông thường không suy luận được sự tương tác giữa cơ chế *Dynamic Typing* của SQLite (Type Affinity) và tính năng tự động parse JSON của Express `express.json()`. Nếu người dùng gửi số `912345678` dạng Number, backend không có bộ Schema Validator (như Joi hay Zod) sẽ đẩy trực tiếp Number vào SQLite. SQLite nhận diện đây là số nguyên và lưu dạng INTEGER, vô tình làm mất hoàn toàn chữ số `'0'` ở đầu. Khi ứng dụng Mobile nhận lại dữ liệu, trường phone sẽ là số nguyên `912345678`, làm sụp đổ hoàn toàn biểu thức chính quy (Regex `^0[0-9]{9,10}$`) trên ứng dụng Mobile.
+
+---
+
+#### TC_FR04_ADV_03
+- **TC_ID:** `TC_FR04_ADV_03`
+- **Category:** Advanced Security Vulnerability (Internal Security State Leak via `SELECT *` in Profile GET)
+- **Test Objective:** Kiểm tra rò rỉ toàn bộ metadata an ninh nhạy cảm: Yêu cầu đặt lại mật khẩu qua `/api/forgot-password`, sau đó gọi `GET /api/users/me` để chứng minh `reset_token`, `login_attempts`, và `locked_until` bị rò rỉ cho client *(Bắt Bug SUT dòng 113: `SELECT * FROM users WHERE id = ?`)*
+- **Pre-condition:** User `user1@example.com` vừa gọi `POST /api/forgot-password`
+- **Request Method & Endpoint:** `GET /api/users/me`
+- **Headers:**
+  - `Authorization: Bearer {{user_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:** N/A
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:** Response **TUYỆT ĐỐI KHÔNG ĐƯỢC CHỨA** các trường `reset_token`, `password`, `login_attempts`, `locked_until`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR04_ADV_03: CRITICAL SEC-07 - Internal security metadata MUST NOT be exposed", function () {
+      pm.response.to.have.status(200);
+      var user = pm.response.json();
+      pm.expect(user).to.not.have.property("password");
+      pm.expect(user).to.not.have.property("reset_token");
+      pm.expect(user).to.not.have.property("login_attempts");
+      pm.expect(user).to.not.have.property("locked_until");
+  });
+  // GHI CHÚ AUDIT: SUT hiện tại chạy SELECT * FROM users nên trả về toàn bộ các cột nhạy cảm trên
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI thông thường khi được yêu cầu kiểm thử bảo mật SEC-07 (Sensitive Data Exposure) chỉ có thói quen kiểm tra xem trường `password` có bị lộ hay không. AI thiếu góc nhìn toàn cục về kiến trúc cơ sở dữ liệu (Database Schema). Trong file `database.js`, bảng `users` chứa rất nhiều trường an ninh nội bộ quan trọng như mã khôi phục mật khẩu (`reset_token`), số lần đăng nhập sai (`login_attempts`), và thời gian khóa tài khoản (`locked_until`). Do `server.js` sử dụng câu lệnh lười biếng `SELECT *`, toàn bộ trạng thái an ninh của tài khoản bị phơi bày. Một kẻ tấn công hoặc mã độc trên thiết bị có thể lợi dụng điều này để đọc `reset_token` ngay trong API Profile mà không cần phải truy cập hộp thư email của nạn nhân!
+
+---
+
+#### TC_FR04_ADV_04
+- **TC_ID:** `TC_FR04_ADV_04`
+- **Category:** Advanced Security Vulnerability (Full Privilege Escalation & Admin Action Exploitation Chain)
+- **Test Objective:** Thực thi chuỗi tấn công leo thang đặc quyền hoàn chỉnh (Full Attack Chain): User thường gửi `{"role": "admin"}` trong `PUT /api/users/me` ➔ Đăng nhập lại để nhận JWT Token mang quyền Admin ➔ Gọi API Quản trị viên `POST /api/admin/import-products` để chứng minh đã chiếm quyền quản trị tối cao
+- **Pre-condition:** User thường `test@eshop.com` ban đầu có `role = 'user'`
+- **Request Method & Endpoint:**
+  1. `PUT /api/users/me` với payload `{"name": "Attacker", "shipping_address": "HN", "phone": "0912345678", "role": "admin"}`
+  2. `POST /api/login` để lấy Token mới
+  3. `POST /api/admin/import-products` với Token mới
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{new_elevated_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body (Import Products):**
+  ```json
+  {
+    "products": [
+      {
+        "name": "Backdoor Admin Product",
+        "price": 1000,
+        "description": "Created via privilege escalation",
+        "imageUrl": "https://placehold.co/300",
+        "category_id": 1
+      }
+    ]
+  }
+  ```
+- **Expected Status Code:** Bước 1 phải từ chối `403` hoặc bỏ qua role; Bước 3 **BẮT BUỘC PHẢI BỊ CHẶN VỚI 403 FORBIDDEN** nếu phân quyền đúng
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR04_ADV_04: Privilege Escalation chain is blocked; Admin actions remain protected", function () {
+      // Trong hệ thống an toàn, người dùng thường không thể thực thi API import sản phẩm của Admin
+      pm.expect(pm.response.code).to.be.oneOf([401, 403]);
+  });
+  // GHI CHÚ AUDIT: SUT có lỗ hổng cho phép khai thác toàn bộ chuỗi này thành công (Mass Assignment)
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các mô hình AI thông thường sinh test theo tư duy "cô lập từng Endpoint" (Isolated Endpoint Testing). Khi kiểm tra Mass Assignment, AI chỉ dừng lại ở việc gửi `role: 'admin'` và kiểm tra response của endpoint đó. Chúng không có khả năng tự động liên kết thành một chuỗi kịch bản khai thác đầu cuối (Multi-request Attack Exploitation Chain) để chứng minh tác động thực tế của lỗ hổng (Business Impact). Việc kết nối từ việc đổi role ➔ re-authenticate lấy claim JWT mới ➔ gọi một API Admin nhạy cảm khác như Import CSV chính là minh chứng thuyết phục nhất về mức độ nguy hiểm của `BUG_FR04_01`.
+
+---
+
+#### TC_FR04_ADV_05
+- **TC_ID:** `TC_FR04_ADV_05`
+- **Category:** Advanced Security Vulnerability (Identity Protection against Hybrid Spoofing Payload)
+- **Test Objective:** Kiểm tra tính bất biến của định danh: Kẻ tấn công gửi payload lai ghép chứa cùng lúc nhiều trường định danh giả mạo (`id: 999`, `user_id: 888`, `email: "victim@eshop.com"`, `is_admin: true`) nhằm thử nghiệm khả năng ghi đè tài khoản khác trong cùng 1 câu lệnh UPDATE
+- **Pre-condition:** User đang đăng nhập với tài khoản `id = 1`, `email = "user1@example.com"`
+- **Request Method & Endpoint:** `PUT /api/users/me` theo sau bởi `GET /api/users/me`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{user_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "id": 999,
+    "user_id": 888,
+    "email": "victim_hacked@eshop.com",
+    "name": "Attempted Hijacker",
+    "shipping_address": "999 Hackers Rd",
+    "phone": "0988888888",
+    "is_admin": true
+  }
+  ```
+- **Expected Status Code:** `200 OK` (hoặc `400 Bad Request`)
+- **Expected Response Body / Schema (GET):** Định danh `id` vẫn là `1`, `email` vẫn là `"user1@example.com"`, `role` vẫn là `"user"`. Chỉ có `name`, `shipping_address`, `phone` hợp lệ của chính user đó được cập nhật
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR04_ADV_05: Hybrid spoofing payload cannot alter identity or compromise foreign accounts", function () {
+      pm.response.to.have.status(200);
+      var user = pm.response.json();
+      pm.expect(user.id).to.eql(1);
+      pm.expect(user.email).to.eql("user1@example.com");
+      pm.expect(user.role).to.eql("user");
+      pm.expect(user.name).to.eql("Attempted Hijacker");
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI khi sinh test case thường phân rã các thuộc tính để kiểm tra đơn lẻ (1 test case cho `id`, 1 test case cho `email`, 1 test case cho `is_admin`). Trong thực tế tấn công bảo mật (Penetration Testing), hacker luôn sử dụng các kỹ thuật tấn công kết hợp (Hybrid / Composite Payload) nhằm kiểm tra xem ORM hoặc câu lệnh SQL động của backend có bị lỗi phân tích cú pháp khi gặp nhiều trường lạ cùng lúc hay không. Nếu backend sử dụng các pattern nguy hiểm như `Object.assign()` hay câu lệnh `UPDATE` lặp qua `Object.keys(req.body)`, payload này sẽ ngay lập tức ghi đè toàn bộ thông tin định danh và phá vỡ cấu trúc CSDL.
+

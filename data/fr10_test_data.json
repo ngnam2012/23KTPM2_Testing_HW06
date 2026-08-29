@@ -2,135 +2,616 @@
   {
     "tc_id": "TC_FR10_STATE_01",
     "category": "State Transition (Valid - Pending to Canceled)",
-    "description": "Cancel pending order successfully",
+    "objective": "Kiểm tra người dùng hủy đơn hàng thành công khi đơn hàng đang ở trạng thái",
     "method": "PUT",
     "endpoint": "/api/orders/1/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 200,
-    "expected_message": "Order canceled successfully"
+    "body": "{}",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR10_STATE_02",
-    "category": "State Transition (State Verification - GET)",
-    "description": "Verify order status updated to canceled in DB",
+    "category": "State Transition (State Verification - GET after Cancel Pending)",
+    "objective": "Gọi",
     "method": "GET",
     "endpoint": "/api/orders/1",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 200,
-    "expected_order_status": "canceled"
+    "body": "N/A",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR10_STATE_03",
     "category": "State Transition (Valid - Confirmed to Canceled)",
-    "description": "Cancel confirmed order successfully",
+    "objective": "Kiểm tra người dùng hủy đơn hàng thành công khi đơn hàng đang ở trạng thái",
     "method": "PUT",
     "endpoint": "/api/orders/2/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 200,
-    "expected_message": "Order canceled successfully"
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_04",
+    "category": "State Transition (State Verification - GET after Cancel Confirmed)",
+    "objective": "Xác thực đơn hàng",
+    "method": "GET",
+    "endpoint": "/api/orders/2",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_05",
+    "category": "State Transition (Valid - Single Item Order Checkout & Cancel)",
+    "objective": "Kiểm tra tạo đơn hàng 1 sản phẩm qua",
+    "method": "PUT",
+    "endpoint": "/api/orders/{{new_order_id}}/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_06",
+    "category": "State Transition (Valid - Multi Item Order Checkout & Cancel)",
+    "objective": "Kiểm tra hủy đơn hàng chứa nhiều mặt hàng (multi-product items)",
+    "method": "PUT",
+    "endpoint": "/api/orders/{{multi_item_order_id}}/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_07",
+    "category": "State Transition (Valid - Order with Coupon Applied)",
+    "objective": "Kiểm tra hủy đơn hàng đã được áp dụng mã giảm giá",
+    "method": "PUT",
+    "endpoint": "/api/orders/{{coupon_order_id}}/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_08",
+    "category": "State Transition (Valid - Immediate Cancellation at T0)",
+    "objective": "Kiểm tra hủy đơn hàng ngay tức thì sau khi bấm đặt hàng (T0)",
+    "method": "PUT",
+    "endpoint": "/api/orders/{{just_created_id}}/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_09",
+    "category": "State Transition (List Synchronization Verification)",
+    "objective": "Kiểm tra danh sách đơn hàng cá nhân",
+    "method": "GET",
+    "endpoint": "/api/orders/my-orders",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_STATE_10",
+    "category": "State Transition (Sequential Multi-Order Cancellation)",
+    "objective": "Kiểm tra hủy liên tiếp nhiều đơn hàng",
+    "method": "PUT",
+    "endpoint": "/api/orders/11/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_ADV_01",
+    "category": "State Machine Bug Hunter (Illegal Transition from",
+    "objective": "Kiểm tra người dùng thường KHÔNG ĐƯỢC PHÉP hủy đơn hàng khi trạng thái đang là",
+    "method": "PUT",
+    "endpoint": "/api/orders/3/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_ADV_05",
+    "category": "Financial & Address Data Integrity (Post-Cancellation Financial Immutability)",
+    "objective": "Xác thực tính bất biến của dữ liệu tài chính và giao vận: Sau khi đơn hàng chuyển sang",
+    "method": "GET",
+    "endpoint": "/api/orders/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR10_INV_01",
     "category": "State Machine Bug Hunter (Invalid - Shipping to Canceled)",
-    "description": "Reject cancellation of order in shipping status",
+    "objective": "Kiểm tra người dùng thường KHÔNG ĐƯỢC PHÉP hủy đơn hàng khi trạng thái đang là",
     "method": "PUT",
     "endpoint": "/api/orders/3/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 400,
-    "bug_note": "SUT currently allows canceling shipping orders (returns 200 OK)"
+    "body": "{}",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR10_INV_02",
-    "category": "State Machine (Invalid - Delivered to Canceled)",
-    "description": "Reject cancellation of delivered order",
+    "category": "State Machine (Invalid - Delivered to Canceled / Final State)",
+    "objective": "Kiểm tra hệ thống từ chối khi cố gắng hủy đơn hàng đã giao thành công (",
     "method": "PUT",
     "endpoint": "/api/orders/4/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 400
+    "body": "{}",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR10_INV_03",
-    "category": "State Machine (Invalid - Canceled to Canceled)",
-    "description": "Reject cancellation of already canceled order",
+    "category": "State Machine (Invalid - Canceled to Canceled / Terminal State)",
+    "objective": "Kiểm tra hệ thống từ chối khi cố gắng hủy đơn hàng đã ở trạng thái",
     "method": "PUT",
     "endpoint": "/api/orders/1/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 400
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_INV_04",
+    "category": "State Machine (Idempotency & Double Cancellation on Pending)",
+    "objective": "Gửi 2 request hủy liên tiếp trên cùng 1 đơn hàng",
+    "method": "PUT",
+    "endpoint": "/api/orders/5/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_INV_05",
+    "category": "State Machine (Idempotency & Double Cancellation on Confirmed)",
+    "objective": "Gửi 2 request hủy liên tiếp trên đơn hàng",
+    "method": "PUT",
+    "endpoint": "/api/orders/6/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_INV_06",
+    "category": "State Machine (State Immutability Verification on Delivered)",
+    "objective": "Xác thực trạng thái của đơn hàng",
+    "method": "GET",
+    "endpoint": "/api/orders/4",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_INV_07",
+    "category": "State Machine (Payload Tampering - Status Override Attempt)",
+    "objective": "Thử gửi body",
+    "method": "PUT",
+    "endpoint": "/api/orders/7/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_INV_08",
+    "category": "State Machine (Invalid - Return / Refunded State Transition)",
+    "objective": "Thử hủy đơn hàng đã hoàn tất đổi trả (",
+    "method": "PUT",
+    "endpoint": "/api/orders/8/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_INV_09",
+    "category": "State Machine (Status Verification after Tampering Attempt)",
+    "objective": "Gọi",
+    "method": "GET",
+    "endpoint": "/api/orders/7",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_INV_10",
+    "category": "State Machine (Admin Changed Status to Shipping - User Cancel Attempt)",
+    "objective": "Đơn hàng ban đầu",
+    "method": "PUT",
+    "endpoint": "/api/orders/9/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_INV_11",
+    "category": "State Machine (State Integrity After Failed Transition)",
+    "objective": "Đảm bảo khi lệnh hủy thất bại, tổng tiền",
+    "method": "GET",
+    "endpoint": "/api/orders/4",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR10_SEC_01",
-    "category": "Security (SEC-01 - BOLA/IDOR on Cancel)",
-    "description": "Prevent User A from canceling User B's order",
+    "category": "Security (SEC-01 - BOLA/IDOR on Cancel Endpoint)",
+    "objective": "Kiểm tra lỗ hổng BOLA: User A (",
     "method": "PUT",
     "endpoint": "/api/orders/20/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 404
+    "body": "{}",
+    "expected_status": "404 Not Found"
   },
   {
     "tc_id": "TC_FR10_SEC_02",
-    "category": "Security Bug Hunter (SEC-01 - BOLA/IDOR on GET)",
-    "description": "Prevent User A from viewing User B's order details",
+    "category": "Security Bug Hunter (SEC-01 - BOLA/IDOR on GET Order Detail)",
+    "objective": "Kiểm tra lỗ hổng BOLA/IDOR: User A gọi",
     "method": "GET",
     "endpoint": "/api/orders/20",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 403,
-    "bug_note": "SUT GET /api/orders/:id lacks authentication and ownership verification"
+    "body": "N/A",
+    "expected_status": "403 Forbidden"
   },
   {
     "tc_id": "TC_FR10_SEC_03",
-    "category": "Security (SEC-02 - Missing Auth on Cancel)",
-    "description": "Reject cancellation without token",
+    "category": "Security (SEC-02 - Missing Authorization on Cancel)",
+    "objective": "Kiểm tra từ chối yêu cầu hủy đơn khi không gửi kèm Header",
     "method": "PUT",
     "endpoint": "/api/orders/1/cancel",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "expected_status": 401
+    "body": "{}",
+    "expected_status": "401 Unauthorized"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_04",
+    "category": "Security Bug Hunter (SEC-02 - Missing Authorization on GET Order)",
+    "objective": "Kiểm tra từ chối truy cập chi tiết đơn hàng khi khách vãng lai không đăng nhập",
+    "method": "GET",
+    "endpoint": "/api/orders/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "401 Unauthorized"
   },
   {
     "tc_id": "TC_FR10_SEC_05",
-    "category": "Security (SEC-02 - Invalid Token on Cancel)",
-    "description": "Reject cancellation with forged JWT token",
+    "category": "Security (SEC-02 - Forged / Invalid JWT Token on Cancel)",
+    "objective": "Kiểm tra từ chối truy cập khi gửi Token JWT giả mạo",
     "method": "PUT",
     "endpoint": "/api/orders/1/cancel",
     "headers": {
-      "Authorization": "Bearer fake.forged.jwt.token",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer invalid_token_12345"
     },
-    "expected_status": 403
+    "body": "{}",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_06",
+    "category": "Security (SEC-02 - Expired JWT Token)",
+    "objective": "Kiểm tra từ chối khi Bearer Token đã hết hạn",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_07",
+    "category": "Security (SEC-06 - SQL Injection in Cancel URL Path Param)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong path parameter",
+    "method": "PUT",
+    "endpoint": "/api/orders/1'",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_08",
+    "category": "Security (SEC-06 - SQL Injection in GET Order Detail URL)",
+    "objective": "Kiểm tra khả năng chống SQL Injection Union-based trong",
+    "method": "GET",
+    "endpoint": "/api/orders/1'",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_09",
+    "category": "Security (HTTP Parameter Pollution - HPP)",
+    "objective": "Thử truyền query parameter trùng lặp",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel?id=2",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_10",
+    "category": "Security (Privilege Impersonation - Fake Admin Header)",
+    "objective": "User thường gửi kèm Header",
+    "method": "PUT",
+    "endpoint": "/api/orders/3/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR10_SEC_11",
+    "category": "Security & Compliance (Mandatory Header X-Student-Id Enforcement)",
+    "objective": "Xác thực Header",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_ADV_02",
+    "category": "Security Bug Hunter (Unauthenticated Cross-Tenant BOLA/IDOR on",
+    "objective": "Kiểm tra truy cập trái phép chi tiết đơn hàng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User A sử dụng Token của mình để đọc trộm đơn hàng",
+    "method": "GET",
+    "endpoint": "/api/orders/2",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "401 Unauthorized"
+  },
+  {
+    "tc_id": "TC_FR10_DOM_01",
+    "category": "Domain & Boundary (Boundary ID = 0)",
+    "objective": "Phân tích giá trị biên: Kiểm tra hủy đơn hàng với",
+    "method": "PUT",
+    "endpoint": "/api/orders/0/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_DOM_02",
+    "category": "Domain & Boundary (Negative ID = -1)",
+    "objective": "Phân tích giá trị biên: Kiểm tra hủy đơn hàng với ID âm (",
+    "method": "PUT",
+    "endpoint": "/api/orders/-1/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_DOM_03",
+    "category": "Domain (Non-numeric String ID = \"abc\")",
+    "objective": "Kiểm tra xử lý khi truyền ID dạng chuỗi chữ cái không phải số",
+    "method": "PUT",
+    "endpoint": "/api/orders/abc/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_DOM_04",
+    "category": "Domain (Floating Point ID = 1.5)",
+    "objective": "Kiểm tra xử lý khi truyền ID là số thực dấu phẩy động",
+    "method": "PUT",
+    "endpoint": "/api/orders/1.5/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
   },
   {
     "tc_id": "TC_FR10_DOM_05",
-    "category": "Domain (Non-existent ID = 999999)",
-    "description": "Return 404 on canceling non-existent order",
+    "category": "Domain (Non-existent Large ID = 999999)",
+    "objective": "Kiểm tra hủy đơn hàng với ID không tồn tại trong hệ thống (",
     "method": "PUT",
     "endpoint": "/api/orders/999999/cancel",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 404
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_SCHEMA_01",
+    "category": "Schema (PUT /api/orders/:id/cancel 200 OK JSON Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi thành công khi hủy đơn",
+    "method": "PUT",
+    "endpoint": "/api/orders/1/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_SCHEMA_02",
+    "category": "Schema (GET /api/orders/:id 200 OK JSON Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi chi tiết đơn hàng",
+    "method": "GET",
+    "endpoint": "/api/orders/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR10_SCHEMA_03",
+    "category": "Schema (400 Bad Request & 404 Not Found JSON Error Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema chuẩn của các phản hồi lỗi",
+    "method": "PUT",
+    "endpoint": "/api/orders/999999/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR10_ADV_04",
+    "category": "Information Disclosure (Order Existence Enumeration via Asymmetric Status Responses)",
+    "objective": "Phát hiện kỹ thuật dò quét ID đơn hàng (Blind ID Enumeration): So sánh phản hồi giữa",
+    "method": "GET",
+    "endpoint": "1.",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "Cả hai endpoint **PHẢI NHẤT QUÁN TRẢ VỀ"
+  },
+  {
+    "tc_id": "TC_FR10_ADV_03",
+    "category": "Concurrency & Robustness (Asynchronous Double-Cancellation TOCTOU Race Condition)",
+    "objective": "Kiểm tra tính bất biến trạng thái khi xảy ra tranh chấp đồng thời: Gửi 2 request hủy đơn liên tiếp cực nhanh trên cùng một đơn hàng",
+    "method": "PUT",
+    "endpoint": "/api/orders/15/cancel",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{}",
+    "expected_status": "Lần 1:"
   }
 ]

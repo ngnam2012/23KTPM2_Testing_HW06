@@ -1,146 +1,605 @@
 [
   {
     "tc_id": "TC_FR15_BAC_01",
-    "category": "Broken Access Control (SEC-03 - Unauthenticated POST)",
-    "description": "Reject unauthenticated product creation",
+    "category": "Broken Access Control Bug Hunter (SEC-03 - Unauthenticated POST Product)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi không có Header",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "name": "Tai nghe Bluetooth Sony",
-      "price": 2500000,
-      "description": "Chống ồn chủ động",
-      "imageUrl": "https://example.com/sony.jpg",
-      "category_id": 1
+    "body": "json",
+    "expected_status": "401 Unauthorized"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_02",
+    "category": "Broken Access Control Bug Hunter (SEC-03 - Unauthenticated PUT Product)",
+    "objective": "Kiểm tra từ chối cập nhật sản phẩm khi không có token",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "expected_status": 401,
-    "bug_note": "SUT currently allows unauthenticated POST /api/products (missing authenticateToken)"
+    "body": "json",
+    "expected_status": "401 Unauthorized"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_03",
+    "category": "Broken Access Control Bug Hunter (SEC-03 - Unauthenticated DELETE Product)",
+    "objective": "Kiểm tra từ chối xóa sản phẩm khi không có token",
+    "method": "DELETE",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "401 Unauthorized"
   },
   {
     "tc_id": "TC_FR15_BAC_04",
-    "category": "Broken Function Level Authorization (SEC-05 - Regular User POST)",
-    "description": "Reject product creation by regular user",
+    "category": "Broken Function Level Authorization (SEC-05 / BFLA - Regular User POST)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi User thường (",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "body": {
-      "name": "Unauthorized Item",
-      "price": 500000,
-      "category_id": 1
+    "body": "json",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_05",
+    "category": "Broken Function Level Authorization (SEC-05 / BFLA - Regular User PUT)",
+    "objective": "Kiểm tra từ chối cập nhật sản phẩm khi User thường gọi API",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
     },
-    "expected_status": 403
+    "body": "json",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_06",
+    "category": "Broken Function Level Authorization (SEC-05 / BFLA - Regular User DELETE)",
+    "objective": "Kiểm tra từ chối xóa sản phẩm khi User thường gọi API",
+    "method": "DELETE",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "403 Forbidden"
   },
   {
     "tc_id": "TC_FR15_BAC_07",
-    "category": "Access Control (Admin POST Product)",
-    "description": "Admin creates product successfully",
+    "category": "Access Control (Valid Admin - POST Product)",
+    "objective": "Kiểm tra tài khoản Quản trị viên (",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "body": {
-      "name": "Tai nghe Bluetooth Sony WH-1000XM5",
-      "price": 8490000,
-      "description": "Tai nghe chống ồn đỉnh cao",
-      "imageUrl": "https://placehold.co/300x300/png?text=Sony+XM5",
-      "category_id": 3
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_08",
+    "category": "Access Control (Valid Admin - PUT Product)",
+    "objective": "Kiểm tra tài khoản Quản trị viên cập nhật thông tin sản phẩm thành công",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "expected_status": 200,
-    "expected_message": "Product created"
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_09",
+    "category": "Access Control (Valid Admin - DELETE Product)",
+    "objective": "Kiểm tra tài khoản Quản trị viên xóa sản phẩm thành công",
+    "method": "DELETE",
+    "endpoint": "/api/products/6",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_10",
+    "category": "Access Control (Invalid JWT Token on POST)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi Bearer Token bị giả mạo",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{\"name\": \"Fake Item\", \"price\": 100000, \"category_id\": 1}",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_11",
+    "category": "Access Control (Invalid JWT Token on PUT)",
+    "objective": "Kiểm tra từ chối sửa sản phẩm khi Bearer Token bị giả mạo",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{\"name\": \"Fake Item\", \"price\": 100000, \"category_id\": 1}",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_12",
+    "category": "Access Control (Invalid JWT Token on DELETE)",
+    "objective": "Kiểm tra từ chối xóa sản phẩm khi Bearer Token bị giả mạo",
+    "method": "DELETE",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "N/A",
+    "expected_status": "403 Forbidden"
+  },
+  {
+    "tc_id": "TC_FR15_BAC_13",
+    "category": "Access Control (Privilege Escalation via Custom Admin Headers)",
+    "objective": "User thường gửi kèm các Header đặc quyền giả lập (",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{user_token_A}}"
+    },
+    "body": "{\"name\": \"Hacked Item\", \"price\": 100000, \"category_id\": 1}",
+    "expected_status": "403 Forbidden"
   },
   {
     "tc_id": "TC_FR15_DOM_01",
-    "category": "Domain (BVA - Zero Price)",
-    "description": "Reject product creation with price = 0",
+    "category": "Domain (BVA - Zero Price:",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi đơn giá bằng 0",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "body": {
-      "name": "Zero Price Item",
-      "price": 0,
-      "category_id": 1
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR15_DOM_02",
-    "category": "Domain (BVA - Negative Price)",
-    "description": "Reject product creation with price = -10000",
+    "category": "Domain (BVA - Negative Price:",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi đơn giá âm",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "body": {
-      "name": "Negative Price Item",
-      "price": -10000,
-      "category_id": 1
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_03",
+    "category": "Domain (EP - Price Non-numeric String)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi giá tiền là chuỗi chữ cái không phải số",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_04",
+    "category": "Domain (BVA - Minimum Positive Price:",
+    "objective": "Kiểm tra tạo sản phẩm với giá tối thiểu hợp lệ",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_05",
+    "category": "Domain (BVA - Extremely Large Price:",
+    "objective": "Kiểm tra xử lý an toàn khi giá tiền cực lớn mà không gây tràn số CSDL",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR15_DOM_06",
-    "category": "Domain (EP - Empty Name)",
-    "description": "Reject product creation with empty name string",
+    "category": "Domain (EP - Empty Name String",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi tên sản phẩm là chuỗi rỗng",
     "method": "POST",
     "endpoint": "/api/products",
     "headers": {
+      "X-Student-Id": "{{studentId}}",
       "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "body": {
-      "name": "",
-      "price": 500000,
-      "category_id": 1
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_07",
+    "category": "Domain (EP - Whitespace Only Name",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi tên chỉ chứa khoảng trắng",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
     },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_08",
+    "category": "Domain (BVA - Name Min Length 1 Char)",
+    "objective": "Kiểm tra tạo sản phẩm với độ dài tên tối thiểu 1 ký tự (",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_09",
+    "category": "Domain (BVA - Name Max Length 255 Chars)",
+    "objective": "Kiểm tra tạo sản phẩm với độ dài tên tối đa 255 ký tự",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_10",
+    "category": "Domain (BVA - Name Exceeding Max Length 256 Chars)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi tên vượt quá 255 ký tự (256 ký tự)",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_11",
+    "category": "Domain (Security - Stored XSS Injection in Product Name)",
+    "objective": "Kiểm tra khả năng xử lý an toàn khi chèn script XSS trong tên sản phẩm",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_12",
+    "category": "Domain (Foreign Key Constraint - Non-existent Category ID",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_DOM_13",
+    "category": "Domain (Foreign Key Constraint - Negative Category ID",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_ADV_04",
+    "category": "Domain Constraint Enforcement (Negative and Zero Price Creation Bypass)",
+    "objective": "Kiểm tra từ chối tạo sản phẩm khi đơn giá là số âm (",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR15_TYPE_01",
-    "category": "Type Coercion (Even ID Price String Coercion)",
-    "description": "Verify GET /api/products/2 returns price as number not string",
+    "category": "Type Coercion Bug Hunter (Even ID Price String Coercion)",
+    "objective": "Kiểm tra",
     "method": "GET",
     "endpoint": "/api/products/2",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}"
     },
-    "expected_status": 200,
-    "bug_note": "SUT coerces price to string on even product IDs"
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_TYPE_02",
+    "category": "Type Coercion Consistency (Odd ID vs Even ID Price Comparison)",
+    "objective": "So sánh kiểu dữ liệu của",
+    "method": "GET",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_02",
+    "category": "Data Integrity (Product Isolation Check)",
+    "objective": "Cập nhật sản phẩm A không làm thay đổi giá và tên của sản phẩm B",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{\"name\": \"iPhone Modified\", \"price\": 99999, \"category_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_01",
+    "category": "Schema Validation (POST /api/products 200/201 Response Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi khi tạo sản phẩm thành công",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{\"name\": \"Item Schema\", \"price\": 100000, \"category_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_02",
+    "category": "Schema Validation (GET /api/products/:id Response Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema đầy đủ của API lấy chi tiết sản phẩm",
+    "method": "GET",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_03",
+    "category": "Schema Validation (PUT /api/products/:id Response Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi khi cập nhật sản phẩm",
+    "method": "PUT",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{\"name\": \"Updated Name\", \"price\": 200000, \"category_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_04",
+    "category": "Schema Validation (DELETE /api/products/:id Response Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi khi xóa sản phẩm",
+    "method": "DELETE",
+    "endpoint": "/api/products/5",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR15_SCHEMA_05",
-    "category": "Schema (Non-existent Product 404 Status)",
-    "description": "Return 404 on non-existent product ID",
+    "category": "Schema Bug Hunter (Non-existent Product GET Status 404)",
+    "objective": "Kiểm tra gọi sản phẩm không tồn tại",
     "method": "GET",
     "endpoint": "/api/products/999999",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}"
     },
-    "expected_status": 404,
-    "bug_note": "SUT returns 200 OK with empty object {} instead of 404 Not Found"
+    "body": "N/A",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR15_SCHEMA_06",
+    "category": "Schema Validation (400 Bad Request Error Schema)",
+    "objective": "Kiểm tra schema trả về khi gửi payload thiếu các trường bắt buộc",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_01",
+    "category": "CRUD Lifecycle (Full End-to-End Lifecycle Verification)",
+    "objective": "Thực thi trọn vẹn luồng: Tạo mới ➔ Lấy chi tiết ➔ Cập nhật ➔ Lấy xác thực ➔ Xóa ➔ Lấy kiểm tra 404",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{}",
+    "expected_status": "Tất cả bước thành công theo đúng thứ tự"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_03",
+    "category": "CRUD (Update Non-existent Product ID",
+    "objective": "Kiểm tra cập nhật sản phẩm không tồn tại",
+    "method": "PUT",
+    "endpoint": "/api/products/999999",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "{\"name\": \"No Item\", \"price\": 1000, \"category_id\": 1}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_04",
+    "category": "CRUD (Delete Non-existent Product ID",
+    "objective": "Kiểm tra xóa sản phẩm không tồn tại",
+    "method": "DELETE",
+    "endpoint": "/api/products/999999",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "N/A",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR15_ADV_03",
+    "category": "Schema Bug Hunter (Silent 200 OK False-Positive with Empty Object on Non-Existent Entity)",
+    "objective": "Kiểm tra mã trạng thái HTTP chuẩn RESTful khi truy vấn sản phẩm không tồn tại",
+    "method": "GET",
+    "endpoint": "/api/products/999999",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "404 Not Found"
   },
   {
     "tc_id": "TC_FR15_CRUD_05",
-    "category": "Security (SQLi in Product Search)",
-    "description": "Search product with SQL injection payload safely",
+    "category": "Security Bug Hunter (SQL Injection in Search Query String)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong API tìm kiếm sản phẩm *(Bắt Bug SUT dòng 144: string interpolation",
     "method": "GET",
-    "endpoint": "/api/products?search=' OR '1'='1",
+    "endpoint": "/api/products?search='",
     "headers": {
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}"
     },
-    "expected_status": 200,
-    "bug_note": "SUT search endpoint has SQLi vulnerability returning HTML database error"
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_CRUD_06",
+    "category": "Security (SQL Injection in Product ID Path Param)",
+    "objective": "Kiểm tra chống SQL Injection khi xóa sản phẩm qua path parameter",
+    "method": "DELETE",
+    "endpoint": "/api/products/1",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Authorization": "Bearer {{admin_token}}"
+    },
+    "body": "N/A",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR15_ADV_05",
+    "category": "Security Bug Hunter (SQL Injection in Search Query Causing Unhandled HTML 500 Leak)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong tham số tìm kiếm: Gửi chuỗi inject",
+    "method": "GET",
+    "endpoint": "/api/products?search='",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR15_ADV_01",
+    "category": "Broken Function Level Authorization (Unauthenticated Product Mutation Bug - SEC-03/SEC-05)",
+    "objective": "Kiểm tra lỗ hổng phân quyền nghiêm trọng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User thường (",
+    "method": "POST",
+    "endpoint": "/api/products",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "401 Unauthorized"
+  },
+  {
+    "tc_id": "TC_FR15_ADV_02",
+    "category": "Type Coercion Bug Hunter (Modulo-Based Parity String Coercion on Even IDs)",
+    "objective": "Kiểm tra tính toàn vẹn kiểu dữ liệu: Gọi",
+    "method": "GET",
+    "endpoint": "/api/products/2",
+    "headers": {
+      "X-Student-Id": "{{studentId}}"
+    },
+    "body": "N/A",
+    "expected_status": "200 OK"
   }
 ]

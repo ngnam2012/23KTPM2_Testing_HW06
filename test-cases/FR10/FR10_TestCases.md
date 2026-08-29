@@ -1,11 +1,11 @@
-# FR-10: Test Cases (Pool B - Order State Machine & Cancellation)
+﻿# FR-10: Test Cases (Pool B - Order State Machine & Cancellation)
 
 > **Mã chức năng:** FR-10 | **Pool:** B (Cart & Orders)  
 > **Chức năng:** Máy Trạng thái & Hủy Đơn hàng (Order State Machine & Cancellation)  
 > **Endpoints:** `PUT /api/orders/:id/cancel` & `GET /api/orders/:id`  
-> **MSSV (X-Student-Id):** `25127001`  
+> **MSSV (X-Student-Id):** `23127092`  
 > **Tiêu chuẩn áp dụng:** ISTQB (State Transition Testing, EP, BVA), OWASP API Security Top 10 (SEC-01 BOLA/IDOR, SEC-02 Broken Auth, SEC-06 SQLi), JSON Schema Validation Draft-07.  
-> **Tổng số test cases:** 40 Test Cases (Vượt chuẩn ≥ 35 TCs)
+> **Tổng số test cases:** 45 Test Cases (Gồm 40 TCs chuẩn + 5 TCs nâng cao chuyên sâu bóc tách mã nguồn)
 
 ---
 
@@ -17,7 +17,8 @@
 | **Nhóm 2** | **State Machine Invalid Transitions** | Chuyển trạng thái bất hợp lệ (`shipping`, `delivered`, `canceled` ➔ `canceled`, Idempotency) | 11 | `TC_FR10_INV_01` → `TC_FR10_INV_11` |
 | **Nhóm 3** | **Security & BOLA / IDOR** | OWASP Top 10 (`SEC-01` BOLA/IDOR, `SEC-02` Broken Auth, `SEC-06` SQLi, Token Forgery) | 11 | `TC_FR10_SEC_01` → `TC_FR10_SEC_11` |
 | **Nhóm 4** | **Domain, Boundary & Schema** | Phân tích giá trị biên tham số (`id` âm, 0, chuỗi, 999999) & JSON Schema Validation | 8 | `TC_FR10_DOM_01` → `TC_FR10_DOM_05`, `TC_FR10_SCHEMA_01` → `03` |
-| **TỔNG** | | | **40** | |
+| **Nhóm 5** | **Hidden Logic & Race Conditions** | Bóc tách mã nguồn Backend (`server.js`), BOLA unauthenticated GET, TOCTOU Race Condition | 5 | `TC_FR10_ADV_01` → `TC_FR10_ADV_05` |
+| **TỔNG** | | | **45** | |
 
 ---
 
@@ -34,7 +35,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:**
@@ -64,7 +65,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/1`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** Payload đơn hàng có `status === "canceled"`
@@ -88,7 +89,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -110,7 +111,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/2`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `status === "canceled"`
@@ -133,7 +134,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -154,7 +155,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/{{multi_item_order_id}}/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -175,7 +176,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/{{coupon_order_id}}/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -196,7 +197,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/{{just_created_id}}/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -217,7 +218,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/my-orders`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** Mảng đơn hàng chứa order với `id === 1` và `status === "canceled"`
@@ -242,7 +243,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/11/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
@@ -266,7 +267,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:**
@@ -296,7 +297,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/4/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -318,7 +319,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -340,7 +341,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/5/cancel` (Lần 2)
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -361,7 +362,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/6/cancel` (Lần 2)
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -382,7 +383,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/4`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `status === "delivered"`
@@ -405,7 +406,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -431,7 +432,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/8/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -452,7 +453,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/7`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `status === "canceled"` (không phải "delivered")
@@ -475,7 +476,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/9/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}`
@@ -496,7 +497,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/4`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `total_amount` và `shipping_address` giữ nguyên giá trị ban đầu
@@ -523,7 +524,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Order not found"}` hoặc `{"error": "Forbidden"}`
@@ -547,7 +548,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/20`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `403 Forbidden` hoặc `404 Not Found`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}` hoặc `{"error": "Order not found"}`
@@ -569,7 +570,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `401 Unauthorized`
 - **Expected Response Body / Schema:** `{"error": "Unauthorized"}`
@@ -590,7 +591,7 @@
 - **Pre-condition:** Không có token
 - **Request Method & Endpoint:** `GET /api/orders/1`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `401 Unauthorized`
 - **Expected Response Body / Schema:** `{"error": "Unauthorized"}`
@@ -612,7 +613,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Authorization: Bearer fake.forged.jwt.token`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -634,7 +635,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{expired_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `403 Forbidden` hoặc `401 Unauthorized`
 - **Expected Response Body / Schema:** Thông báo token không hợp lệ hoặc hết hạn
@@ -655,7 +656,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1' OR '1'='1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** Xử lý an toàn dạng Parameterized Query, KHÔNG gây lỗi SQL syntax 500
@@ -677,7 +678,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/1' UNION SELECT 1,2,3,4,5,6,7 --`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** Không crash hệ thống với 500
@@ -698,14 +699,15 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel?id=2`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
-- **Expected Status Code:** `200 OK` (áp dụng cho ID trên path)
-- **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}`
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:** `{"message": "Order canceled successfully"}` (Tham số trên path `/1/` có độ ưu tiên cao nhất, query pollution bị bỏ qua)
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Path param takes precedence over query pollution", function () {
-      pm.expect(pm.response.code).to.be.oneOf([200, 400]);
+  pm.test("TC_FR10_SEC_09: Path param takes strict precedence over query pollution", function () {
+      pm.response.to.have.status(200);
+      pm.expect(pm.response.json().message).to.eql("Order canceled successfully");
   });
   ```
 
@@ -721,7 +723,7 @@
   - `Authorization: Bearer {{user_token_A}}`
   - `X-Role: admin`
   - `X-Is-Admin: true`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** Header giả mạo bị bỏ qua, quyền hạn dựa hoàn toàn vào JWT payload
@@ -737,19 +739,19 @@
 #### TC_FR10_SEC_11
 - **TC_ID:** `TC_FR10_SEC_11`
 - **Category:** Security & Compliance (Mandatory Header X-Student-Id Enforcement)
-- **Test Objective:** Xác thực Header `X-Student-Id: 25127001` được gửi đầy đủ và log trên server
+- **Test Objective:** Xác thực Header `X-Student-Id: 23127092` được gửi đầy đủ và log trên server
 - **Pre-condition:** Request được cấu hình qua Pre-request Script
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** Request được chấp nhận xử lý
 - **Postman Chai Assertion:**
   ```javascript
   pm.test("Request header X-Student-Id is present", function () {
-      pm.expect(pm.request.headers.get("X-Student-Id")).to.eql("25127001");
+      pm.expect(pm.request.headers.get("X-Student-Id")).to.eql("23127092");
   });
   ```
 
@@ -765,7 +767,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/0/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Order not found"}`
@@ -786,7 +788,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/-1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Order not found"}`
@@ -807,7 +809,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/abc/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Order not found"}`
@@ -828,7 +830,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1.5/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "Order not found"}`
@@ -849,7 +851,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/999999/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:**
@@ -878,7 +880,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/1/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:**
@@ -917,7 +919,7 @@
 - **Request Method & Endpoint:** `GET /api/orders/1`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:**
@@ -967,7 +969,7 @@
 - **Request Method & Endpoint:** `PUT /api/orders/999999/cancel`
 - **Headers:**
   - `Authorization: Bearer {{user_token_A}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:**
@@ -988,3 +990,141 @@
       pm.expect(json.error).to.be.a("string");
   });
   ```
+
+---
+
+### NHÓM 5: TÌNH HUỐNG BIÊN NÂNG CAO & BÓC TÁCH MÃ NGUỒN ẨN (5 ADVANCED TEST CASES)
+
+> **Mục đích nhóm 5:** Khai thác các kẽ hở logic máy trạng thái (State Machine Transitions), lỗ hổng phân quyền đa người dùng BOLA/IDOR và điều kiện tranh chấp đồng thời (Race Conditions) trong `server.js` (dòng 321–350).
+
+---
+
+#### TC_FR10_ADV_01
+- **TC_ID:** `TC_FR10_ADV_01`
+- **Category:** State Machine Bug Hunter (Illegal Transition from `shipping` to `canceled`)
+- **Test Objective:** Kiểm tra người dùng thường KHÔNG ĐƯỢC PHÉP hủy đơn hàng khi trạng thái đang là `shipping` *(Bắt Bug SUT dòng 329: `if (order.status === "delivered" || order.status === "canceled")` bỏ sót kiểm tra `shipping`)*
+- **Pre-condition:** Đơn hàng `id = 3` thuộc User A đang có trạng thái `status = 'shipping'`
+- **Request Method & Endpoint:** `PUT /api/orders/3/cancel`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{user_token_A}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:** `{}`
+- **Expected Status Code:** `400 Bad Request`
+- **Expected Response Body / Schema:** `{"error": "Cannot cancel this order."}` (Hoặc thông báo tương đương thể hiện đơn hàng đang giao không được hủy)
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR10_ADV_01: CRITICAL - Order in 'shipping' state MUST NOT be canceled by regular user", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json()).to.have.property("error");
+  });
+  // GHI CHÚ AUDIT: SUT hiện tại cho phép hủy đơn shipping (trả về 200 OK sai hoàn toàn đặc tả SRS FR-10)
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các công cụ AI thông thường khi tạo test cho máy trạng thái (State Machine) chỉ tập trung vào trạng thái khởi đầu (`pending` ➔ `canceled`) và hai trạng thái kết thúc (`delivered` ➔ `canceled`, `canceled` ➔ `canceled`). AI thường bỏ quên trạng thái trung gian `shipping`. Hơn nữa, trong mã nguồn backend (`server.js` dòng 329), lập trình viên sử dụng kỹ thuật kiểm tra danh sách đen lỏng lẻo: `if (order.status === "delivered" || order.status === "canceled") return res.status(400)`. Do thiếu kiểm tra `order.status === 'shipping'`, SUT vô tình cho phép hủy đơn hàng đang giao. Một AI không có khả năng đối chiếu đối xứng giữa đặc tả SRS FR-10 (*"Đơn hàng shipping chỉ có Admin mới có quyền hủy"*) và mã nguồn sẽ dễ dàng chấp nhận phản hồi `200 OK` như một hành vi bình thường.
+
+---
+
+#### TC_FR10_ADV_02
+- **TC_ID:** `TC_FR10_ADV_02`
+- **Category:** Security Bug Hunter (Unauthenticated Cross-Tenant BOLA/IDOR on `GET /api/orders/:id`)
+- **Test Objective:** Kiểm tra truy cập trái phép chi tiết đơn hàng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User A sử dụng Token của mình để đọc trộm đơn hàng `id = 2` của User B *(Bắt Bug SUT dòng 344: `GET /api/orders/:id` hoàn toàn thiếu middleware `authenticateToken` và thiếu kiểm tra `WHERE user_id = req.user.id`)*
+- **Pre-condition:** Đơn hàng `id = 2` thuộc về User B chứa thông tin cá nhân và số tiền nhạy cảm
+- **Request Method & Endpoint:** `GET /api/orders/2`
+- **Headers:**
+  - `X-Student-Id: 23127092` (Không gửi kèm Header `Authorization`)
+- **Request Body:** N/A
+- **Expected Status Code:** `401 Unauthorized` (Nếu không có token) hoặc `403 Forbidden` / `404 Not Found` (Nếu User A đọc của User B)
+- **Expected Response Body / Schema:** `{"error": "Unauthorized"}` hoặc `{"error": "Forbidden"}`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR10_ADV_02: CRITICAL BOLA - Unauthenticated access to order details MUST be rejected with 401", function () {
+      pm.response.to.have.status(401);
+      pm.expect(pm.response.json().error).to.eql("Unauthorized");
+  });
+  // GHI CHÚ AUDIT: SUT trả về 200 OK và phơi bày toàn bộ dữ liệu đơn hàng do thiếu middleware bảo vệ
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI sinh test tự động có xu hướng áp dụng Header mặc định (Collection-level Authentication) vào tất cả các request. Do đó, tất cả các request `GET /api/orders/:id` được AI tạo ra đều gửi kèm token của chính chủ đơn hàng (Happy Path). AI rất hiếm khi chủ động bóc tách Header Authentication ra khỏi request hoặc mô phỏng môi trường đa người dùng (Multi-tenant) để User A truy cập ID của User B. Điều này khiến lỗ hổng BOLA/IDOR (OWASP API Security Top 1) bị ẩn giấu hoàn toàn trong các đợt kiểm thử tự động sơ sài.
+
+---
+
+#### TC_FR10_ADV_03
+- **TC_ID:** `TC_FR10_ADV_03`
+- **Category:** Concurrency & Robustness (Asynchronous Double-Cancellation TOCTOU Race Condition)
+- **Test Objective:** Kiểm tra tính bất biến trạng thái khi xảy ra tranh chấp đồng thời: Gửi 2 request hủy đơn liên tiếp cực nhanh trên cùng một đơn hàng `pending` để phát hiện lỗi TOCTOU (Time-of-Check to Time-of-Use) trong câu truy vấn bất đồng bộ của Node.js SQLite
+- **Pre-condition:** Đơn hàng mới tạo `id = 15` đang có `status = 'pending'`
+- **Request Method & Endpoint:** `PUT /api/orders/15/cancel` (Gửi 2 lần liên tiếp)
+- **Headers:**
+  - `Authorization: Bearer {{user_token_A}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:** `{}`
+- **Expected Status Code:** Lần 1: `200 OK`; Lần 2: **BẮT BUỘC PHẢI LÀ `400 Bad Request`**
+- **Expected Response Body / Schema:** Lần 2 trả về `{"error": "Cannot cancel this order."}`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR10_ADV_03: Second cancellation attempt MUST be rejected with 400 Bad Request", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json().error).to.eql("Cannot cancel this order.");
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các mô hình AI sinh test theo luồng tuyến tính đơn luồng (Linear Sequential Flow: Request 1 xong mới tới Request 2). AI không tự động suy luận được khoảng cách thời gian trễ (latency window) giữa thao tác `db.get` (kiểm tra trạng thái) và `db.run` (cập nhật trạng thái) tại dòng 322–339 trong `server.js`. Nếu 2 request đến cùng lúc, cả 2 đều thấy `status === 'pending'` và cả 2 đều thực hiện UPDATE, dẫn đến việc cả 2 request đều trả về `200 OK` (vi phạm tính lũy thừa Idempotency và tính nhất quán ACID của máy trạng thái).
+
+---
+
+#### TC_FR10_ADV_04
+- **TC_ID:** `TC_FR10_ADV_04`
+- **Category:** Information Disclosure (Order Existence Enumeration via Asymmetric Status Responses)
+- **Test Objective:** Phát hiện kỹ thuật dò quét ID đơn hàng (Blind ID Enumeration): So sánh phản hồi giữa `PUT /api/orders/2/cancel` (trả về `404 Not Found` do có `WHERE user_id = ?`) và `GET /api/orders/2` (trả về `200 OK` do thiếu `WHERE user_id = ?`), chứng minh kẻ tấn công có thể phân biệt được ID nào tồn tại trong hệ thống
+- **Pre-condition:** Đơn hàng `id = 2` thuộc về User B
+- **Request Method & Endpoint:**
+  1. `PUT /api/orders/2/cancel` với `{{user_token_A}}` ➔ Nhận `404 Not Found`
+  2. `GET /api/orders/2` với `{{user_token_A}}` ➔ Nhận `200 OK` (Lộ đơn)
+- **Headers:**
+  - `Authorization: Bearer {{user_token_A}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:** `{}`
+- **Expected Status Code:** Cả hai endpoint **PHẢI NHẤT QUÁN TRẢ VỀ `403 Forbidden` HOẶC `404 Not Found`** để ngăn chặn việc dò quét dữ liệu
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR10_ADV_04: Cross-endpoint authorization consistency - Foreign order must NOT return 200 on GET", function () {
+      // Trong hệ thống bảo mật, User A không thể nhận 200 OK trên đơn hàng của User B
+      pm.expect(pm.response.code).to.be.oneOf([403, 404]);
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI kiểm thử chỉ đánh giá từng endpoint đơn lẻ (Single Endpoint Scope). AI không có khả năng "liên kết chéo" (Cross-Endpoint Correlation Analysis) để nhận ra sự bất đối xứng nguy hiểm: lập trình viên đã viết đúng kiểm tra quyền sở hữu `WHERE id = ? AND user_id = ?` ở endpoint `PUT cancel` (dòng 323), nhưng lại **hoàn toàn quên mất điều kiện này ở endpoint `GET order`** (dòng 345: `SELECT * FROM orders WHERE id = ?`). Sự thiếu nhất quán này mở ra vector tấn công do thám (Reconnaissance Attack) cho hacker.
+
+---
+
+#### TC_FR10_ADV_05
+- **TC_ID:** `TC_FR10_ADV_05`
+- **Category:** Financial & Address Data Integrity (Post-Cancellation Financial Immutability)
+- **Test Objective:** Xác thực tính bất biến của dữ liệu tài chính và giao vận: Sau khi đơn hàng chuyển sang `status = 'canceled'`, tổng tiền (`total_amount`) và địa chỉ giao hàng (`shipping_address`) ban đầu bắt buộc phải được giữ nguyên vẹn 100% để phục vụ đối soát kế toán và lưu vết lịch sử
+- **Pre-condition:** Đơn hàng `id = 1` vừa được hủy thành công
+- **Request Method & Endpoint:** `GET /api/orders/1`
+- **Headers:**
+  - `Authorization: Bearer {{user_token_A}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:** N/A
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:**
+  - `status === "canceled"`
+  - `total_amount > 0` (Bằng đúng số tiền lúc checkout ban đầu)
+  - `shipping_address` không bị null hay rỗng
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR10_ADV_05: Financial and audit data remains completely immutable after cancellation", function () {
+      pm.response.to.have.status(200);
+      var order = pm.response.json();
+      pm.expect(order.status).to.eql("canceled");
+      pm.expect(order.total_amount).to.be.a("number");
+      pm.expect(order.total_amount).to.be.above(0);
+      pm.expect(order.shipping_address).to.be.a("string");
+      pm.expect(order.shipping_address.length).to.be.above(0);
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Khi kiểm tra tính năng hủy đơn hàng, AI thông thường chỉ đặt kỳ vọng vào trường `status === 'canceled'` hoặc message `"Order canceled successfully"`. AI không có tư duy của một chuyên gia kiểm thử nghiệp vụ E-commerce (Business Domain Logic): một lệnh hủy đơn hàng chỉ được phép thay đổi trạng thái vòng đời, tuyệt đối không được làm sai lệch dữ liệu tài chính lịch sử (`total_amount`) hoặc thông tin giao vận ban đầu. Nếu thiếu assertion này, các lỗi backend vô tình gán `total_amount = 0` hoặc xóa địa chỉ khi hủy đơn sẽ bị bỏ lọt hoàn toàn.
+

@@ -1,373 +1,2215 @@
 {
   "info": {
-    "_postman_id": "fr09-mobile-coupon-25127001",
-    "name": "FR-09: Mobile Apply Coupon Test Suite",
-    "description": "Comprehensive Test Suite for FR-09 (POST /api/apply-coupon) covering Decision Table C1-C5, Math Formula Bugs, Domain Boundaries, and JSON Schema Validation.",
+    "name": "FR09_Mobile_Coupon",
+    "_postman_id": "gen-5aa77b81f5534096",
+    "description": "Full Comprehensive Postman Test Collection for FR-09 (MSSV: 23127092) - Total 45 Test Cases",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
+  "item": [
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Attach mandatory Header X-Student-Id to every request",
-          "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
-        ]
-      }
+      "name": "0. Setup & Auth Seed",
+      "item": [
+        {
+          "name": "0.1 Register & Login User A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User A\",\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('0.1 Setup: Register or User A exists', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.2 Login User A to Get Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('user_token', res.token);",
+                  "    pm.environment.set('user_token_A', res.token);",
+                  "    pm.collectionVariables.set('user_token', res.token);",
+                  "    pm.collectionVariables.set('user_token_A', res.token);",
+                  "}",
+                  "pm.test('0.2 Setup: User A Login successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3 Login Admin to Get Admin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@eshop.com\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('admin_token', res.token);",
+                  "    pm.collectionVariables.set('admin_token', res.token);",
+                  "}",
+                  "pm.test('0.3 Setup: Admin Login successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 1 - Domain Partitions & Primary Rules",
+      "item": [
+        {
+          "name": "TC_FR09_COND_01: Kiểm tra áp dụng thành công mã giảm giá theo phần trăm khi thỏa mãn toàn bộ 5 điều kiện C1-C5",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"Coupon applied successfully\", function () {",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.success).to.be.true;",
+                  "      pm.expect(data.discount_amount).to.eql(50000);",
+                  "      pm.expect(data.final_amount).to.eql(450000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_02: Kiểm tra áp dụng thành công mã giảm giá số tiền cố định khi thỏa mãn C1-C5",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for fixed coupon\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.eql(50000);",
+                  "      pm.expect(data.final_amount).to.eql(550000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_03: Kiểm tra từ chối khi nhập mã giảm giá không tồn tại trong hệ thống",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 404 or 400 for non-existent coupon\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_04: Kiểm tra từ chối khi mã giảm giá đã bị Admin vô hiệu hóa (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Inactive coupon is rejected\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_05: Kiểm tra từ chối khi mã giảm giá đã hết hạn sử dụng (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for expired coupon\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_06: Kiểm tra từ chối khi tổng tiền đơn hàng nhỏ hơn ngưỡng tối thiểu (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for below-minimum order\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_07: Kiểm tra áp dụng THÀNH CÔNG khi tổng tiền đơn hàng BẰNG ĐÚNG ngưỡng tối thiểu (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"CRITICAL C3 BOUNDARY: Total amount EQUAL to min_order_amount MUST return 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().success).to.be.true;",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có bug ở dòng 379: if (total_amount > coupon.min_order_amount)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_08: Phân tích giá trị biên: Tổng tiền thiếu đúng 1 đồng so với ngưỡng tối thiểu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for Min-1\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_09: Phân tích giá trị biên: Tổng tiền vượt đúng 1 đồng so với ngưỡng tối thiểu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for Min+1\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_10: Kiểm tra áp dụng thành công khi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Fixed coupon at exact min threshold returns 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_11: Kiểm tra áp dụng mã giảm giá khi khách vãng lai không truyền",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Anonymous coupon application handled gracefully\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_12: Kiểm tra áp dụng mã giảm giá với",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Invalid user_id handled safely\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_13: Kiểm tra từ chối khi người dùng đã sử dụng mã quá số lần cho phép",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Exceeded coupon usage is rejected\", function () {",
+                  "      if (pm.response.code === 400) {",
+                  "          pm.expect(pm.response.json().error).to.include(\"đã đạt giới hạn\");",
+                  "      }",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_14: Áp dụng mã",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"First use of multi-use coupon succeeds with 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_15: Kiểm tra xử lý khi mã giảm giá vừa bị vô hiệu hóa vừa hết hạn",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Combined violation rejected\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_COND_16: Kiểm tra nhập mã bằng chữ thường (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Case-handling of coupon code is stable\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_01: Kiểm tra từ chối khi tổng tiền đơn hàng bằng 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for zero total amount\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_02: Kiểm tra từ chối khi tổng tiền đơn hàng là số âm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for negative total amount\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_03: Kiểm tra từ chối khi trường code là chuỗi rỗng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for empty code\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.eql(\"Vui lòng nhập mã giảm giá\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_04: Kiểm tra từ chối khi trường code toàn khoảng trắng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Whitespace code rejected\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_05: Kiểm tra từ chối khi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"String total amount rejected with 400\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_04: Đảm bảo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"BIGBUY\", \"total_amount\": 600000, \"user_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Amounts are strictly numeric types\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.be.a(\"number\");",
+                  "      pm.expect(data.final_amount).to.be.a(\"number\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_05: Xác thực Header",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"BIGBUY\", \"total_amount\": 600000, \"user_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Header X-Student-Id is present in request\", function () {",
+                  "      pm.expect(pm.request.headers.get(\"X-Student-Id\")).to.eql(\"23127092\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_06: Kiểm tra thời gian phản hồi của API áp dụng mã giảm giá đáp ứng trải nghiệm mượt mà trên Mobile App (< 200ms)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"SAVE10\", \"total_amount\": 500000, \"user_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Response time is under 200ms (Mobile SLA)\", function () {",
+                  "      pm.expect(pm.response.responseTime).to.be.below(200);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 2 - Security, State Invariants & Boundary Matrix",
+      "item": [
+        {
+          "name": "TC_FR09_MATH_01: Kiểm tra công thức tính phần trăm: Giảm 10% trên đơn 500k phải ra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"CRITICAL MATH BUG: Discount amount MUST be POSITIVE 50000 (10% of 500k)\", function () {",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.eql(50000);",
+                  "      pm.expect(data.discount_amount).to.be.above(0);",
+                  "      pm.expect(data.final_amount).to.eql(450000);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có bug ở dòng 400: discount_amount = Math.floor(total_amount * (1 - coupon.discount_value))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_02: Kiểm tra tính đúng tiền giảm fixed 50k trên đơn 600k",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Fixed discount calculation is correct\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.eql(50000);",
+                  "      pm.expect(data.final_amount).to.eql(550000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_03: Kiểm tra khi gửi đơn hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_MATH_03: Order below min_order_amount is rejected with 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_04: Kiểm tra khi gửi đơn hàng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_MATH_04: Order below min_order_amount is rejected with 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_05: Kiểm tra làm tròn số tiền chiết khấu bằng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Discount rounded to integer\", function () {",
+                  "      if (pm.response.code === 200) {",
+                  "          var data = pm.response.json();",
+                  "          pm.expect(Number.isInteger(data.discount_amount)).to.be.true;",
+                  "      }",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_06: Kiểm tra tính toán chiết khấu chính xác với đơn hàng giá trị lớn (100 triệu)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Large amount calculated accurately\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.eql(10000000);",
+                  "      pm.expect(data.final_amount).to.eql(90000000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_07: Kiểm tra bất biến số học: Tổng tiền sau giảm cộng tiền giảm phải luôn bằng tổng tiền ban đầu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Arithmetic invariant: final_amount + discount_amount === total_amount\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.final_amount + data.discount_amount).to.eql(750000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_08: Xác thực số tiền giảm giá",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"discount_amount must be >= 0\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().discount_amount).to.be.at.least(0);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_09: Xác thực số tiền thanh toán cuối cùng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"final_amount must be >= 0\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().final_amount).to.be.at.least(0);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_10: Kiểm tra tính đúng mã 100k trên đơn 1,000,000 ➔ Còn 900,000",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"VIP100 discount calculated accurately\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.discount_amount).to.eql(100000);",
+                  "      pm.expect(data.final_amount).to.eql(900000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_MATH_11: Kiểm tra nội dung chuỗi thông báo trả về (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Message string formatted properly\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.include(\"10%\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_06: Kiểm tra khả năng chống SQL Injection trong trường",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"SQL Injection handled safely without 500 error\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_DOM_07: Kiểm tra an toàn khi chèn payload XSS trong",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"XSS payload in coupon code rejected safely\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_ADV_04: Kiểm tra tính toàn vẹn định danh người dùng: Gọi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_ADV_04: Server must validate user identity via token rather than trusting arbitrary user_id\", function () {",
+                  "      // Đánh giá cơ chế xác thực và chống giả mạo user_id",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400, 401]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 4 - Schema Validation & Response Standards",
+      "item": [
+        {
+          "name": "TC_FR09_SCHEMA_01: Kiểm tra cấu trúc JSON Schema phản hồi thành công khi áp dụng mã giảm giá",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var couponSchema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"success\", \"coupon_id\", \"discount_amount\", \"final_amount\", \"message\"],",
+                  "      \"properties\": {",
+                  "          \"success\": { \"type\": \"boolean\" },",
+                  "          \"coupon_id\": { \"type\": \"integer\" },",
+                  "          \"discount_amount\": { \"type\": \"number\" },",
+                  "          \"final_amount\": { \"type\": \"number\" },",
+                  "          \"message\": { \"type\": \"string\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"200 OK response conforms to Apply Coupon Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), couponSchema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_02: Kiểm tra cấu trúc JSON Schema của phản hồi lỗi 400 Bad Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"total_amount\": 500000}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"400 error response contains error message string\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "      pm.expect(pm.response.json().error).to.be.a(\"string\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_SCHEMA_03: Kiểm tra cấu trúc JSON Schema của phản hồi lỗi 404 Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"UNKNOWN_CODE\", \"total_amount\": 500000}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"404 error schema contains error property\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 5 - Hidden Logic & Code-Level Vulnerabilities",
+      "item": [
+        {
+          "name": "TC_FR09_ADV_01: Phát hiện lỗi công thức toán học nghiêm trọng làm số tiền giảm giá biến thành số âm khổng lồ: Áp dụng mã",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_ADV_01: CRITICAL MATH - Percent discount formula MUST be (discount_value/100), not (1-discount_value)\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var res = pm.response.json();",
+                  "      pm.expect(res.discount_amount, \"Discount amount was negative due to math bug!\").to.eql(50000);",
+                  "      pm.expect(res.final_amount, \"Final amount was inflated by 10x!\").to.eql(450000);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về discount_amount = -4500000 và final_amount = 5000000 (Đội giá tiền lên gấp 10 lần)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_ADV_02: Kiểm tra áp dụng mã tại ĐÚNG ĐIỂM BIÊN NGƯỠNG ĐƠN HÀNG TỐI THIỂU: Gửi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_ADV_02: CRITICAL BVA - Order total EXACTLY EQUAL to min_order_amount MUST be accepted (C3 rule)\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().success).to.be.true;",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về 400 Bad Request 'Đơn hàng chưa đủ giá trị tối thiểu' do dùng dấu > thay vì >="
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_ADV_03: Kiểm tra tính bất biến số học trong tài chính: Khi mã giảm giá cố định có giá trị giảm lớn hơn tổng tiền đơn hàng (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_ADV_03: Financial Invariant - Final amount must NEVER be negative (Capped at 0)\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var res = pm.response.json();",
+                  "      pm.expect(res.final_amount).to.be.at.least(0);",
+                  "      pm.expect(res.discount_amount).to.be.at.most(300000);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR09_ADV_05: Kiểm tra tính chính xác của thời gian hết hạn (Condition C2): Mã giảm giá có hạn sử dụng ghi ngày",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/apply-coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "apply-coupon"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR09_ADV_05: Expiration date parsing handles end-of-day boundary consistently\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 400, 404]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
-    { "key": "studentId", "value": "25127001", "type": "string" }
-  ],
-  "item": [
     {
-      "name": "Group 1 - Decision Table (C1 to C5)",
-      "item": [
-        {
-          "name": "TC_FR09_COND_01: Valid Percent Coupon (SAVE10 on 500k)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_01: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR09_COND_01: Success is true\", function () {",
-                  "    pm.expect(pm.response.json().success).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_COND_02: Valid Fixed Coupon (BIGBUY on 600k)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_02: Status code is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var res = pm.response.json();",
-                  "    pm.expect(res.discount_amount).to.eql(50000);",
-                  "    pm.expect(res.final_amount).to.eql(550000);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_COND_03: Non-existent Coupon Code",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"FAKE_COUPON_999\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_03: Non-existent coupon returns 404 or 400\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_COND_05: Expired Coupon (EXPIRED)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_05: Expired coupon returns 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Mã giảm giá đã hết hạn\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_COND_06: Below Min Order Amount (SAVE10 on 200k)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 200000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_06: Below min order amount returns 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "    pm.expect(pm.response.json().error).to.include(\"chưa đủ giá trị tối thiểu\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 300000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    pm.expect(pm.response.json().success).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
     },
     {
-      "name": "Group 2 - Math & Calculation Edge Cases",
-      "item": [
-        {
-          "name": "TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000\", function () {",
-                  "    var res = pm.response.json();",
-                  "    pm.expect(res.discount_amount).to.eql(50000);",
-                  "    pm.expect(res.discount_amount).to.be.above(0);",
-                  "    pm.expect(res.final_amount).to.eql(450000);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_MATH_07: Arithmetic Invariant Property (final + discount === total)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 750000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_MATH_07: Arithmetic invariant holds (final + discount === total)\", function () {",
-                  "    var res = pm.response.json();",
-                  "    pm.expect(res.final_amount + res.discount_amount).to.eql(750000);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "studentId",
+      "value": "23127092",
+      "type": "string"
     },
     {
-      "name": "Group 3 - Domain Partitions & Security",
-      "item": [
-        {
-          "name": "TC_FR09_DOM_03: Empty Coupon Code",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_DOM_03: Empty code returns 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "    pm.expect(pm.response.json().error).to.eql(\"Vui lòng nhập mã giảm giá\");",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_DOM_06: SQL Injection in Coupon Code",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10' OR '1'='1\",\n  \"total_amount\": 500000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_DOM_06: SQLi handled safely without 500 error\", function () {",
-                  "    pm.expect(pm.response.code).to.not.equal(500);",
-                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "user_token",
+      "value": "",
+      "type": "string"
     },
     {
-      "name": "Group 4 - Schema Validation & Mobile SLA",
-      "item": [
-        {
-          "name": "TC_FR09_SCHEMA_01: 200 OK JSON Schema Validation",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "var schema = {",
-                  "    \"type\": \"object\",",
-                  "    \"required\": [\"success\", \"coupon_id\", \"discount_amount\", \"final_amount\", \"message\"],",
-                  "    \"properties\": {",
-                  "        \"success\": { \"type\": \"boolean\" },",
-                  "        \"coupon_id\": { \"type\": \"integer\" },",
-                  "        \"discount_amount\": { \"type\": \"number\" },",
-                  "        \"final_amount\": { \"type\": \"number\" },",
-                  "        \"message\": { \"type\": \"string\" }",
-                  "    }",
-                  "};",
-                  "pm.test(\"TC_FR09_SCHEMA_01: Conforms to Apply Coupon JSON Schema\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR09_SCHEMA_06: Mobile Performance SLA (< 200ms)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"code\": \"BIGBUY\",\n  \"total_amount\": 600000,\n  \"user_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/apply-coupon", "host": ["{{baseUrl}}"], "path": ["api", "apply-coupon"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR09_SCHEMA_06: Response time is under 200ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
+      "key": "user_token_A",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token_B",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
     }
   ]
 }

@@ -1,11 +1,11 @@
-# FR-15: Test Cases (Pool C - Admin Product CRUD)
+﻿# FR-15: Test Cases (Pool C - Admin Product CRUD)
 
 > **Mã chức năng:** FR-15 | **Pool:** C (Web Admin & Product Management)  
 > **Chức năng:** Quản lý Sản phẩm Admin (Admin Product CRUD)  
 > **Endpoints:** `POST /api/products`, `PUT /api/products/:id`, `DELETE /api/products/:id`, `GET /api/products/:id`  
-> **MSSV (X-Student-Id):** `25127001`  
+> **MSSV (X-Student-Id):** `23127092`  
 > **Tiêu chuẩn áp dụng:** ISTQB (EP, BVA, CRUD Lifecycle), OWASP API Security Top 10 (SEC-03 Broken Access Control, SEC-05 BFLA, SEC-06 SQLi, Type Coercion), JSON Schema Validation Draft-07.  
-> **Tổng số test cases:** 40 Test Cases (Vượt chuẩn ≥ 35 TCs)
+> **Tổng số test cases:** 45 Test Cases (Gồm 40 TCs chuẩn + 5 TCs nâng cao chuyên sâu bóc tách mã nguồn)
 
 ---
 
@@ -17,7 +17,8 @@
 | **Nhóm 2** | **Domain & Boundary Values** | Phân tích giá trị biên (BVA) & Phân vùng tương đương (EP) cho `name`, `price`, `category_id` | 13 | `TC_FR15_DOM_01` → `TC_FR15_DOM_13` |
 | **Nhóm 3** | **Type Coercion & Schema** | Kiểm thử ép kiểu (Type Coercion `price: number` vs `string`), JSON Schema Validation | 8 | `TC_FR15_TYPE_01` → `02`, `TC_FR15_SCHEMA_01` → `06` |
 | **Nhóm 4** | **CRUD Lifecycle & Integrity** | Vòng đời CRUD (Create ➔ Read ➔ Update ➔ Read ➔ Delete ➔ Read 404), SQLi Protection | 6 | `TC_FR15_CRUD_01` → `TC_FR15_CRUD_06` |
-| **TỔNG** | | | **40** | |
+| **Nhóm 5** | **Hidden Logic & Code Vulnerabilities**| Bóc tách mã nguồn Backend (`server.js`), Type Coercion chẵn lẻ, Missing Auth, SQLi HTML Leak | 5 | `TC_FR15_ADV_01` → `TC_FR15_ADV_05` |
+| **TỔNG** | | | **45** | |
 
 ---
 
@@ -33,7 +34,7 @@
 - **Request Method & Endpoint:** `POST /api/products`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -64,7 +65,7 @@
 - **Request Method & Endpoint:** `PUT /api/products/1`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -93,7 +94,7 @@
 - **Pre-condition:** Khách vãng lai
 - **Request Method & Endpoint:** `DELETE /api/products/1`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `401 Unauthorized`
 - **Expected Response Body / Schema:** `{"error": "Unauthorized"}`
@@ -115,7 +116,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -146,7 +147,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -176,7 +177,7 @@
 - **Request Method & Endpoint:** `DELETE /api/products/1`
 - **Headers:**
   - `Authorization: Bearer {{user_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -198,7 +199,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -240,7 +241,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -271,7 +272,7 @@
 - **Request Method & Endpoint:** `DELETE /api/products/6`
 - **Headers:**
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Product deleted"}`
@@ -294,7 +295,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer fake.jwt.admin.token`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "Fake Item", "price": 100000, "category_id": 1}`
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -316,7 +317,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer fake.jwt.admin.token`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "Fake Item", "price": 100000, "category_id": 1}`
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -337,7 +338,7 @@
 - **Request Method & Endpoint:** `DELETE /api/products/1`
 - **Headers:**
   - `Authorization: Bearer fake.jwt.admin.token`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -361,7 +362,7 @@
   - `Authorization: Bearer {{user_token}}`
   - `X-Admin-Role: true`
   - `X-Role: admin`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "Hacked Item", "price": 100000, "category_id": 1}`
 - **Expected Status Code:** `403 Forbidden`
 - **Expected Response Body / Schema:** `{"error": "Forbidden"}`
@@ -385,7 +386,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -416,7 +417,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -447,7 +448,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -478,7 +479,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -509,7 +510,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -540,7 +541,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -571,7 +572,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -602,7 +603,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -633,7 +634,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -664,7 +665,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -695,7 +696,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -726,7 +727,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -757,7 +758,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -788,7 +789,7 @@
 - **Pre-condition:** Sản phẩm `id = 2` tồn tại trong database (Samsung Galaxy S24 Ultra)
 - **Request Method & Endpoint:** `GET /api/products/2`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `price` bắt buộc phải là kiểu `number` (`typeof price === 'number'`)
@@ -814,7 +815,7 @@
 - **Pre-condition:** Sản phẩm `id = 1` và `id = 2` có sẵn
 - **Request Method & Endpoint:** `GET /api/products/1`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `typeof product.price === 'number'`
@@ -837,7 +838,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "Item Schema", "price": 100000, "category_id": 1}`
 - **Expected Status Code:** `200 OK` hoặc `201 Created`
 - **Expected Response Body / Schema:**
@@ -876,7 +877,7 @@
 - **Pre-condition:** Sản phẩm `id = 1` tồn tại
 - **Request Method & Endpoint:** `GET /api/products/1`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:**
@@ -923,7 +924,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "Updated Name", "price": 200000, "category_id": 1}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"type": "object", "required": ["message"], "properties": {"message": {"type": "string"}}}`
@@ -945,7 +946,7 @@
 - **Request Method & Endpoint:** `DELETE /api/products/5`
 - **Headers:**
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `{"message": "Product deleted"}`
@@ -966,7 +967,7 @@
 - **Pre-condition:** Không có sản phẩm 999999
 - **Request Method & Endpoint:** `GET /api/products/999999`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:** `{"error": "Product not found"}`
@@ -990,7 +991,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:** `{"error": "..."}`
@@ -1014,7 +1015,7 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body (POST):**
   ```json
   {
@@ -1044,7 +1045,7 @@
 - **Request Method & Endpoint:** `PUT /api/products/1` theo sau bởi `GET /api/products/2`
 - **Headers:**
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "iPhone Modified", "price": 99999, "category_id": 1}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** Sản phẩm 2 vẫn giữ nguyên giá 28,000,000
@@ -1069,14 +1070,15 @@
 - **Headers:**
   - `Content-Type: application/json`
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"name": "No Item", "price": 1000, "category_id": 1}`
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:** `{"error": "Product not found"}`
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Updating non-existent product returns 404", function () {
-      pm.expect(pm.response.code).to.be.oneOf([400, 404]);
+  pm.test("TC_FR15_CRUD_03: Updating non-existent product MUST return 404 Not Found", function () {
+      pm.response.to.have.status(404);
+      pm.expect(pm.response.json()).to.have.property("error");
   });
   ```
 
@@ -1090,14 +1092,15 @@
 - **Request Method & Endpoint:** `DELETE /api/products/999999`
 - **Headers:**
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:** `{"error": "Product not found"}`
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Deleting non-existent product returns 404", function () {
-      pm.expect(pm.response.code).to.be.oneOf([400, 404]);
+  pm.test("TC_FR15_CRUD_04: Deleting non-existent product MUST return 404 Not Found", function () {
+      pm.response.to.have.status(404);
+      pm.expect(pm.response.json()).to.have.property("error");
   });
   ```
 
@@ -1110,7 +1113,7 @@
 - **Pre-condition:** Không cần auth
 - **Request Method & Endpoint:** `GET /api/products?search=' OR '1'='1`
 - **Headers:**
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `200 OK` (Parameterized) hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** JSON Array, **KHÔNG ĐƯỢC trả về HTML 500 `<h1>Database Error</h1>`**
@@ -1132,7 +1135,7 @@
 - **Request Method & Endpoint:** `DELETE /api/products/1 OR 1=1`
 - **Headers:**
   - `Authorization: Bearer {{admin_token}}`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** N/A
 - **Expected Status Code:** `404 Not Found` hoặc `400 Bad Request`
 - **Expected Response Body / Schema:** Không xóa toàn bộ bảng dữ liệu
@@ -1142,3 +1145,156 @@
       pm.expect(pm.response.code).to.not.equal(500);
   });
   ```
+
+---
+
+### NHÓM 5: TÌNH HUỐNG BIÊN NÂNG CAO & BÓC TÁCH MÃ NGUỒN ẨN (5 ADVANCED TEST CASES)
+
+> **Mục đích nhóm 5:** Khai thác các kẽ hở phân quyền RBAC/BFLA, lỗi ép kiểu ngầm theo ID chẵn/lẻ (Type Coercion), và lỗi rò rỉ mã HTML 500 khi dính SQLi trong `server.js` (dòng 141–196).
+
+---
+
+#### TC_FR15_ADV_01
+- **TC_ID:** `TC_FR15_ADV_01`
+- **Category:** Broken Function Level Authorization (Unauthenticated Product Mutation Bug - SEC-03/SEC-05)
+- **Test Objective:** Kiểm tra lỗ hổng phân quyền nghiêm trọng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User thường (`role = 'user'`) gọi `POST /api/products` để thêm sản phẩm mới mà không bị chặn *(Bắt Bug SUT dòng 167: hoàn toàn thiếu middleware `authenticateToken`)*
+- **Pre-condition:** Khách vãng lai chưa đăng nhập
+- **Request Method & Endpoint:** `POST /api/products`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "name": "Hack Product Without Auth",
+    "price": 1000,
+    "description": "Created by unauthenticated user",
+    "imageUrl": "https://placehold.co/300",
+    "category_id": 1
+  }
+  ```
+- **Expected Status Code:** `401 Unauthorized` (Nếu không có token) hoặc `403 Forbidden` (Nếu là User thường)
+- **Expected Response Body / Schema:** `{"error": "Unauthorized"}` hoặc `{"error": "Forbidden"}`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR15_ADV_01: CRITICAL BFLA - Product creation without admin token MUST be rejected", function () {
+      pm.expect(pm.response.code).to.be.oneOf([401, 403]);
+      pm.expect(pm.response.json()).to.have.property("error");
+  });
+  // GHI CHÚ AUDIT: SUT hiện tại trả về 200 OK do POST/PUT/DELETE /api/products không gắn authenticateToken
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Khi sinh test cho nhóm chức năng "Quản trị Sản phẩm Admin (Admin CRUD)", các prompt AI thông thường tự động thiết lập kịch bản lý tưởng (Happy Path Pre-condition): Tạo token Admin trước, sau đó truyền Header `Authorization: Bearer {{admin_token}}` vào 100% các request POST, PUT, DELETE. AI hoàn toàn bỏ quên việc kiểm tra ranh giới phân quyền âm (Negative Access Control Testing) bằng cách thử gửi request *không có token* hoặc *dùng token của người dùng thông thường*. Điều này khiến lỗ hổng Broken Access Control nghiêm trọng bậc nhất hệ thống bị bỏ lọt hoàn toàn trong suốt quá trình kiểm thử.
+
+---
+
+#### TC_FR15_ADV_02
+- **TC_ID:** `TC_FR15_ADV_02`
+- **Category:** Type Coercion Bug Hunter (Modulo-Based Parity String Coercion on Even IDs)
+- **Test Objective:** Kiểm tra tính toàn vẹn kiểu dữ liệu: Gọi `GET /api/products/2` (ID chẵn) để phát hiện trường `price` bị ép kiểu sai trái từ kiểu số (`number`) thành chuỗi ký tự (`string`) *(Bắt Bug SUT dòng 162: `if (row.id % 2 === 0) row.price = row.price.toString();`)*
+- **Pre-condition:** Sản phẩm `id = 2` tồn tại trong database
+- **Request Method & Endpoint:** `GET /api/products/2`
+- **Headers:**
+  - `X-Student-Id: 23127092`
+- **Request Body:** N/A
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:** `typeof product.price === 'number'` (Bắt buộc là kiểu số học, không được là chuỗi string)
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR15_ADV_02: CRITICAL - Product price MUST be a numeric type for both even and odd IDs", function () {
+      pm.response.to.have.status(200);
+      var product = pm.response.json();
+      pm.expect(product.price).to.be.a("number");
+      pm.expect(typeof product.price).to.not.equal("string");
+  });
+  // GHI CHÚ AUDIT: SUT có bug ở dòng 162 chuyển giá tiền của các sản phẩm có ID chẵn thành String
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI sinh test tự động thường chỉ chọn một mẫu dữ liệu đơn lẻ (ví dụ: `GET /api/products/1` hoặc lấy `id` vừa tạo ở bước POST đầu tiên). Nếu sản phẩm được kiểm tra tình cờ rơi vào ID lẻ (`id = 1`), assertion `typeof price === 'number'` sẽ luôn ĐẠT (Passed). AI không có khả năng tự động phân tích mã nguồn (Static Code Analysis) để nhận ra sự tồn tại của logic phân nhánh quái dị dựa trên tính chẵn lẻ của ID (`row.id % 2 === 0`). Khi ứng dụng Web/Mobile nhận giá tiền dạng chuỗi `"28000000"` cho ID chẵn, các phép tính cộng giỏ hàng sẽ bị lỗi ghép chuỗi (`"28000000" + 500000 = "28000000500000"`).
+
+---
+
+#### TC_FR15_ADV_03
+- **TC_ID:** `TC_FR15_ADV_03`
+- **Category:** Schema Bug Hunter (Silent 200 OK False-Positive with Empty Object on Non-Existent Entity)
+- **Test Objective:** Kiểm tra mã trạng thái HTTP chuẩn RESTful khi truy vấn sản phẩm không tồn tại `GET /api/products/999999` *(Bắt Bug SUT dòng 161: `if (!row) return res.status(200).json({});`)*
+- **Pre-condition:** Không có sản phẩm với `id = 999999` trong database
+- **Request Method & Endpoint:** `GET /api/products/999999`
+- **Headers:**
+  - `X-Student-Id: 23127092`
+- **Request Body:** N/A
+- **Expected Status Code:** `404 Not Found`
+- **Expected Response Body / Schema:** `{"error": "Product not found"}` (Tuyệt đối không được trả về `200 OK` kèm object rỗng `{}`)
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR15_ADV_03: Non-existent product query MUST return 404 Not Found, NOT 200 with {}", function () {
+      pm.response.to.have.status(404);
+      var data = pm.response.json();
+      pm.expect(data).to.have.property("error");
+      pm.expect(data).to.not.deep.equal({});
+  });
+  // GHI CHÚ AUDIT: SUT trả về 200 OK kèm {} làm sập logic xử lý lỗi Not Found trên Frontend
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Khi kiểm thử các mã lỗi Not Found, nếu một AI tạo assertion lỏng lẻo dạng `pm.expect(pm.response.code).to.be.oneOf([200, 404])` hoặc chỉ kiểm tra `pm.response.to.be.json`, test case sẽ vô tình bị coi là ĐẠT (False Positive). AI không nhận thức được tiêu chuẩn thiết kế RESTful API (RFC 7231): Việc trả về `200 OK` cho một tài nguyên không tồn tại làm cho các thư viện HTTP client (như Axios, Fetch) không thể bắt được lỗi trong khối `catch()`, khiến giao diện hiển thị sản phẩm rỗng không có tên và không có giá.
+
+---
+
+#### TC_FR15_ADV_04
+- **TC_ID:** `TC_FR15_ADV_04`
+- **Category:** Domain Constraint Enforcement (Negative and Zero Price Creation Bypass)
+- **Test Objective:** Kiểm tra từ chối tạo sản phẩm khi đơn giá là số âm (`price = -50000`) hoặc bằng 0 *(Bắt Bug SUT dòng 167–176: hoàn toàn thiếu tầng Validation dữ liệu đầu vào)*
+- **Pre-condition:** Admin đăng nhập
+- **Request Method & Endpoint:** `POST /api/products`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `Authorization: Bearer {{admin_token}}`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "name": "Sản phẩm giá âm nguy hiểm",
+    "price": -50000,
+    "description": "Giá âm làm sập tổng tiền giỏ hàng",
+    "imageUrl": "https://placehold.co/300",
+    "category_id": 1
+  }
+  ```
+- **Expected Status Code:** `400 Bad Request`
+- **Expected Response Body / Schema:** `{"error": "Price must be greater than 0"}`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR15_ADV_04: Negative price MUST be rejected with 400 Bad Request", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json()).to.have.property("error");
+  });
+  // GHI CHÚ AUDIT: SUT hiện tại chấp nhận lưu giá âm vào database và trả về 200 OK
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các công cụ sinh test AI thông thường thường tập trung kiểm tra các trường kiểu chuỗi (như tên rỗng, tên quá dài) và giả định rằng kiểu số sẽ luôn được hệ thống bảo vệ tự nhiên. AI ít khi suy luận đến hệ quả domino trong nghiệp vụ E-commerce: Nếu một sản phẩm giá âm được lưu thành công vào CSDL, người dùng có thể thêm sản phẩm này vào giỏ hàng để trừ bớt tổng tiền thanh toán (Negative Price Exploit).
+
+---
+
+#### TC_FR15_ADV_05
+- **TC_ID:** `TC_FR15_ADV_05`
+- **Category:** Security Bug Hunter (SQL Injection in Search Query Causing Unhandled HTML 500 Leak)
+- **Test Objective:** Kiểm tra khả năng chống SQL Injection trong tham số tìm kiếm: Gửi chuỗi inject `GET /api/products?search=' OR '1'='1` hoặc ký tự nháy đơn `'` để chứng minh backend bị lỗi cú pháp SQL và trả về trang HTML 500 thô *(Bắt Bug SUT dòng 144–149: nối chuỗi trực tiếp `${searchQuery}`)*
+- **Pre-condition:** Không cần đăng nhập
+- **Request Method & Endpoint:** `GET /api/products?search='`
+- **Headers:**
+  - `X-Student-Id: 23127092`
+- **Request Body:** N/A
+- **Expected Status Code:** `200 OK` (Xử lý an toàn bằng Parameterized Query) hoặc `400 Bad Request`
+- **Expected Response Body / Schema:** Bắt buộc phải là JSON (`Content-Type: application/json`), **TUYỆT ĐỐI KHÔNG ĐƯỢC LÀ HTML 500 VỚI NỘI DUNG `<h1>Database Error</h1>`**
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR15_ADV_05: CRITICAL SEC-06 - Search API must use Parameterized Query and NEVER return HTML 500", function () {
+      pm.expect(pm.response.code).to.not.equal(500);
+      pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
+      pm.expect(pm.response.text()).to.not.include("Database Error");
+  });
+  // GHI CHÚ AUDIT: SUT trả về HTML 500 <h1>Database Error</h1> làm lộ lỗi cú pháp SQLite
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Khi kiểm tra tính năng tìm kiếm, AI thường chỉ gửi các từ khóa chữ cái thông thường (`?search=Sony`, `?search=Samsung`). Khi thực hiện kiểm thử bảo mật SQLi, AI thường chỉ kiểm tra assertion thụ động `pm.response.to.not.have.status(500)`. AI không kiểm tra Header `Content-Type` và không kiểm tra chuỗi trả về có chứa mã HTML rò rỉ cấu trúc database hay không. Trong kiến trúc RESTful API, việc một endpoint trả về HTML thay vì JSON khi gặp ký tự đặc biệt là một lỗi nghiêm trọng về cấu hình bảo mật (OWASP API Security Top 8: Security Misconfiguration / CWE-209).
+

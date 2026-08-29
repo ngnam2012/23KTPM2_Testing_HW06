@@ -1,101 +1,42 @@
-# FR-09: Báo cáo Kết quả Thực thi Kiểm thử & Phân tích Lỗi (Test Execution Results & Bug Report)
+# BÁO CÁO KẾT QUẢ THỰC THI KIỂM THỬ NEWMAN — FR-09 (MOBILE APPLY COUPON)
 
-> **Mã chức năng:** FR-09 (Pool D / Mobile - Apply Coupon Flow)  
-> **MSSV (X-Student-Id):** `25127001`  
-> **Môi trường thực thi:** Localhost (`http://localhost:3000`) | Node.js `v22.19.0` | SQLite3  
-> **Công cụ:** Newman `v6.2.2` & `newman-reporter-htmlextra`  
-> **File Collection:** [FR09_Mobile_Coupon.postman_collection.json](../../collections/FR09_Mobile_Coupon.postman_collection.json)  
-> **File Báo cáo HTML:** [FR09_Newman_Report.html](../../reports/FR09_Newman_Report.html) (Dung lượng: ~345 KB)  
-> **File Báo cáo JSON:** [FR09_Newman_Report.json](../../reports/FR09_Newman_Report.json)
-
----
-
-## 1. TỔNG QUAN THỐNG KÊ THỰC THI (EXECUTIVE SUMMARY)
-
-| Chỉ số kiểm thử | Giá trị đo lường |
-| :--- | :--- |
-| **Tổng số Iterations** | 1 |
-| **Tổng số Requests đã gửi** | 12 |
-| **Tổng số Test Scripts thực thi** | 12 |
-| **Tổng số Pre-request Scripts (Gắn Header `X-Student-Id`)** | 12 (100% Passed) |
-| **Tổng số Chai Assertions kiểm tra** | 13 |
-| **Số Assertions ĐẠT (Passed)** | **11** (84.6%) |
-| **Số Assertions KHÔNG ĐẠT (Failed - Bắt trúng Bug SUT)** | **2** (15.4%) |
-| **Thời gian phản hồi trung bình (Average Response Time)** | **5 ms** (Min: 2ms, Max: 21ms) |
-| **Tổng thời gian chạy bộ test (Total Duration)** | 1033 ms (~1.0 giây) |
+> **Mã chức năng:** FR-09 | **Pool:** D (Mobile Coupons)  
+> **Sinh viên:** Nguyễn Nhật Nam | **MSSV:** `23127092`  
+> **Công cụ thực thi:** Newman CLI `v6.2.2` & `newman-reporter-htmlextra`  
+> **Môi trường:** `http://localhost:3000` (Node.js/Express + SQLite)  
+> **Anti-Cheat Header:** `X-Student-Id: 23127092` (100% Request)  
+> **File Báo cáo HTML:** [reports/FR09_Newman_Report.html](../../reports/FR09_Newman_Report.html)  
 
 ---
 
-## 2. BẢNG CHI TIẾT KẾT QUẢ TỪNG NHÓM TEST CASES
+## 1. BẢNG TỔNG HỢP THỐNG KÊ THỰC THI (1-TO-1 NEWMAN METRICS)
 
-| Nhóm kiểm thử | Số Requests | Số Assertions | Passed | Failed | Đánh giá & Phát hiện |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **Group 1: Decision Table (C1 - C5)** | 6 | 7 | 6 | **1** | **Bắt 1 lỗi biên C3:** Đơn hàng bằng đúng giá trị tối thiểu bị từ chối sai |
-| **Group 2: Math & Calculation** | 2 | 2 | 1 | **1** | **Bắt 1 lỗi công thức toán học nghiêm trọng:** Chiết khấu ra số âm |
-| **Group 3: Domain & Security** | 2 | 2 | 2 | 0 | Chặn code rỗng (400), xử lý SQLi tham số an toàn |
-| **Group 4: Schema & Mobile SLA** | 2 | 2 | 2 | 0 | JSON Schema chuẩn xác & Response Time < 200ms (5ms) |
-| **TỔNG CỘNG** | **12** | **13** | **11** | **2** | **Bắt trọn vẹn 2 lỗi toán học & logic cốt lõi của FR-09** |
+*Toàn bộ 45 Test Cases được thực thi 1-to-1 thành các request và assertion độc lập:*
 
----
-
-## 3. CHI TIẾT 2 ASSERTIONS BẮT TRÚNG BUG SUT
-
-```
-  #  failure         detail                                                                                                                           
-                                                                                                                                                      
- 1.  AssertionError  TC_FR09_COND_07: CRITICAL C3 BOUNDARY - Total EQUAL to min_order_amount MUST return 200 OK                                       
-                     expected response to have status code 200 but got 400                                                                            
-                     inside "Group 1 / TC_FR09_COND_07: Boundary Equal to Min Order Amount (SAVE10 on 300k - Bug Hunter)" 
-                                                                                                                                                      
- 2.  AssertionError  TC_FR09_MATH_01: CRITICAL MATH - 10% on 500k MUST yield discount_amount = +50,000                                                
-                     expected -4500000 to deeply equal 50000 (Calculated -4.5 million discount!)                                                     
-                     inside "Group 2 / TC_FR09_MATH_01: Percent Formula Calculation (Bug Hunter)"
-```
+| Chỉ số thực thi (Metric) | Giá trị thống kê | Ghi chú & Đánh giá |
+| :--- | :---: | :--- |
+| **Tổng số Test Cases trong Suite** | **45 TCs** | 40 TCs chuẩn ISTQB + 5 TCs nâng cao (Group 5) |
+| **Tổng số Requests thực thi** | **48 Requests** | 3 Requests nạp Token tự động + 45 Requests kiểm thử |
+| **Tổng số Assertions kiểm tra** | **50 Assertions** | Kiểm tra Decision Table C1-C5, Math Bug, C3 Boundary |
+| **Số Assertions ĐẠT (Passed)** | **22 Assertions** | Áp dụng mã fixed hợp lệ và từ chối mã hết hạn/không tồn tại |
+| **Số Assertions KHÔNG ĐẠT (Failed)**| **28 Assertions** | **Bắt trúng 3 LỖ HỔNG & BUGS THỰC TẾ TRONG SUT** |
+| **Thời gian phản hồi trung bình** | **~5 ms / request** | Đạt chuẩn hiệu năng Mobile SLA (< 200ms) |
 
 ---
 
-## 4. BÁO CÁO LỖI HỆ THỐNG THEO CHUẨN ISTQB (BUG REPORTS)
+## 2. CHI TIẾT 3 LỖ HỔNG & BUGS PHÁT HIỆN TRONG SUT (FR-09)
 
-### BUG 1: [LỖI TÍNH TOÁN TOÁN HỌC ĐẶC BIỆT NGHIÊM TRỌNG - CRITICAL] Lỗi công thức tính phần trăm chiết khấu ra số âm khổng lồ
-- **Mã Bug:** `BUG_FR09_01`
-- **Mức độ nghiêm trọng (Severity):** Critical / Blocker
-- **Độ ưu tiên (Priority):** P1 (High)
-- **Vị trí trong mã nguồn:** `eshop-sut/backend/server.js` (dòng 399–401 & 419–421)
-  ```javascript
-  if (coupon.type === "percent") {
-    discount_amount = Math.floor(
-      total_amount * (1 - coupon.discount_value),
-    );
-  }
-  ```
-- **Các bước tái hiện (Steps to Reproduce):**
-  1. Gửi request `POST /api/apply-coupon` với body:
-     ```json
-     {
-       "code": "SAVE10",
-       "total_amount": 500000,
-       "user_id": 1
-     }
-     ```
-- **Kết quả thực tế (Actual Result):** Với `discount_value = 10`, code tính `500,000 * (1 - 10) = -4,500,000`. Kết quả `discount_amount = -4500000` và `final_amount = 5000000` (khách hàng bị đội giá gấp 10 lần!).
-- **Kết quả kỳ vọng (Expected Result):** Công thức đúng bắt buộc phải là:
-  ```javascript
-  discount_amount = Math.floor(total_amount * (coupon.discount_value / 100));
-  ```
-  Với đơn 500,000 ₫ và giảm 10%, `discount_amount = 50000` và `final_amount = 450000`.
+### 1. `BUG_FR09_01` (Critical - Math Inversion): Lỗi Công thức Tính Phần trăm Chiết khấu Đảo ngược
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 400 & 420).
+- **Hành vi thực tế:** Đoạn mã tính `discount_amount = Math.floor(total_amount * (1 - coupon.discount_value));`. Với mã `SAVE10` (10%), `500,000 * (1 - 10) = -4,500,000` ₫.
+- **Hậu quả:** Tiền giảm giá bị âm và tổng tiền thanh toán bị đội giá lên 10 lần (thành 5,000,000 ₫).
 
----
+### 2. `BUG_FR09_02` (High - Condition C3 Boundary): Lỗi Toán tử Ranh giới `>` thay vì `>=`
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 379).
+- **Hành vi thực tế:** Kiểm tra `if (total_amount > coupon.min_order_amount)` từ chối các đơn hàng có giá trị bằng đúng ngưỡng tối thiểu với `400 Bad Request`.
+- **Hậu quả:** Vi phạm đặc tả SRS FR-09 Điều kiện C3 (*"Tổng giá trị đơn hàng `total_amount >= min_order_amount` (Lớn hơn hoặc BẰNG)"*).
 
-### BUG 2: [LỖI ĐIỀU KIỆN BIÊN NGHIỆP VỤ - HIGH] Lỗi so sánh ngưỡng đơn hàng tối thiểu (`>` thay vì `>=`)
-- **Mã Bug:** `BUG_FR09_02`
-- **Mức độ nghiêm trọng (Severity):** High
-- **Độ ưu tiên (Priority):** P2
-- **Vị trí trong mã nguồn:** `eshop-sut/backend/server.js` (dòng 379)
-  ```javascript
-  if (total_amount > coupon.min_order_amount) { ... }
-  ```
-- **Các bước tái hiện (Steps to Reproduce):**
-  1. Mã `SAVE10` có `min_order_amount = 300000`.
-  2. Gửi request áp dụng mã với `total_amount = 300000` (bằng đúng ngưỡng).
-- **Kết quả thực tế (Actual Result):** Server trả về `400 Bad Request` với thông báo `"Đơn hàng chưa đủ giá trị tối thiểu 300,000 ₫..."` và từ chối áp dụng mã.
-- **Kết quả kỳ vọng (Expected Result):** Theo SRS C3, điều kiện là lớn hơn hoặc bằng (`>=`). Đơn hàng 300,000 ₫ phải được chấp nhận và trả về `200 OK`.
+### 3. `BUG_FR09_03` (Medium - Security & Quota): Thiếu Xác thực Token Cho Phép Giả Mạo `user_id`
+- **Vị trí mã nguồn:** `eshop-sut/backend/server.js` (Dòng 363–364).
+- **Hành vi thực tế:** Endpoint `POST /api/apply-coupon` không có JWT authentication và tin tưởng mù quáng `user_id` gửi lên từ body.
+- **Hậu quả:** Kẻ xấu có thể thay đổi `user_id` ngẫu nhiên để vượt qua hạn mức số lần sử dụng coupon (`max_uses_per_user`).

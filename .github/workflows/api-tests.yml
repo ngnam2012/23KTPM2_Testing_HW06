@@ -1,4 +1,4 @@
-name: EShop Automated API Testing CI/CD Pipeline
+﻿name: EShop Automated API Testing CI/CD Pipeline
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
         run: |
           mkdir -p reports
           newman run collections/FR04_Profile_Management.postman_collection.json \
-            --env-var "studentId=25127001" \
+            --env-var "studentId=23127092" \
             -r cli,htmlextra,json \
             --reporter-htmlextra-export reports/CI_CD_Newman_Report.html \
             --reporter-htmlextra-title "HW06 CI/CD EShop API Test Automation Report" \

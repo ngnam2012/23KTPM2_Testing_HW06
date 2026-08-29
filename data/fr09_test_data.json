@@ -1,145 +1,587 @@
 [
   {
     "tc_id": "TC_FR09_COND_01",
-    "category": "Decision Table (Valid Percent Coupon)",
-    "description": "Apply 10% coupon SAVE10 successfully on 500k order",
+    "category": "Decision Table (Valid All 5 Conditions - Percent Coupon",
+    "objective": "Kiểm tra áp dụng thành công mã giảm giá theo phần trăm khi thỏa mãn toàn bộ 5 điều kiện C1-C5",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "SAVE10",
-      "total_amount": 500000,
-      "user_id": 1
-    },
-    "expected_status": 200,
-    "expected_discount": 50000,
-    "expected_final": 450000
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR09_COND_02",
-    "category": "Decision Table (Valid Fixed Coupon)",
-    "description": "Apply 50k fixed coupon BIGBUY successfully on 600k order",
+    "category": "Decision Table (Valid All 5 Conditions - Fixed Coupon",
+    "objective": "Kiểm tra áp dụng thành công mã giảm giá số tiền cố định khi thỏa mãn C1-C5",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "BIGBUY",
-      "total_amount": 600000,
-      "user_id": 1
-    },
-    "expected_status": 200,
-    "expected_discount": 50000,
-    "expected_final": 550000
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
     "tc_id": "TC_FR09_COND_03",
-    "category": "Decision Table (Violate C1 - Non-existent Code)",
-    "description": "Reject non-existent coupon code",
+    "category": "Decision Table (Violate C1 - Non-existent Coupon Code)",
+    "objective": "Kiểm tra từ chối khi nhập mã giảm giá không tồn tại trong hệ thống",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "FAKE_COUPON_999",
-      "total_amount": 500000,
-      "user_id": 1
+    "body": "json",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR09_COND_04",
+    "category": "Decision Table (Violate C1 - Inactive Coupon",
+    "objective": "Kiểm tra từ chối khi mã giảm giá đã bị Admin vô hiệu hóa (",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "expected_status": 404
+    "body": "json",
+    "expected_status": "404 Not Found"
   },
   {
     "tc_id": "TC_FR09_COND_05",
-    "category": "Decision Table (Violate C2 - Expired Coupon)",
-    "description": "Reject expired coupon code",
+    "category": "Decision Table (Violate C2 - Expired Coupon",
+    "objective": "Kiểm tra từ chối khi mã giảm giá đã hết hạn sử dụng (",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "EXPIRED",
-      "total_amount": 500000,
-      "user_id": 1
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR09_COND_06",
-    "category": "Decision Table (Violate C3 - Below Minimum Order)",
-    "description": "Reject order below minimum amount (200k < 300k)",
+    "category": "Decision Table (Violate C3 - Total Below Minimum Order Amount)",
+    "objective": "Kiểm tra từ chối khi tổng tiền đơn hàng nhỏ hơn ngưỡng tối thiểu (",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "SAVE10",
-      "total_amount": 200000,
-      "user_id": 1
-    },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR09_COND_07",
-    "category": "Decision Table (Boundary C3 - Exactly Equal Minimum Order)",
-    "description": "Accept order exactly equal to minimum amount (300k === 300k)",
+    "category": "Decision Table Bug Hunter (Boundary C3 - Total Exactly Equals Min Order Amount)",
+    "objective": "Kiểm tra áp dụng THÀNH CÔNG khi tổng tiền đơn hàng BẰNG ĐÚNG ngưỡng tối thiểu (",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "SAVE10",
-      "total_amount": 300000,
-      "user_id": 1
-    },
-    "expected_status": 200,
-    "bug_note": "SUT uses total_amount > min_order_amount instead of >=, rejecting valid orders at exact threshold"
+    "body": "json",
+    "expected_status": "200 OK"
   },
   {
-    "tc_id": "TC_FR09_MATH_01",
-    "category": "Math (Percent Formula Calculation)",
-    "description": "Ensure 10% discount on 500k calculates as positive 50000",
+    "tc_id": "TC_FR09_COND_08",
+    "category": "Boundary Value Analysis (Boundary C3 - Min - 1:",
+    "objective": "Phân tích giá trị biên: Tổng tiền thiếu đúng 1 đồng so với ngưỡng tối thiểu",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "SAVE10",
-      "total_amount": 500000,
-      "user_id": 1
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_COND_09",
+    "category": "Boundary Value Analysis (Boundary C3 - Min + 1:",
+    "objective": "Phân tích giá trị biên: Tổng tiền vượt đúng 1 đồng so với ngưỡng tối thiểu",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "expected_status": 200,
-    "expected_discount": 50000,
-    "bug_note": "SUT calculates total_amount * (1 - discount_value), resulting in negative millions"
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_COND_10",
+    "category": "Boundary Value Analysis (Boundary C3 on Fixed Coupon:",
+    "objective": "Kiểm tra áp dụng thành công khi",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_COND_11",
+    "category": "Decision Table (Condition C4 - Anonymous User without",
+    "objective": "Kiểm tra áp dụng mã giảm giá khi khách vãng lai không truyền",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_COND_12",
+    "category": "Decision Table (Condition C4 - Non-existent User ID",
+    "objective": "Kiểm tra áp dụng mã giảm giá với",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_COND_13",
+    "category": "Decision Table (Violate C5 - Usage Limit Reached",
+    "objective": "Kiểm tra từ chối khi người dùng đã sử dụng mã quá số lần cho phép",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_COND_14",
+    "category": "Decision Table (Condition C5 - First Use of Multi-use Coupon)",
+    "objective": "Áp dụng mã",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_COND_15",
+    "category": "Decision Table (Combined Violation: Inactive AND Expired)",
+    "objective": "Kiểm tra xử lý khi mã giảm giá vừa bị vô hiệu hóa vừa hết hạn",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_COND_16",
+    "category": "Domain & Usability (Case-Insensitive Coupon Code",
+    "objective": "Kiểm tra nhập mã bằng chữ thường (",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_01",
+    "category": "Domain (BVA - Zero Total Amount",
+    "objective": "Kiểm tra từ chối khi tổng tiền đơn hàng bằng 0",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_02",
+    "category": "Domain (BVA - Negative Total Amount",
+    "objective": "Kiểm tra từ chối khi tổng tiền đơn hàng là số âm",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
   },
   {
     "tc_id": "TC_FR09_DOM_03",
-    "category": "Domain (Empty Code)",
-    "description": "Reject request with empty code string",
+    "category": "Domain (EP - Empty Coupon Code",
+    "objective": "Kiểm tra từ chối khi trường code là chuỗi rỗng",
     "method": "POST",
     "endpoint": "/api/apply-coupon",
     "headers": {
-      "Content-Type": "application/json",
-      "X-Student-Id": "25127001"
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "body": {
-      "code": "",
-      "total_amount": 500000,
-      "user_id": 1
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_04",
+    "category": "Domain (EP - Whitespace Only Coupon Code",
+    "objective": "Kiểm tra từ chối khi trường code toàn khoảng trắng",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
     },
-    "expected_status": 400
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_05",
+    "category": "Domain (EP - Non-numeric String Total Amount)",
+    "objective": "Kiểm tra từ chối khi",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_04",
+    "category": "Type Consistency (Numeric Type Verification on Calculated Fields)",
+    "objective": "Đảm bảo",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"BIGBUY\", \"total_amount\": 600000, \"user_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_05",
+    "category": "Anti-Cheat Header Enforcement (X-Student-Id Verification)",
+    "objective": "Xác thực Header",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"BIGBUY\", \"total_amount\": 600000, \"user_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_06",
+    "category": "Performance SLA (Mobile Checkout Response Time < 200ms)",
+    "objective": "Kiểm tra thời gian phản hồi của API áp dụng mã giảm giá đáp ứng trải nghiệm mượt mà trên Mobile App (< 200ms)",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"SAVE10\", \"total_amount\": 500000, \"user_id\": 1}",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_01",
+    "category": "Math Bug Hunter (Percent Formula Verification - 10% on 500k)",
+    "objective": "Kiểm tra công thức tính phần trăm: Giảm 10% trên đơn 500k phải ra",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_02",
+    "category": "Math Calculation (Fixed Discount Calculation - 50k off 600k)",
+    "objective": "Kiểm tra tính đúng tiền giảm fixed 50k trên đơn 600k",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_03",
+    "category": "Math Boundary (Order Below Minimum for Fixed Coupon - C3 Precedence)",
+    "objective": "Kiểm tra khi gửi đơn hàng",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_04",
+    "category": "Math Boundary (Order Below Minimum for Fixed Coupon - C3 Precedence)",
+    "objective": "Kiểm tra khi gửi đơn hàng",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_05",
+    "category": "Math Precision (Percent Rounding on Fractional Amount)",
+    "objective": "Kiểm tra làm tròn số tiền chiết khấu bằng",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_06",
+    "category": "Math Scalability (Large Total Amount 100,000,000)",
+    "objective": "Kiểm tra tính toán chiết khấu chính xác với đơn hàng giá trị lớn (100 triệu)",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_07",
+    "category": "Math Invariant (Arithmetic Sum Property:",
+    "objective": "Kiểm tra bất biến số học: Tổng tiền sau giảm cộng tiền giảm phải luôn bằng tổng tiền ban đầu",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_08",
+    "category": "Math Invariant (Non-Negative Discount Assertion)",
+    "objective": "Xác thực số tiền giảm giá",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_09",
+    "category": "Math Invariant (Non-Negative Final Amount Assertion)",
+    "objective": "Xác thực số tiền thanh toán cuối cùng",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_10",
+    "category": "Math Edge (Fixed 100k Discount on 1 Million)",
+    "objective": "Kiểm tra tính đúng mã 100k trên đơn 1,000,000 ➔ Còn 900,000",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_MATH_11",
+    "category": "Math Edge (Discount Message Formatting Check)",
+    "objective": "Kiểm tra nội dung chuỗi thông báo trả về (",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_06",
+    "category": "Security (SEC-06 - SQL Injection in Coupon Code Parameter)",
+    "objective": "Kiểm tra khả năng chống SQL Injection trong trường",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR09_DOM_07",
+    "category": "Security (SEC-06 - Stored/Reflected XSS in Coupon Code)",
+    "objective": "Kiểm tra an toàn khi chèn payload XSS trong",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR09_ADV_04",
+    "category": "Security & Identity Integrity (Unauthenticated User ID Spoofing & Quota Bypass)",
+    "objective": "Kiểm tra tính toàn vẹn định danh người dùng: Gọi",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "Hệ thống chuẩn an toàn phải yêu cầu đăng nhập và lấy"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_01",
+    "category": "Schema Validation (POST /api/apply-coupon 200 OK Response Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema phản hồi thành công khi áp dụng mã giảm giá",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_02",
+    "category": "Schema Validation (400 Bad Request Error Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema của phản hồi lỗi 400 Bad Request",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "{\"total_amount\": 500000}",
+    "expected_status": "400 Bad Request"
+  },
+  {
+    "tc_id": "TC_FR09_SCHEMA_03",
+    "category": "Schema Validation (404 Not Found Error Schema)",
+    "objective": "Kiểm tra cấu trúc JSON Schema của phản hồi lỗi 404 Not Found",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"UNKNOWN_CODE\", \"total_amount\": 500000}",
+    "expected_status": "404 Not Found"
+  },
+  {
+    "tc_id": "TC_FR09_ADV_01",
+    "category": "Math Logic Bug Hunter (Critical Percent Formula Inversion",
+    "objective": "Phát hiện lỗi công thức toán học nghiêm trọng làm số tiền giảm giá biến thành số âm khổng lồ: Áp dụng mã",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_ADV_02",
+    "category": "Boundary Operator Bug Hunter (Threshold Operator",
+    "objective": "Kiểm tra áp dụng mã tại ĐÚNG ĐIỂM BIÊN NGƯỠNG ĐƠN HÀNG TỐI THIỂU: Gửi",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_ADV_03",
+    "category": "Arithmetic Invariant (Fixed Coupon Exceeding Total & Non-Negative Invariant",
+    "objective": "Kiểm tra tính bất biến số học trong tài chính: Khi mã giảm giá cố định có giá trị giảm lớn hơn tổng tiền đơn hàng (",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
+  },
+  {
+    "tc_id": "TC_FR09_ADV_05",
+    "category": "Date & Time Boundary (Midnight ISO Timestamp Expiration Truncation)",
+    "objective": "Kiểm tra tính chính xác của thời gian hết hạn (Condition C2): Mã giảm giá có hạn sử dụng ghi ngày",
+    "method": "POST",
+    "endpoint": "/api/apply-coupon",
+    "headers": {
+      "X-Student-Id": "{{studentId}}",
+      "Content-Type": "application/json"
+    },
+    "body": "json",
+    "expected_status": "200 OK"
   }
 ]

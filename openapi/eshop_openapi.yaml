@@ -1,0 +1,494 @@
+openapi: 3.0.3
+info:
+  title: EShop Backend SUT - API Specification
+  description: |
+    Tài liệu Đặc tả API chuẩn OpenAPI 3.0 cho hệ thống EShop SUT phục vụ bài tập HW06 Kiểm thử phần mềm.
+    Hỗ trợ đầy đủ các phân vùng tính năng: Authentication, Users, Products, Categories, Cart, Orders, Coupons, và Admin CRUD.
+  version: 1.0.0
+  contact:
+    name: Nguyễn Nhật Nam (MSSV: 23127092)
+    email: 23127092@student.hcmus.edu.vn
+servers:
+  - url: http://localhost:3000
+    description: Local SUT Environment
+
+paths:
+  # ==========================================
+  # POOL A: AUTHENTICATION & USERS
+  # ==========================================
+  /api/register:
+    post:
+      summary: Đăng ký tài khoản người dùng mới (FR-01)
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterSuccessResponse'
+        '400':
+          description: Dữ liệu không hợp lệ hoặc Email đã tồn tại
+
+  /api/login:
+    post:
+      summary: Đăng nhập hệ thống (FR-02)
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công, trả về JWT Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessResponse'
+        '401':
+          description: Sai email hoặc mật khẩu
+        '403':
+          description: Tài khoản bị khóa (Lockout sau 5 lần sai)
+
+  /api/forgot-password:
+    post:
+      summary: Yêu cầu mã đặt lại mật khẩu (FR-03 Step 1)
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Mã OTP / Reset Token được tạo thành công
+        '404':
+          description: Email không tồn tại
+
+  /api/reset-password:
+    post:
+      summary: Đặt lại mật khẩu với Token (FR-03 Step 2)
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, resetToken, newPassword]
+              properties:
+                email: { type: string, format: email }
+                resetToken: { type: string }
+                newPassword: { type: string, minLength: 6 }
+      responses:
+        '200':
+          description: Đặt lại mật khẩu thành công
+        '400':
+          description: Token không hợp lệ hoặc hết hạn
+
+  /api/users/me:
+    get:
+      summary: Lấy thông tin hồ sơ cá nhân hiện tại (FR-04)
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Thông tin người dùng (Không được chứa password/reset_token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          description: Chưa đăng nhập hoặc thiếu Token
+    put:
+      summary: Cập nhật thông tin hồ sơ cá nhân (FR-04)
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Cập nhật hồ sơ thành công
+        '400':
+          description: Số điện thoại không hợp lệ hoặc dữ liệu sai định dạng
+        '401':
+          description: Chưa xác thực
+
+  # ==========================================
+  # POOL A & C: PRODUCTS & CATEGORIES
+  # ==========================================
+  /api/products:
+    get:
+      summary: Danh sách sản phẩm và tìm kiếm (FR-05)
+      tags:
+        - Products
+      parameters:
+        - name: search
+          in: query
+          description: Từ khóa tìm kiếm theo tên sản phẩm
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: ID danh mục cần lọc
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Danh sách sản phẩm phù hợp
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Thêm mới sản phẩm (FR-15 Admin)
+      tags:
+        - Admin Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Sản phẩm được tạo thành công
+        '400':
+          description: Giá tiền âm, tên rỗng hoặc danh mục không tồn tại
+        '401':
+          description: Chưa xác thực
+        '403':
+          description: Quyền hạn không phải Admin (BFLA Violation)
+
+  /api/products/{id}:
+    get:
+      summary: Xem chi tiết sản phẩm theo ID (FR-06)
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Chi tiết sản phẩm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Sản phẩm không tồn tại
+    put:
+      summary: Cập nhật thông tin sản phẩm (FR-15 Admin)
+      tags:
+        - Admin Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+        '404':
+          description: Không tìm thấy sản phẩm
+    delete:
+      summary: Xóa sản phẩm (FR-15 Admin)
+      tags:
+        - Admin Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Xóa sản phẩm thành công
+        '404':
+          description: Không tìm thấy sản phẩm
+
+  # ==========================================
+  # POOL B: CART & ORDERS
+  # ==========================================
+  /api/cart:
+    get:
+      summary: Xem giỏ hàng của người dùng (FR-07)
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Danh sách sản phẩm trong giỏ hàng
+    post:
+      summary: Thêm sản phẩm vào giỏ hàng (FR-07)
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantity]
+              properties:
+                productId: { type: integer, minimum: 1 }
+                quantity: { type: integer, minimum: 1, maximum: 99 }
+      responses:
+        '200':
+          description: Thêm vào giỏ hàng thành công
+
+  /api/checkout:
+    post:
+      summary: Đặt hàng từ giỏ hàng (FR-08)
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [total_amount, shipping_address]
+              properties:
+                total_amount: { type: integer, minimum: 1000 }
+                shipping_address: { type: string, minLength: 5 }
+                coupon_code: { type: string }
+      responses:
+        '200':
+          description: Đặt hàng thành công, tạo đơn trạng thái pending
+
+  /api/orders/my-orders:
+    get:
+      summary: Xem lịch sử đơn hàng của tôi (FR-11)
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Danh sách đơn hàng thuộc sở hữu của user
+
+  /api/orders/{id}:
+    get:
+      summary: Xem chi tiết đơn hàng (FR-10 / SEC-01 BOLA)
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Chi tiết đơn hàng (Chỉ chủ sở hữu hoặc Admin được xem)
+        '403':
+          description: Từ chối truy cập đơn hàng của người khác (BOLA Protection)
+        '404':
+          description: Không tìm thấy đơn hàng
+
+  /api/orders/{id}/cancel:
+    put:
+      summary: Hủy đơn hàng theo Máy Trạng Thái (FR-10)
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Hủy đơn hàng thành công (Chuyển sang trạng thái canceled)
+        '400':
+          description: Không thể hủy đơn hàng đã shipping, delivered hoặc canceled
+        '403':
+          description: Không có quyền hủy đơn hàng của người khác
+
+  # ==========================================
+  # POOL D & C: COUPONS
+  # ==========================================
+  /api/apply-coupon:
+    post:
+      summary: Áp dụng mã giảm giá Mobile Flow (FR-09)
+      tags:
+        - Coupons
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyCouponRequest'
+      responses:
+        '200':
+          description: Áp dụng mã thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyCouponResponse'
+        '400':
+          description: Mã không hợp lệ, hết hạn, chưa đủ giá trị tối thiểu hoặc hết lượt
+
+  /api/coupons:
+    get:
+      summary: Danh sách mã giảm giá (FR-17 Admin)
+      tags:
+        - Admin Coupons
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Danh sách tất cả coupons trong hệ thống
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    StudentIdHeader:
+      type: apiKey
+      in: header
+      name: X-Student-Id
+      description: Header Anti-Cheat bắt buộc chứa MSSV (23127092)
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 50, example: "Nguyen Van A" }
+        email: { type: string, format: email, example: "user@domain.com" }
+        password: { type: string, minLength: 6, example: "Password123!" }
+
+    RegisterSuccessResponse:
+      type: object
+      properties:
+        message: { type: string, example: "User registered successfully" }
+        id: { type: integer, example: 1 }
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: "user@domain.com" }
+        password: { type: string, example: "Password123!" }
+
+    LoginSuccessResponse:
+      type: object
+      properties:
+        token: { type: string, example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
+        user:
+          type: object
+          properties:
+            id: { type: integer }
+            email: { type: string }
+            name: { type: string }
+            role: { type: string, enum: [user, admin] }
+
+    UserProfileResponse:
+      type: object
+      required: [id, email, name, role]
+      properties:
+        id: { type: integer, example: 1 }
+        email: { type: string, example: "user@domain.com" }
+        name: { type: string, example: "Nguyen Van A" }
+        role: { type: string, example: "user" }
+        phone: { type: string, nullable: true, example: "0912345678" }
+        shipping_address: { type: string, nullable: true, example: "123 Le Loi, Q1" }
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100, example: "Nguyen Van B" }
+        phone: { type: string, pattern: "^0[0-9]{9,10}$", example: "0987654321" }
+        shipping_address: { type: string, minLength: 5, maxLength: 255, example: "456 Tran Phu, Q5" }
+
+    Product:
+      type: object
+      required: [id, name, price, category_id]
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: "iPhone 15 Pro" }
+        price: { type: integer, example: 28000000 }
+        description: { type: string, example: "Dung luong 256GB" }
+        imageUrl: { type: string, format: uri, example: "https://placehold.co/300" }
+        category_id: { type: integer, example: 1 }
+
+    CreateProductRequest:
+      type: object
+      required: [name, price, category_id]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 150, example: "Laptop Dell XPS" }
+        price: { type: integer, minimum: 1000, example: 32000000 }
+        description: { type: string, example: "RAM 16GB SSD 512GB" }
+        imageUrl: { type: string, example: "https://placehold.co/300" }
+        category_id: { type: integer, minimum: 1, example: 1 }
+
+    ApplyCouponRequest:
+      type: object
+      required: [code, total_amount]
+      properties:
+        code: { type: string, minLength: 1, maxLength: 20, example: "SAVE10" }
+        total_amount: { type: integer, minimum: 0, example: 500000 }
+        user_id: { type: integer, minimum: 1, example: 1 }
+
+    ApplyCouponResponse:
+      type: object
+      required: [success, coupon_id, discount_amount, final_amount]
+      properties:
+        success: { type: boolean, example: true }
+        coupon_id: { type: integer, example: 1 }
+        discount_amount: { type: integer, minimum: 0, example: 50000 }
+        final_amount: { type: integer, minimum: 0, example: 450000 }
+        message: { type: string, example: "Áp dụng mã giảm giá thành công" }

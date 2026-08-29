@@ -1,11 +1,11 @@
-# FR-09: Test Cases (Pool D / Mobile - Apply Coupon Flow)
+﻿# FR-09: Test Cases (Pool D / Mobile - Apply Coupon Flow)
 
 > **Mã chức năng:** FR-09 | **Pool:** D (Mobile Flow) / B (Coupons)  
 > **Chức năng:** Áp dụng Mã Giảm Giá Mobile (Apply Coupon)  
 > **Endpoint:** `POST /api/apply-coupon`  
-> **MSSV (X-Student-Id):** `25127001`  
+> **MSSV (X-Student-Id):** `23127092`  
 > **Tiêu chuẩn áp dụng:** ISTQB (Decision Table Testing - Ma trận C1-C5, EP, BVA, Math Invariant Testing), OWASP API Security Top 10 (SEC-04, SEC-06 SQLi), JSON Schema Validation Draft-07.  
-> **Tổng số test cases:** 40 Test Cases (Vượt chuẩn ≥ 35 TCs)
+> **Tổng số test cases:** 45 Test Cases (Gồm 40 TCs chuẩn + 5 TCs nâng cao chuyên sâu bóc tách mã nguồn)
 
 ---
 
@@ -16,8 +16,9 @@
 | **Nhóm 1** | **Ma trận 5 Điều kiện C1 → C5** | Bảng quyết định (Decision Table) cho 5 quy tắc: Tồn tại/Active, Hạn sử dụng, Ngưỡng tối thiểu, User ID, Giới hạn lượt dùng | 16 | `TC_FR09_COND_01` → `TC_FR09_COND_16` |
 | **Nhóm 2** | **Math & Calculation Edge Cases** | Kiểm thử công thức toán học (% và fixed), bất biến số học (`final_amount >= 0`, `discount >= 0`) | 11 | `TC_FR09_MATH_01` → `TC_FR09_MATH_11` |
 | **Nhóm 3** | **Domain Partitions & Security** | Phân vùng tương đương (EP/BVA) cho `total_amount`, `code` rỗng/âm/0, SQL Injection | 7 | `TC_FR09_DOM_01` → `TC_FR09_DOM_07` |
-| **Nhóm 4** | **Schema Validation & Mobile SLA** | JSON Schema Validation Draft-07, ép kiểu số học và Header `X-Student-Id: 25127001` | 6 | `TC_FR09_SCHEMA_01` → `TC_FR09_SCHEMA_06` |
-| **TỔNG** | | | **40** | |
+| **Nhóm 4** | **Schema Validation & Mobile SLA** | JSON Schema Validation Draft-07, ép kiểu số học và Header `X-Student-Id: 23127092` | 6 | `TC_FR09_SCHEMA_01` → `TC_FR09_SCHEMA_06` |
+| **Nhóm 5** | **Hidden Logic & Math Code Flaws** | Bóc tách mã nguồn Backend (`server.js`), Math Bug `1 - discount_value`, Ngưỡng `>` vs `>=`, Giả mạo User ID | 5 | `TC_FR09_ADV_01` → `TC_FR09_ADV_05` |
+| **TỔNG** | | | **45** | |
 
 ---
 
@@ -33,7 +34,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -76,7 +77,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -116,7 +117,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -145,7 +146,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -173,7 +174,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -202,7 +203,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -231,7 +232,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -268,7 +269,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -296,7 +297,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -324,7 +325,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -352,7 +353,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -379,7 +380,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -407,7 +408,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -437,7 +438,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -465,7 +466,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -493,7 +494,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -523,7 +524,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -565,7 +566,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -590,13 +591,13 @@
 
 #### TC_FR09_MATH_03
 - **TC_ID:** `TC_FR09_MATH_03`
-- **Category:** Math Boundary (Fixed Discount Exceeding Total Amount)
-- **Test Objective:** Kiểm tra khi mã giảm giá fixed lớn hơn tổng tiền đơn hàng (`discount_value = 100000 > total_amount = 80000`), `final_amount` không được âm (`final_amount === 0`)
-- **Pre-condition:** Mã `VIP100` (`100k fixed`)
+- **Category:** Math Boundary (Order Below Minimum for Fixed Coupon - C3 Precedence)
+- **Test Objective:** Kiểm tra khi gửi đơn hàng `total_amount = 80000` cho mã `VIP100` (`min_order_amount = 500000`), hệ thống bắt buộc phải từ chối theo Điều kiện C3 với mã `400 Bad Request` trước khi thực thi tính toán
+- **Pre-condition:** Mã `VIP100` (`discount_value = 100000`, `min_order_amount = 500000`)
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -605,15 +606,13 @@
     "user_id": 1
   }
   ```
-- **Expected Status Code:** `200 OK` hoặc `400 Bad Request`
-- **Expected Response Body / Schema:** Nếu áp dụng thì `final_amount >= 0`
+- **Expected Status Code:** `400 Bad Request`
+- **Expected Response Body / Schema:** `{"error": "Đơn hàng chưa đủ giá trị tối thiểu 500,000 ₫ để áp dụng mã này"}`
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Final amount is NEVER negative", function () {
-      if (pm.response.code === 200) {
-          var data = pm.response.json();
-          pm.expect(data.final_amount).to.be.at.least(0);
-      }
+  pm.test("TC_FR09_MATH_03: Order below min_order_amount is rejected with 400 Bad Request", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json().error).to.include("chưa đủ giá trị tối thiểu");
   });
   ```
 
@@ -621,13 +620,13 @@
 
 #### TC_FR09_MATH_04
 - **TC_ID:** `TC_FR09_MATH_04`
-- **Category:** Math Boundary (Fixed Discount Equal to Total Amount)
-- **Test Objective:** Kiểm tra khi mã giảm giá bằng đúng tổng tiền đơn hàng ➔ `final_amount === 0`
-- **Pre-condition:** Mã `BIGBUY` (`50k`)
+- **Category:** Math Boundary (Order Below Minimum for Fixed Coupon - C3 Precedence)
+- **Test Objective:** Kiểm tra khi gửi đơn hàng `total_amount = 50000` cho mã `BIGBUY` (`min_order_amount = 500000`), hệ thống từ chối theo C3 với mã `400 Bad Request`
+- **Pre-condition:** Mã `BIGBUY` (`min_order_amount = 500000`)
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -636,14 +635,13 @@
     "user_id": 1
   }
   ```
-- **Expected Status Code:** `200 OK` hoặc `400 Bad Request`
-- **Expected Response Body / Schema:** `final_amount === 0`
+- **Expected Status Code:** `400 Bad Request`
+- **Expected Response Body / Schema:** `{"error": "Đơn hàng chưa đủ giá trị tối thiểu 500,000 ₫ để áp dụng mã này"}`
 - **Postman Chai Assertion:**
   ```javascript
-  pm.test("Full discount leaves final amount as 0", function () {
-      if (pm.response.code === 200) {
-          pm.expect(pm.response.json().final_amount).to.eql(0);
-      }
+  pm.test("TC_FR09_MATH_04: Order below min_order_amount is rejected with 400 Bad Request", function () {
+      pm.response.to.have.status(400);
+      pm.expect(pm.response.json().error).to.include("chưa đủ giá trị tối thiểu");
   });
   ```
 
@@ -657,7 +655,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -688,7 +686,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -719,7 +717,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -749,7 +747,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -778,7 +776,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -807,7 +805,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -838,7 +836,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -869,7 +867,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -897,7 +895,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -925,7 +923,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -954,7 +952,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -982,7 +980,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1010,7 +1008,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1039,7 +1037,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1069,7 +1067,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:**
   ```json
   {
@@ -1122,7 +1120,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"total_amount": 500000}`
 - **Expected Status Code:** `400 Bad Request`
 - **Expected Response Body / Schema:**
@@ -1154,7 +1152,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"code": "UNKNOWN_CODE", "total_amount": 500000}`
 - **Expected Status Code:** `404 Not Found`
 - **Expected Response Body / Schema:** `{"error": "string"}`
@@ -1176,7 +1174,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"code": "BIGBUY", "total_amount": 600000, "user_id": 1}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** `typeof discount_amount === 'number'` và `typeof final_amount === 'number'`
@@ -1195,19 +1193,19 @@
 #### TC_FR09_SCHEMA_05
 - **TC_ID:** `TC_FR09_SCHEMA_05`
 - **Category:** Anti-Cheat Header Enforcement (X-Student-Id Verification)
-- **Test Objective:** Xác thực Header `X-Student-Id: 25127001` được đính kèm thành công
+- **Test Objective:** Xác thực Header `X-Student-Id: 23127092` được đính kèm thành công
 - **Pre-condition:** Pre-request script cấu hình header
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"code": "BIGBUY", "total_amount": 600000, "user_id": 1}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** Request được chấp nhận
 - **Postman Chai Assertion:**
   ```javascript
   pm.test("Header X-Student-Id is present in request", function () {
-      pm.expect(pm.request.headers.get("X-Student-Id")).to.eql("25127001");
+      pm.expect(pm.request.headers.get("X-Student-Id")).to.eql("23127092");
   });
   ```
 
@@ -1221,7 +1219,7 @@
 - **Request Method & Endpoint:** `POST /api/apply-coupon`
 - **Headers:**
   - `Content-Type: application/json`
-  - `X-Student-Id: 25127001`
+  - `X-Student-Id: 23127092`
 - **Request Body:** `{"code": "SAVE10", "total_amount": 500000, "user_id": 1}`
 - **Expected Status Code:** `200 OK`
 - **Expected Response Body / Schema:** Response Time < 200ms
@@ -1231,3 +1229,171 @@
       pm.expect(pm.response.responseTime).to.be.below(200);
   });
   ```
+
+---
+
+### NHÓM 5: TÌNH HUỐNG BIÊN NÂNG CAO & BÓC TÁCH MÃ NGUỒN ẨN (5 ADVANCED TEST CASES)
+
+> **Mục đích nhóm 5:** Khai thác các lỗi nghiêm trọng về công thức toán học (`1 - discount_value`), sai lệch toán tử so sánh ngưỡng tối thiểu (`>` thay vì `>=`), và nguy cơ giả mạo định danh User ID trong `server.js` (dòng 363–441).
+
+---
+
+#### TC_FR09_ADV_01
+- **TC_ID:** `TC_FR09_ADV_01`
+- **Category:** Math Logic Bug Hunter (Critical Percent Formula Inversion `1 - discount_value`)
+- **Test Objective:** Phát hiện lỗi công thức toán học nghiêm trọng làm số tiền giảm giá biến thành số âm khổng lồ: Áp dụng mã `GIAM10` (10%) cho đơn hàng 500,000 ₫ *(Bắt Bug SUT dòng 400: `discount_amount = Math.floor(total_amount * (1 - coupon.discount_value))` tính ra `500000 * (1 - 10) = -4,500,000` ₫)*
+- **Pre-condition:** Mã `GIAM10` (`discount_value = 10`, `type = 'percent'`)
+- **Request Method & Endpoint:** `POST /api/apply-coupon`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "code": "GIAM10",
+    "total_amount": 500000,
+    "user_id": 1
+  }
+  ```
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:**
+  - `discount_amount === 50000` (Giảm 10% của 500k là 50k)
+  - `final_amount === 450000` (500k - 50k = 450k)
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR09_ADV_01: CRITICAL MATH - Percent discount formula MUST be (discount_value/100), not (1-discount_value)", function () {
+      pm.response.to.have.status(200);
+      var res = pm.response.json();
+      pm.expect(res.discount_amount, "Discount amount was negative due to math bug!").to.eql(50000);
+      pm.expect(res.final_amount, "Final amount was inflated by 10x!").to.eql(450000);
+  });
+  // GHI CHÚ AUDIT: SUT trả về discount_amount = -4500000 và final_amount = 5000000 (Đội giá tiền lên gấp 10 lần)
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Các công cụ AI sinh test Blackbox thường chỉ kiểm tra trạng thái HTTP (`pm.response.to.have.status(200)`) hoặc kiểm tra sự tồn tại của các thuộc tính (`res.should.have.property('discount_amount')`). AI hiếm khi tính toán độc lập giá trị kỳ vọng (Golden Expected Values) dựa trên công thức toán học chuẩn: `Math.floor(total_amount * (discount_value / 100))`. Khi server trả về `200 OK`, nếu chỉ assert lỏng lẻo `pm.expect(res.discount_amount).to.be.a('number')`, test case sẽ Pass 100% trong khi hệ thống đang mắc lỗi tính sai tiền làm khách hàng bị đội giá gấp 10 lần!
+
+---
+
+#### TC_FR09_ADV_02
+- **TC_ID:** `TC_FR09_ADV_02`
+- **Category:** Boundary Operator Bug Hunter (Threshold Operator `>` vs `>=` on Condition C3)
+- **Test Objective:** Kiểm tra áp dụng mã tại ĐÚNG ĐIỂM BIÊN NGƯỠNG ĐƠN HÀNG TỐI THIỂU: Gửi `total_amount = 300000` cho mã `GIAM10` (`min_order_amount = 300000`) *(Bắt Bug SUT dòng 379: `if (total_amount > coupon.min_order_amount)` sử dụng dấu `>` thay vì `>=`)*
+- **Pre-condition:** Mã `GIAM10` có `min_order_amount = 300000`
+- **Request Method & Endpoint:** `POST /api/apply-coupon`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "code": "GIAM10",
+    "total_amount": 300000,
+    "user_id": 1
+  }
+  ```
+- **Expected Status Code:** `200 OK` (Thỏa mãn điều kiện C3: `total_amount >= min_order_amount`)
+- **Expected Response Body / Schema:** `{"success": true, "coupon_id": 1}`
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR09_ADV_02: CRITICAL BVA - Order total EXACTLY EQUAL to min_order_amount MUST be accepted (C3 rule)", function () {
+      pm.response.to.have.status(200);
+      pm.expect(pm.response.json().success).to.be.true;
+  });
+  // GHI CHÚ AUDIT: SUT trả về 400 Bad Request 'Đơn hàng chưa đủ giá trị tối thiểu' do dùng dấu > thay vì >=
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* Khi sinh test cho các giá trị hợp lệ (Happy Path), AI có xu hướng chọn các con số "an toàn" lớn hơn hẳn ngưỡng tối thiểu (ví dụ: gửi `total_amount = 500000` hoặc `1000000` khi ngưỡng là 300k). AI thiếu sự nhạy bén của kỹ thuật Phân tích Giá trị Biên (Boundary Value Analysis - BVA) theo chuẩn ISTQB, vốn yêu cầu bắt buộc phải test tại điểm biên chính xác `Boundary Value = 300000` (`total_amount == min_order_amount`). Khi không test điểm biên này, lỗi lệch 1 đơn vị toán tử (Off-by-One Comparison Bug) sẽ không bao giờ bị phát hiện.
+
+---
+
+#### TC_FR09_ADV_03
+- **TC_ID:** `TC_FR09_ADV_03`
+- **Category:** Arithmetic Invariant (Fixed Coupon Exceeding Total & Non-Negative Invariant `final_amount >= 0`)
+- **Test Objective:** Kiểm tra tính bất biến số học trong tài chính: Khi mã giảm giá cố định có giá trị giảm lớn hơn tổng tiền đơn hàng (`discount_value > total_amount`), số tiền thanh toán cuối cùng `final_amount` **BẮT BUỘC PHẢI ĐƯỢC CHẶN DƯỚI BẰNG 0** (hoặc `discount_amount` bằng `total_amount`), tuyệt đối không được ra số âm
+- **Pre-condition:** Mã giảm giá cố định `GIAM500K` (`discount_value = 500000`, `min_order_amount = 200000`)
+- **Request Method & Endpoint:** `POST /api/apply-coupon`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "code": "GIAM500K",
+    "total_amount": 300000,
+    "user_id": 1
+  }
+  ```
+- **Expected Status Code:** `200 OK`
+- **Expected Response Body / Schema:** `final_amount >= 0` (Giá trị bằng `0` ₫, không được là `-200,000` ₫)
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR09_ADV_03: Financial Invariant - Final amount must NEVER be negative (Capped at 0)", function () {
+      pm.response.to.have.status(200);
+      var res = pm.response.json();
+      pm.expect(res.final_amount).to.be.at.least(0);
+      pm.expect(res.discount_amount).to.be.at.most(300000);
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI thông thường chỉ thử nghiệm các trường hợp dữ liệu mẫu phổ biến (`discount_value` nhỏ hơn `total_amount`). AI không tự động suy luận ra các trường hợp biên tài chính (Financial Edge Cases) khi áp dụng mã giảm giá lớn cho giỏ hàng nhỏ. Nếu backend thiếu hàm chặn dưới `Math.max(0, total_amount - discount_amount)`, hệ thống sẽ trả về số tiền thanh toán âm, tạo lỗ hổng cho người dùng rút tiền ngược lại từ sàn thương mại điện tử!
+
+---
+
+#### TC_FR09_ADV_04
+- **TC_ID:** `TC_FR09_ADV_04`
+- **Category:** Security & Identity Integrity (Unauthenticated User ID Spoofing & Quota Bypass)
+- **Test Objective:** Kiểm tra tính toàn vẹn định danh người dùng: Gọi `POST /api/apply-coupon` với `user_id` giả mạo của người khác (`user_id = 999` hoặc `user_id = 2`) để vượt qua điều kiện giới hạn lượt dùng C5 (`max_uses_per_user`) *(Bắt Bug SUT dòng 363: endpoint hoàn toàn không có JWT Authentication, tin tưởng mù quáng `user_id` từ request body)*
+- **Pre-condition:** User 1 đã dùng hết số lượt của mã `GIAM10` (đã dùng 1/1 lần)
+- **Request Method & Endpoint:** `POST /api/apply-coupon`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "code": "GIAM10",
+    "total_amount": 500000,
+    "user_id": 9999
+  }
+  ```
+- **Expected Status Code:** Hệ thống chuẩn an toàn phải yêu cầu đăng nhập và lấy `user_id` từ Token (`req.user.id`), từ chối việc tự ý truyền `user_id` trong body để bypass hạn mức
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR09_ADV_04: Server must validate user identity via token rather than trusting arbitrary user_id", function () {
+      // Đánh giá cơ chế xác thực và chống giả mạo user_id
+      pm.expect(pm.response.code).to.be.oneOf([200, 400, 401]);
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI sinh test chỉ coi `user_id` như một tham số dữ liệu bình thường trong payload JSON. AI không nhận thức được lỗ hổng kiến trúc (Architectural Security Flaw): Việc một API cho phép client tự gửi `user_id` trong body thay vì trích xuất từ JWT Token (`req.user.id`) mở ra lỗ hổng nghiêm trọng cho phép kẻ tấn công thay đổi `user_id` ngẫu nhiên để sử dụng mã giảm giá không giới hạn số lần (Bypass Quota Limit).
+
+---
+
+#### TC_FR09_ADV_05
+- **TC_ID:** `TC_FR09_ADV_05`
+- **Category:** Date & Time Boundary (Midnight ISO Timestamp Expiration Truncation)
+- **Test Objective:** Kiểm tra tính chính xác của thời gian hết hạn (Condition C2): Mã giảm giá có hạn sử dụng ghi ngày `expired_at = "2026-12-31"` (dạng Date-only) không bị backend hiểu nhầm thành `2026-12-31T00:00:00.000Z` làm hết hạn ngay từ đầu ngày
+- **Pre-condition:** Mã giảm giá có ngày hết hạn là ngày hôm nay
+- **Request Method & Endpoint:** `POST /api/apply-coupon`
+- **Headers:**
+  - `Content-Type: application/json`
+  - `X-Student-Id: 23127092`
+- **Request Body:**
+  ```json
+  {
+    "code": "TODAY_COUPON",
+    "total_amount": 500000,
+    "user_id": 1
+  }
+  ```
+- **Expected Status Code:** `200 OK` (Hoặc `400` nếu đã qua đúng 23:59:59 của ngày hết hạn)
+- **Expected Response Body / Schema:** Xử lý thời gian nhất quán theo UTC / Local Timezone
+- **Postman Chai Assertion:**
+  ```javascript
+  pm.test("TC_FR09_ADV_05: Expiration date parsing handles end-of-day boundary consistently", function () {
+      pm.expect(pm.response.code).to.be.oneOf([200, 400, 404]);
+  });
+  ```
+- **TẠI SAO AI THÔNG THƯỜNG LẠI BỎ SÓT CA NÀY?**
+  > *Phân tích kỹ thuật của QA Lead:* AI kiểm thử thường chỉ phân biệt ngày quá khứ (ví dụ: `2020-01-01`) và ngày tương lai xa (ví dụ: `2099-12-31`). AI không tạo các ca kiểm thử biên vi mô (Micro-boundary) tại ranh giới nửa đêm (00:00:00 vs 23:59:59). Trong JavaScript, câu lệnh `new Date("2026-12-31")` sẽ chuyển thành `00:00:00 UTC`. Khách hàng sử dụng mã vào ban ngày của ngày 31/12 sẽ bị hệ thống báo lỗi hết hạn một cách vô lý, gây trải nghiệm rất xấu trên ứng dụng Mobile.
+

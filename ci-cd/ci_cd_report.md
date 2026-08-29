@@ -1,7 +1,7 @@
-# BÁO CÁO TÍCH HỢP CI/CD PIPELINE (HW06 - ESHOP API TESTING)
+﻿# BÁO CÁO TÍCH HỢP CI/CD PIPELINE (HW06 - ESHOP API TESTING)
 
 > **Mã bài tập:** HW06-AI | **Môn học:** Kiểm thử phần mềm (Software Testing)  
-> **MSSV:** `25127001`  
+> **MSSV:** `23127092`  
 > **Repository:** `https://github.com/ngnam2012/23KTPM2_Testing_HW06`  
 > **Hệ thống SUT:** EShop Backend (`Node.js/Express + SQLite3`)  
 > **Nền tảng CI/CD:** GitHub Actions & Newman CLI (`newman-reporter-htmlextra`)  
@@ -45,7 +45,7 @@ File cấu hình [`.github/workflows/api-tests.yml`](../.github/workflows/api-te
 | **4** | **Init SQLite Database** | `node database.js` | Tái tạo sạch sẽ database SQLite (`database.sqlite`), drop các bảng cũ và nạp sẵn tài khoản mẫu. |
 | **5** | **Start Backend & Healthcheck** | `node server.js &`<br>`npx wait-on http://localhost:3000/api/products --timeout 30000` | Khởi động server chạy nền ở cổng 3000, sử dụng công cụ `wait-on` để đảm bảo API sẵn sàng trước khi test. |
 | **6** | **Install Newman** | `npm install -g newman newman-reporter-htmlextra` | Cài đặt công cụ CLI chạy Postman Collection và thư viện xuất báo cáo đồ họa tương tác. |
-| **7** | **Execute API Tests** | `newman run collections/FR04_Profile_Management.postman_collection.json --env-var "studentId=25127001" -r cli,htmlextra,json` | Chạy toàn bộ test suites, tự động đính kèm header `X-Student-Id: 25127001` qua biến môi trường. |
+| **7** | **Execute API Tests** | `newman run collections/FR04_Profile_Management.postman_collection.json --env-var "studentId=23127092" -r cli,htmlextra,json` | Chạy toàn bộ test suites, tự động đính kèm header `X-Student-Id: 23127092` qua biến môi trường. |
 | **8** | **Upload Artifacts** | `actions/upload-artifact@v4` (`if: always()`) | Lưu trữ file báo cáo HTML/JSON lên GitHub Actions Artifacts trong 14 ngày (luôn chạy kể cả khi test fail). |
 
 ---

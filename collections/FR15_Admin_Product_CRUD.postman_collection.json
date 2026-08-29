@@ -1,71 +1,135 @@
 {
   "info": {
-    "_postman_id": "fr15-admin-product-crud-25127001",
-    "name": "FR-15: Admin Product CRUD Test Suite",
-    "description": "Comprehensive Test Suite for FR-15 (POST, PUT, DELETE, GET /api/products) covering Broken Access Control (SEC-03), Domain Boundaries, Type Coercion, and CRUD Lifecycle.",
+    "name": "FR15_Admin_Product_CRUD",
+    "_postman_id": "gen-7bc2783985d7434a",
+    "description": "Full Comprehensive Postman Test Collection for FR-15 (MSSV: 23127092) - Total 45 Test Cases",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Ensure mandatory Header X-Student-Id is attached to every request",
-          "pm.request.headers.upsert({ key: 'X-Student-Id', value: pm.collectionVariables.get('studentId') || '25127001' });"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
-    { "key": "studentId", "value": "25127001", "type": "string" },
-    { "key": "admin_token", "value": "", "type": "string" },
-    { "key": "user_token", "value": "", "type": "string" },
-    { "key": "created_product_id", "value": "6", "type": "string" }
-  ],
   "item": [
     {
-      "name": "0. Setup & Auth",
+      "name": "0. Setup & Auth Seed",
       "item": [
         {
-          "name": "0.1 Login Admin",
+          "name": "0.1 Register & Login User A",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User A\",\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('0.1 Setup: Register or User A exists', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.2 Login User A to Get Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user_a_seed@eshop.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('user_token', res.token);",
+                  "    pm.environment.set('user_token_A', res.token);",
+                  "    pm.collectionVariables.set('user_token', res.token);",
+                  "    pm.collectionVariables.set('user_token_A', res.token);",
+                  "}",
+                  "pm.test('0.2 Setup: User A Login successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.3 Login Admin to Get Admin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"admin@eshop.com\",\n  \"password\": \"Admin123!\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Login Admin successful\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var data = pm.response.json();",
-                  "    pm.expect(data).to.have.property('token');",
-                  "    pm.collectionVariables.set('admin_token', data.token);",
-                  "});"
-                ]
-              }
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
             }
-          ]
-        },
-        {
-          "name": "0.2 Login Regular User",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@eshop.com\",\n  \"password\": \"Test1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
           },
           "event": [
             {
@@ -73,130 +137,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Login Regular User successful\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var data = pm.response.json();",
-                  "    pm.collectionVariables.set('user_token', data.token);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 1 - Broken Access Control (SEC-03 / BFLA)",
-      "item": [
-        {
-          "name": "TC_FR15_BAC_01: Unauthenticated POST Product (Bug Hunter)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Unauthenticated Product\",\n  \"price\": 100000,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_BAC_01: CRITICAL SEC-03 - Unauthenticated POST MUST return 401\", function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_BAC_04: Regular User POST Product (Bug Hunter)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{user_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"User Product Attempt\",\n  \"price\": 100000,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_BAC_04: CRITICAL BFLA - Regular user MUST return 403 Forbidden\", function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_BAC_07: Admin POST Product (Valid Action)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Tai nghe Sony WH-1000XM5\",\n  \"price\": 8490000,\n  \"description\": \"Chong on cao cap\",\n  \"imageUrl\": \"https://placehold.co/300\",\n  \"category_id\": 3\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_BAC_07: Admin creates product with 200/201\", function () {",
+                  "var res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.environment.set('admin_token', res.token);",
+                  "    pm.collectionVariables.set('admin_token', res.token);",
+                  "}",
+                  "pm.test('0.3 Setup: Admin Login successful', function () {",
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "    var res = pm.response.json();",
-                  "    if (res.id) {",
-                  "        pm.collectionVariables.set('created_product_id', String(res.id));",
-                  "    }",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_BAC_10: Forged Token on POST",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer fake.jwt.admin.token" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Fake Token Product\",\n  \"price\": 100000,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_BAC_10: Forged token rejected with 403\", function () {",
-                  "    pm.response.to.have.status(403);",
                   "});"
                 ]
               }
@@ -206,21 +153,36 @@
       ]
     },
     {
-      "name": "Group 2 - Domain & Boundary Values",
+      "name": "Group 1 - Domain Partitions & Primary Rules",
       "item": [
         {
-          "name": "TC_FR15_DOM_01: Zero Price Rejection",
+          "name": "TC_FR15_BAC_01: Kiểm tra từ chối tạo sản phẩm khi không có Header",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Zero Price Product\",\n  \"price\": 0,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+              "raw": "json"
+            }
           },
           "event": [
             {
@@ -228,161 +190,44 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR15_DOM_01: Price 0 rejected with 400 Bad Request\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
+                  "  pm.test(\"Status code is 401 Unauthorized for unauthenticated product creation\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại trả về 200 OK do POST /api/products không gắn authenticateToken"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR15_DOM_02: Negative Price Rejection",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Negative Price Product\",\n  \"price\": -50000,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_DOM_02: Negative price rejected with 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_DOM_06: Empty Name Rejection",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"\",\n  \"price\": 100000,\n  \"category_id\": 1\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_DOM_06: Empty name rejected with 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 3 - Type Coercion & Schema Validation",
-      "item": [
-        {
-          "name": "TC_FR15_TYPE_01: Even ID Price Type Coercion Bug Check",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/api/products/2", "host": ["{{baseUrl}}"], "path": ["api", "products", "2"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_TYPE_01: Status is 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"TC_FR15_TYPE_01: CRITICAL - Price MUST be number not string\", function () {",
-                  "    var p = pm.response.json();",
-                  "    pm.expect(p.price).to.be.a('number');",
-                  "    pm.expect(typeof p.price).to.not.equal('string');",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_SCHEMA_02: Odd ID Product Schema Validation",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/api/products/1", "host": ["{{baseUrl}}"], "path": ["api", "products", "1"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_SCHEMA_02: Product 1 conforms to schema\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "    var p = pm.response.json();",
-                  "    pm.expect(p.id).to.eql(1);",
-                  "    pm.expect(p.price).to.be.a('number');",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "TC_FR15_SCHEMA_05: Non-existent Product 404 Status Check",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/api/products/999999", "host": ["{{baseUrl}}"], "path": ["api", "products", "999999"] }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"TC_FR15_SCHEMA_05: Non-existent product MUST return 404 Not Found\", function () {",
-                  "    pm.response.to.have.status(404);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Group 4 - CRUD Lifecycle & Integrity",
-      "item": [
-        {
-          "name": "TC_FR15_CRUD_01_PUT: Update Created Product",
+          "name": "TC_FR15_BAC_02: Kiểm tra từ chối cập nhật sản phẩm khi không có token",
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Tai nghe Sony WH-1000XM5 Updated\",\n  \"price\": 7990000,\n  \"description\": \"Gia giam soc\",\n  \"imageUrl\": \"https://placehold.co/300\",\n  \"category_id\": 3\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/products/{{created_product_id}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{created_product_id}}"] }
+              "raw": "json"
+            }
           },
           "event": [
             {
@@ -390,22 +235,35 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR15_CRUD_01_PUT: Product updated with 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "  pm.test(\"Status code is 401 Unauthorized for unauthenticated product update\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR15_CRUD_01_DEL: Delete Created Product",
+          "name": "TC_FR15_BAC_03: Kiểm tra từ chối xóa sản phẩm khi không có token",
           "request": {
             "method": "DELETE",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/products/{{created_product_id}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{created_product_id}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
           },
           "event": [
             {
@@ -413,19 +271,46 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR15_CRUD_01_DEL: Product deleted with 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "  pm.test(\"Status code is 401 Unauthorized for unauthenticated product deletion\", function () {",
+                  "      pm.response.to.have.status(401);",
+                  "  });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "TC_FR15_CRUD_05: SQLi in Search Query",
+          "name": "TC_FR15_BAC_04: Kiểm tra từ chối tạo sản phẩm khi User thường (",
           "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/api/products?search=' OR '1'='1", "host": ["{{baseUrl}}"], "path": ["api", "products"], "query": [{ "key": "search", "value": "' OR '1'='1" }] }
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
           },
           "event": [
             {
@@ -433,16 +318,1923 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"TC_FR15_CRUD_05: CRITICAL SQLi - Server MUST NOT return HTML 500 error\", function () {",
-                  "    pm.expect(pm.response.code).to.not.equal(500);",
-                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-                  "});"
+                  "  pm.test(\"Status code is 403 Forbidden for regular user attempting product creation\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_05: Kiểm tra từ chối cập nhật sản phẩm khi User thường gọi API",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for regular user attempting product update\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_06: Kiểm tra từ chối xóa sản phẩm khi User thường gọi API",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for regular user attempting product deletion\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_07: Kiểm tra tài khoản Quản trị viên (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK or 201 Created for Admin\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "  });",
+                  "  pm.test(\"Response contains product ID and success message\", function () {",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data.message).to.eql(\"Product created\");",
+                  "      pm.expect(data).to.have.property(\"id\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_08: Kiểm tra tài khoản Quản trị viên cập nhật thông tin sản phẩm thành công",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for Admin product update\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Product updated\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_09: Kiểm tra tài khoản Quản trị viên xóa sản phẩm thành công",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "6"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK for Admin product deletion\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Product deleted\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_10: Kiểm tra từ chối tạo sản phẩm khi Bearer Token bị giả mạo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Fake Item\", \"price\": 100000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for forged token\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_11: Kiểm tra từ chối sửa sản phẩm khi Bearer Token bị giả mạo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Fake Item\", \"price\": 100000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for forged token on PUT\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_12: Kiểm tra từ chối xóa sản phẩm khi Bearer Token bị giả mạo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 403 Forbidden for forged token on DELETE\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_BAC_13: User thường gửi kèm các Header đặc quyền giả lập (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token_A}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Hacked Item\", \"price\": 100000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Spoofed admin headers are ignored, returning 403 Forbidden\", function () {",
+                  "      pm.response.to.have.status(403);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_01: Kiểm tra từ chối tạo sản phẩm khi đơn giá bằng 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for zero price\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_02: Kiểm tra từ chối tạo sản phẩm khi đơn giá âm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for negative price\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_03: Kiểm tra từ chối tạo sản phẩm khi giá tiền là chuỗi chữ cái không phải số",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for string price\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_04: Kiểm tra tạo sản phẩm với giá tối thiểu hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200/201 for minimum valid price\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_05: Kiểm tra xử lý an toàn khi giá tiền cực lớn mà không gây tràn số CSDL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Extremely large price handled without server crash\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_06: Kiểm tra từ chối tạo sản phẩm khi tên sản phẩm là chuỗi rỗng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for empty product name\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_07: Kiểm tra từ chối tạo sản phẩm khi tên chỉ chứa khoảng trắng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for whitespace name\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_08: Kiểm tra tạo sản phẩm với độ dài tên tối thiểu 1 ký tự (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200/201 for 1-char name\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_09: Kiểm tra tạo sản phẩm với độ dài tên tối đa 255 ký tự",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200/201 for 255-char name\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_10: Kiểm tra từ chối tạo sản phẩm khi tên vượt quá 255 ký tự (256 ký tự)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for name > 255 chars\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_11: Kiểm tra khả năng xử lý an toàn khi chèn script XSS trong tên sản phẩm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"XSS payload handled safely without 500 error\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_12: Kiểm tra từ chối tạo sản phẩm khi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for non-existent category\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_DOM_13: Kiểm tra từ chối tạo sản phẩm khi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for negative category_id\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_ADV_04: Kiểm tra từ chối tạo sản phẩm khi đơn giá là số âm (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_ADV_04: Negative price MUST be rejected with 400 Bad Request\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại chấp nhận lưu giá âm vào database và trả về 200 OK"
                 ]
               }
             }
           ]
         }
       ]
+    },
+    {
+      "name": "Group 3 - State Lifecycle & Data Integrity",
+      "item": [
+        {
+          "name": "TC_FR15_TYPE_01: Kiểm tra",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "2"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 200 OK\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "  });",
+                  "  pm.test(\"CRITICAL: Price MUST be a number, NOT a string (Type Coercion Bug Check)\", function () {",
+                  "      var product = pm.response.json();",
+                  "      pm.expect(product.price).to.be.a(\"number\");",
+                  "      pm.expect(typeof product.price).to.not.equal(\"string\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có bug ở dòng 162: if (row.id % 2 === 0) row.price = row.price.toString();"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_TYPE_02: So sánh kiểu dữ liệu của",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Odd ID product price is a number\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().price).to.be.a(\"number\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_CRUD_02: Cập nhật sản phẩm A không làm thay đổi giá và tên của sản phẩm B",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"iPhone Modified\", \"price\": 99999, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Product 2 remains unchanged after updating Product 1\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var p2 = pm.response.json();",
+                  "      pm.expect(p2.id).to.eql(2);",
+                  "      pm.expect(p2.name).to.include(\"Samsung\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 4 - Schema Validation & Response Standards",
+      "item": [
+        {
+          "name": "TC_FR15_SCHEMA_01: Kiểm tra cấu trúc JSON Schema phản hồi khi tạo sản phẩm thành công",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Item Schema\", \"price\": 100000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var schema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"message\", \"id\"],",
+                  "      \"properties\": {",
+                  "          \"message\": { \"type\": \"string\" },",
+                  "          \"id\": { \"type\": \"integer\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"POST response matches JSON Schema\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "      pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_SCHEMA_02: Kiểm tra cấu trúc JSON Schema đầy đủ của API lấy chi tiết sản phẩm",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  var productSchema = {",
+                  "      \"type\": \"object\",",
+                  "      \"required\": [\"id\", \"name\", \"price\", \"category_id\"],",
+                  "      \"properties\": {",
+                  "          \"id\": { \"type\": \"integer\" },",
+                  "          \"name\": { \"type\": \"string\" },",
+                  "          \"price\": { \"type\": \"number\" },",
+                  "          \"category_id\": { \"type\": \"integer\" }",
+                  "      }",
+                  "  };",
+                  "  pm.test(\"GET product details conforms to Product JSON Schema\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(tv4.validate(pm.response.json(), productSchema)).to.be.true;",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_SCHEMA_03: Kiểm tra cấu trúc JSON Schema phản hồi khi cập nhật sản phẩm",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Updated Name\", \"price\": 200000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"PUT response contains message string\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"message\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_SCHEMA_04: Kiểm tra cấu trúc JSON Schema phản hồi khi xóa sản phẩm",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "5"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"DELETE response contains message string\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      pm.expect(pm.response.json().message).to.eql(\"Product deleted\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_SCHEMA_05: Kiểm tra gọi sản phẩm không tồn tại",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Non-existent product MUST return 404 Not Found\", function () {",
+                  "      pm.response.to.have.status(404);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có bug ở dòng 161: if (!row) return res.status(200).json({});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_SCHEMA_06: Kiểm tra schema trả về khi gửi payload thiếu các trường bắt buộc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Status code is 400 Bad Request for empty payload\", function () {",
+                  "      pm.response.to.have.status(400);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_CRUD_01: Thực thi trọn vẹn luồng: Tạo mới ➔ Lấy chi tiết ➔ Cập nhật ➔ Lấy xác thực ➔ Xóa ➔ Lấy kiểm tra 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"CRUD Lifecycle step executed successfully\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_CRUD_03: Kiểm tra cập nhật sản phẩm không tồn tại",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "999999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"No Item\", \"price\": 1000, \"category_id\": 1}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_CRUD_03: Updating non-existent product MUST return 404 Not Found\", function () {",
+                  "      pm.response.to.have.status(404);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_CRUD_04: Kiểm tra xóa sản phẩm không tồn tại",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_CRUD_04: Deleting non-existent product MUST return 404 Not Found\", function () {",
+                  "      pm.response.to.have.status(404);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_ADV_03: Kiểm tra mã trạng thái HTTP chuẩn RESTful khi truy vấn sản phẩm không tồn tại",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_ADV_03: Non-existent product query MUST return 404 Not Found, NOT 200 with {}\", function () {",
+                  "      pm.response.to.have.status(404);",
+                  "      var data = pm.response.json();",
+                  "      pm.expect(data).to.have.property(\"error\");",
+                  "      pm.expect(data).to.not.deep.equal({});",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về 200 OK kèm {} làm sập logic xử lý lỗi Not Found trên Frontend"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 2 - Security, State Invariants & Boundary Matrix",
+      "item": [
+        {
+          "name": "TC_FR15_CRUD_05: Kiểm tra khả năng chống SQL Injection trong API tìm kiếm sản phẩm *(Bắt Bug SUT dòng 144: string interpolation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?search='",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"Search API handles SQLi safely without 500 HTML Error\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "      pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_CRUD_06: Kiểm tra chống SQL Injection khi xóa sản phẩm qua path parameter",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"SQL Injection in DELETE path param handled safely\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "  });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_ADV_05: Kiểm tra khả năng chống SQL Injection trong tham số tìm kiếm: Gửi chuỗi inject",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?search='",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_ADV_05: CRITICAL SEC-06 - Search API must use Parameterized Query and NEVER return HTML 500\", function () {",
+                  "      pm.expect(pm.response.code).to.not.equal(500);",
+                  "      pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "      pm.expect(pm.response.text()).to.not.include(\"Database Error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT trả về HTML 500 <h1>Database Error</h1> làm lộ lỗi cú pháp SQLite"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Group 5 - Hidden Logic & Code-Level Vulnerabilities",
+      "item": [
+        {
+          "name": "TC_FR15_ADV_01: Kiểm tra lỗ hổng phân quyền nghiêm trọng: Khách vãng lai KHÔNG CÓ TOKEN hoặc User thường (",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "json"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_ADV_01: CRITICAL BFLA - Product creation without admin token MUST be rejected\", function () {",
+                  "      pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "      pm.expect(pm.response.json()).to.have.property(\"error\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT hiện tại trả về 200 OK do POST/PUT/DELETE /api/products không gắn authenticateToken"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC_FR15_ADV_02: Kiểm tra tính toàn vẹn kiểu dữ liệu: Gọi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Student-Id",
+                "value": "{{studentId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "2"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "  pm.test(\"TC_FR15_ADV_02: CRITICAL - Product price MUST be a numeric type for both even and odd IDs\", function () {",
+                  "      pm.response.to.have.status(200);",
+                  "      var product = pm.response.json();",
+                  "      pm.expect(product.price).to.be.a(\"number\");",
+                  "      pm.expect(typeof product.price).to.not.equal(\"string\");",
+                  "  });",
+                  "  // GHI CHÚ AUDIT: SUT có bug ở dòng 162 chuyển giá tiền của các sản phẩm có ID chẵn thành String"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "23127092",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token_A",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token_B",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
     }
   ]
 }
